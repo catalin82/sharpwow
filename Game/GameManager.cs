@@ -108,7 +108,7 @@ namespace SharpWoW.Game
                             if (key == null)
                                 key = Registry.CurrentUser.CreateSubKey("Software\\Yias\\SharpWoW");
 
-                            key.SetValue("StoredWoWPath", (object)mGamePath);
+                            key.SetValue("StoredWoWPath", mGamePath);
                         }
                     }
                 }

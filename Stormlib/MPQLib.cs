@@ -49,66 +49,7 @@ namespace SharpWoW.Stormlib
         {
             string basePath = Game.GameManager.GamePath;
             basePath += "\\data";
-            string[] files = System.IO.Directory.GetFiles(basePath, "*.mpq");
-            List<string> listFiles = files.ToList();
-
-            #region File Sort Lambda
-
-            listFiles.Sort(
-                (strA, strB) =>
-                {
-                    if (strA == null && strB == null)
-                        return 0;
-                    if (strA == null && strB != null)
-                        return 1;
-                    if (strA != null && strB == null)
-                        return -1;
-
-                    int patchIndexA = strA.ToLower().IndexOf("patch");
-                    int patchIndexB = strB.ToLower().IndexOf("patch");
-
-                    if (patchIndexA != -1 && patchIndexB == -1)
-                        return -1;
-                    if (patchIndexB != -1 && patchIndexA == -1)
-                        return 1;
-
-                    if (patchIndexA == -1 && patchIndexB == -1)
-                        return strA.CompareTo(strB);
-
-                    int extIndexA = strA.LastIndexOf('.');
-                    int extIndexB = strB.LastIndexOf('.');
-
-                    char patchIdentA = strA.Substring(extIndexA - 1, 1)[0];
-                    char patchIdentB = strB.Substring(extIndexB - 1, 1)[0];
-
-                    char separatorA = strA.Substring(extIndexA - 2, 1)[0];
-                    char separatorB = strB.Substring(extIndexB - 2, 1)[0];
-
-                    if (separatorA != '-' && separatorB == '-')
-                        return 1;
-                    if (separatorA == '-' && separatorB != '-')
-                        return -1;
-
-                    if (patchIdentA == patchIdentB)
-                        return 0;
-                    if (patchIdentA < patchIdentB)
-                        return 1;
-                    if (patchIdentB < patchIdentA)
-                        return -1;
-
-                    return 0;
-                }
-            );
-
-            #endregion
-
-            foreach (string file in listFiles)
-            {
-                IntPtr hArchive = new IntPtr(0);
-                bool ret = SFileOpenArchive(file, 0, 0, ref hArchive);
-                if (ret)
-                    Archives.Add(file, hArchive);
-            }
+            LoadArchivesFromDir(basePath);
 
             Locale = Locales.Unknown;
 
@@ -126,11 +67,32 @@ namespace SharpWoW.Stormlib
                 throw new Exception("Unable to determine locale!");
 
             basePath += "\\" + Locale.ToString();
-            files = System.IO.Directory.GetFiles(basePath, "*.mpq");
-            listFiles = files.ToList();
+            LoadArchivesFromDir(basePath);
 
-            #region File Sort Lambda
+            return true;
+        }
 
+        private void LoadArchive(List<string> listFiles)
+        {
+            foreach (string file in listFiles)
+            {
+                IntPtr hArchive = new IntPtr(0);
+                bool ret = SFileOpenArchive(file, 0, 0, ref hArchive);
+                if (ret)
+                    Archives.Add(file, hArchive);
+            }
+        }
+
+        private void LoadArchivesFromDir(string dir)
+        {
+            string[] files = System.IO.Directory.GetFiles(dir, "*.mpq");
+            List<string> listFiles = files.ToList();
+            SortLambda(listFiles);
+            LoadArchive(listFiles);
+        }
+
+        private void SortLambda(List<string> listFiles)
+        {
             listFiles.Sort(
                 (strA, strB) =>
                 {
@@ -176,18 +138,6 @@ namespace SharpWoW.Stormlib
                     return 0;
                 }
             );
-
-            #endregion
-
-            foreach (string file in listFiles)
-            {
-                IntPtr hArchive = new IntPtr(0);
-                bool ret = SFileOpenArchive(file, 0, 0, ref hArchive);
-                if (ret)
-                    Archives.Add(file, hArchive);
-            }
-
-            return true;
         }
 
         internal Dictionary<string, IntPtr> Archives = new Dictionary<string, IntPtr>();

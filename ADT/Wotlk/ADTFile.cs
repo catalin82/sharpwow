@@ -109,6 +109,7 @@ namespace SharpWoW.ADT.Wotlk
             }
             catch (System.IO.FileFormatException)
             {
+                mLoadEvent.Set();
                 return;
             }
 

@@ -146,6 +146,9 @@
     <Compile Include="Models\MDX\M2InfoCache.cs" />
     <Compile Include="Models\MDX\M2Manager.cs" />
     <Compile Include="Models\MDX\M2Structs.cs" />
+    <Compile Include="Models\WMO\WMOCache.cs" />
+    <Compile Include="Models\WMO\WMOFile.cs" />
+    <Compile Include="Models\WMO\WMOStructs.cs" />
     <Compile Include="Resources\Images.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

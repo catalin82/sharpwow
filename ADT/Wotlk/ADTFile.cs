@@ -103,7 +103,15 @@ namespace SharpWoW.ADT.Wotlk
 
         private void AsyncLoadProc()
         {
-            mpqFile = new Stormlib.MPQFile(FileName);
+            try
+            {
+                mpqFile = new Stormlib.MPQFile(FileName);
+            }
+            catch (System.IO.FileFormatException)
+            {
+                return;
+            }
+
             if (ReadSignature() != "REVM")
                 return;
 

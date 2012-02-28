@@ -63,7 +63,7 @@ namespace SharpWoW.ADT.Wotlk
                 if (dist > radius)
                     continue;
 
-                /*switch(Game.GameManager.TerrainLogic.ChangeMode)
+                switch(Game.GameManager.TerrainLogic.ChangeMode)
                 {
                     case Game.Logic.ChangeMode.Flat:
                         vertices[i].Z += amount * (lower ? -1 : 1);
@@ -84,9 +84,8 @@ namespace SharpWoW.ADT.Wotlk
                     case Game.Logic.ChangeMode.Spline:
                         vertices[i].Z += (float)Game.GameManager.TerrainLogic.TerrainSpline.Interpolate(dist / radius) * amount;
                         break;
-                }*/
+                }
 
-                vertices[i].Z += amount * Game.GameManager.TerrainLogic.TerrainBrush.GetValueAtDistance(dist);
 
                 if (vertices[i].Z < MinPosition.Z)
                 {

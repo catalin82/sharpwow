@@ -1,0 +1,386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FF32C15A-ADB1-463D-888F-F398D4EAF4FA}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharpWoW</RootNamespace>
+    <AssemblyName>SharpWoW</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Resources\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MathNet.Iridium">
+      <HintPath>dep\Math.NET\MathNet.Iridium.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SlimDX, Version=4.0.12.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\SlimDX SDK (September 2011)\Bin\net40\x86\SlimDX.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ADT\ADTAlphaHandler.cs" />
+    <Compile Include="ADT\Cataclysm\ADTAsyncLoader.cs" />
+    <Compile Include="ADT\Cataclysm\ADTChunk.cs" />
+    <Compile Include="ADT\Cataclysm\ADTFile.cs" />
+    <Compile Include="ADT\Cataclysm\ADTStructs.cs" />
+    <Compile Include="ADT\IADTChunk.cs" />
+    <Compile Include="ADT\IADTFile.cs" />
+    <Compile Include="ADT\Wotlk\ADTChunk.cs" />
+    <Compile Include="ADT\Wotlk\ADTChunkInteraction.cs" />
+    <Compile Include="ADT\Wotlk\ADTFile.cs" />
+    <Compile Include="ADT\ADTManager.cs" />
+    <Compile Include="ADT\ADTStaticData.cs" />
+    <Compile Include="ADT\Wotlk\ADTStructs.cs" />
+    <Compile Include="ADT\Minimap.cs" />
+    <Compile Include="Brushes\IBrush.cs" />
+    <Compile Include="Brushes\SprayBrush.cs" />
+    <Compile Include="Brushes\TerrainBrush.cs" />
+    <Compile Include="Controls\AreaTableEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\AreaTableEditor.Designer.cs">
+      <DependentUpon>AreaTableEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ExpanderControl.xaml.cs">
+      <DependentUpon>ExpanderControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LightColorSelector.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\LightColorSelector.Designer.cs">
+      <DependentUpon>LightColorSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LightEditorTab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\LightEditorTab.Designer.cs">
+      <DependentUpon>LightEditorTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Light\LightInterpolator.cs" />
+    <Compile Include="Controls\Light\LightMarker.cs" />
+    <Compile Include="Controls\MinimapControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MinimapControl.Designer.cs">
+      <DependentUpon>MinimapControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MultiPointSplineControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MultiPointSplineControl.Designer.cs">
+      <DependentUpon>MultiPointSplineControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PropertyTab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PropertyTab.Designer.cs">
+      <DependentUpon>PropertyTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SplineControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SplineControl.Designer.cs">
+      <DependentUpon>SplineControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\UIPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\UIPanel.Designer.cs">
+      <DependentUpon>UIPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DBC\Converters.cs" />
+    <Compile Include="DBC\DBCFile.cs" />
+    <Compile Include="DBC\DBCStores.cs" />
+    <Compile Include="DBC\DBCWriter.cs" />
+    <Compile Include="ADT\Wotlk\ADTAsyncLoader.cs" />
+    <Compile Include="Models\MDX\M2BatchRenderer.cs" />
+    <Compile Include="Models\MDX\M2Info.cs" />
+    <Compile Include="Models\MDX\M2InfoCache.cs" />
+    <Compile Include="Models\MDX\M2Manager.cs" />
+    <Compile Include="Models\MDX\M2Structs.cs" />
+    <Compile Include="Resources\Images.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Images.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\GlowHelpDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\GlowHelpDialog.Designer.cs">
+      <DependentUpon>GlowHelpDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\LightCreator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\LightCreator.Designer.cs">
+      <DependentUpon>LightCreator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\LightMarkerDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\LightMarkerDialog.Designer.cs">
+      <DependentUpon>LightMarkerDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\MapRadiusSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\MapRadiusSelector.Designer.cs">
+      <DependentUpon>MapRadiusSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\SkyBoxSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\SkyBoxSelector.Designer.cs">
+      <DependentUpon>SkyBoxSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\StreamedMpq.cs" />
+    <Compile Include="World\MapSky.cs" />
+    <Compile Include="World\SkyManager.cs" />
+    <Compile Include="Game\GameManager.cs" />
+    <Compile Include="DBC\Structures.cs" />
+    <Compile Include="Game\Logic\TerrainLogic.cs" />
+    <Compile Include="Game\ThreadManager.cs" />
+    <Compile Include="Game\VideoThread.cs" />
+    <Compile Include="Game\WorldManager.cs" />
+    <Compile Include="Resources\Shaders.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Shaders.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Strings-deDE.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings-deDE.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Stormlib\MPQLib.cs" />
+    <Compile Include="UI\Dialogs\DBCEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\DBCEditor.Designer.cs">
+      <DependentUpon>DBCEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\DeviceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\DeviceDialog.Designer.cs">
+      <DependentUpon>DeviceDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\MapSelectDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\MapSelectDialog.Designer.cs">
+      <DependentUpon>MapSelectDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\MinimapDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\MinimapDialog.Designer.cs">
+      <DependentUpon>MinimapDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Generators\PerlinGenerator.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\ManualPathSelector.cs" />
+    <Compile Include="UI\TerrainPropertyPanel.cs" />
+    <Compile Include="UI\WoWFolderSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\WoWFolderSelector.Designer.cs">
+      <DependentUpon>WoWFolderSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\Memory.cs" />
+    <Compile Include="Utils\Metrics.cs" />
+    <Compile Include="Utils\Reflection.cs" />
+    <Compile Include="Utils\Singleton.cs" />
+    <Compile Include="Video\Camera.cs" />
+    <Compile Include="Video\Frustum.cs" />
+    <Compile Include="Video\GraphicsManager.cs" />
+    <Compile Include="Video\Input\InputManager.cs" />
+    <Compile Include="Video\Input\Mouse.cs" />
+    <Compile Include="Video\Shader.cs" />
+    <Compile Include="Video\ShaderCollection.cs" />
+    <Compile Include="Video\ShaderManager.cs" />
+    <Compile Include="Video\TextureHandle.cs" />
+    <Compile Include="Video\TextureManager.cs" />
+    <Compile Include="Video\VideoConfig.cs" />
+    <Compile Include="World\SkySphere.cs" />
+    <Compile Include="World\WorldLightEntry.cs" />
+    <EmbeddedResource Include="Controls\AreaTableEditor.resx">
+      <DependentUpon>AreaTableEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\LightColorSelector.resx">
+      <DependentUpon>LightColorSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\LightEditorTab.resx">
+      <DependentUpon>LightEditorTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MinimapControl.resx">
+      <DependentUpon>MinimapControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MultiPointSplineControl.resx">
+      <DependentUpon>MultiPointSplineControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PropertyTab.resx">
+      <DependentUpon>PropertyTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SplineControl.resx">
+      <DependentUpon>SplineControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\UIPanel.resx">
+      <DependentUpon>UIPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Images.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Images.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Shaders.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Shaders.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Strings-deDE.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings-deDE.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\DBCEditor.resx">
+      <DependentUpon>DBCEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\DeviceDialog.resx">
+      <DependentUpon>DeviceDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\GlowHelpDialog.resx">
+      <DependentUpon>GlowHelpDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\LightCreator.resx">
+      <DependentUpon>LightCreator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\LightMarkerDialog.resx">
+      <DependentUpon>LightMarkerDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\MapRadiusSelector.resx">
+      <DependentUpon>MapRadiusSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\MapSelectDialog.resx">
+      <DependentUpon>MapSelectDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\MinimapDialog.resx">
+      <DependentUpon>MinimapDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\SkyBoxSelector.resx">
+      <DependentUpon>SkyBoxSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="UI\WoWFolderSelector.resx">
+      <DependentUpon>WoWFolderSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\app.manifest" />
+    <None Include="UI\App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TerrainShader.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\MDXShader.fx" />
+    <Content Include="Resources\SkySphere.fx" />
+    <None Include="Resources\WoWScrnShot_022612_095745.jpg" />
+    <None Include="Resources\WoWScrnShot_022612_095604.jpg" />
+    <None Include="Resources\WoWScrnShot_022612_095745_low.jpg" />
+    <None Include="Resources\WoWScrnShot_022612_095604_low.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\ExpanderControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

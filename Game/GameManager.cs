@@ -104,7 +104,7 @@ namespace SharpWoW.Game
                         var res = MessageBox.Show("Would you like to store that path in a new registry key?", "Saving the path...", MessageBoxButtons.YesNo);
                         if (res == DialogResult.Yes)
                         {
-                            RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Yias\\SharpWoW");
+                            RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Yias\\SharpWoW", true);
                             if (key == null)
                                 key = Registry.CurrentUser.CreateSubKey("Software\\Yias\\SharpWoW");
 

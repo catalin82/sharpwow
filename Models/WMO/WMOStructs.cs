@@ -48,4 +48,37 @@ namespace SharpWoW.Models.WMO
         public Vector3 MaxPosition;
         public uint nameOffset;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MOGP
+    {
+        public uint ofsGroupName;
+        public uint ofsDescGroupName;
+        public uint Flags;
+        public Vector3 MinPosition;
+        public Vector3 MaxPosition;
+        public ushort ofsMOPR;
+        public ushort numMOPR;
+        public ushort batchesA;
+        public ushort batchesB;
+        public ushort batchesC;
+        public uint fogList;
+        public uint liquidType;
+        public uint groupID;
+        public uint unk1, unk2;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MOBA
+    {
+        public uint color1;
+        public uint color2;
+        public uint color3;
+        public uint startIndex;
+        public ushort numIndices;
+        public ushort startVertex;
+        public ushort endVertex;
+        public byte unk1;
+        public byte textureID;
+    }
 }

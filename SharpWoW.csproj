@@ -141,6 +141,7 @@
     <Compile Include="DBC\DBCStores.cs" />
     <Compile Include="DBC\DBCWriter.cs" />
     <Compile Include="ADT\Wotlk\ADTAsyncLoader.cs" />
+    <Compile Include="Game\Bookmark.cs" />
     <Compile Include="Models\MDX\M2BatchRenderer.cs" />
     <Compile Include="Models\MDX\M2Info.cs" />
     <Compile Include="Models\MDX\M2InfoCache.cs" />
@@ -148,11 +149,18 @@
     <Compile Include="Models\MDX\M2Structs.cs" />
     <Compile Include="Models\WMO\WMOCache.cs" />
     <Compile Include="Models\WMO\WMOFile.cs" />
+    <Compile Include="Models\WMO\WMOGroup.cs" />
     <Compile Include="Models\WMO\WMOStructs.cs" />
     <Compile Include="Resources\Images.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Images.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\BookmarksDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\BookmarksDialog.Designer.cs">
+      <DependentUpon>BookmarksDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\GlowHelpDialog.cs">
       <SubType>Form</SubType>
@@ -306,6 +314,9 @@
     <EmbeddedResource Include="Resources\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\BookmarksDialog.resx">
+      <DependentUpon>BookmarksDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Dialogs\DBCEditor.resx">
       <DependentUpon>DBCEditor.cs</DependentUpon>

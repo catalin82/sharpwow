@@ -22,6 +22,43 @@ namespace SharpWoW.Models.WMO
             mFile.Position += 4;
             mHeader = mFile.Read<MOHD>();
 
+            SeekChunk("XTOM");
+            uint numBytes = mFile.Read<uint>();
+            byte[] texData = mFile.Read(numBytes);
+            var fullStr = Encoding.UTF8.GetString(texData);
+            var textures = fullStr.Split('\0');
+
+            uint curPos = 0;
+            foreach (var tex in textures)
+            {
+                if (tex != "")
+                    mTextureNames.Add(curPos, tex);
+
+                curPos += (uint)tex.Length + 1;
+            }
+
+            SeekChunk("TMOM");
+            mFile.Position += 4;
+
+            for (uint i = 0; i < mHeader.nMaterials; ++i)
+            {
+                MOMT mat = mFile.Read<MOMT>();
+                mMaterials.Add(mat);
+            }
+
+            SeekChunk("IGOM");
+            mFile.Position += 4;
+
+            for (uint i = 0; i < mHeader.nGroups; ++i)
+            {
+                MOGI mogi = mFile.Read<MOGI>();
+                mGroupInfos.Add(mogi);
+
+                WMOGroup group = new WMOGroup(FileName, i, this);
+                if (group.LoadGroup())
+                    mGroups.Add(group);
+            }
+
             isLoadFinished = true;
         }
 
@@ -37,7 +74,7 @@ namespace SharpWoW.Models.WMO
 
         private string GetChunk()
         {
-            byte[] sig = new byte[4];
+            byte[] sig = mFile.Read(4);
             var str = Encoding.UTF8.GetString(sig);
             return str;
         }
@@ -47,6 +84,10 @@ namespace SharpWoW.Models.WMO
         private MOHD mHeader;
         private bool isLoadFinished = false;
         private Stormlib.MPQFile mFile;
+        private Dictionary<uint, string> mTextureNames = new Dictionary<uint, string>();
+        private List<MOMT> mMaterials = new List<MOMT>();
+        private List<MOGI> mGroupInfos = new List<MOGI>();
+        private List<WMOGroup> mGroups = new List<WMOGroup>();
 
         public bool LoadFinished { get { return isLoadFinished; } }
     }

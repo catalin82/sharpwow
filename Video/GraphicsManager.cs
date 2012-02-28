@@ -54,7 +54,6 @@ namespace SharpWoW.Video
             ));
             Device.SetTransform(TransformState.World, Matrix.Identity);
 
-            Models.WMO.WMOCache.GetCacheEntry(@"WORLD\WMO\DUNGEON\ND_GUNDRAK\GUNDRAKINTERIOR_001.wmo");
         }
 
         public void UpdateMouseTerrainPos(int x, int y)

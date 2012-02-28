@@ -104,13 +104,6 @@ namespace SharpWoW.Stormlib
 
             foreach (string file in listFiles)
             {
-                StringBuilder bldr = new StringBuilder(System.IO.Path.GetFileName(file));
-
-                if (bldr.ToString().ToLower().IndexOf("patch") != -1)
-                {
-                    continue;
-                }   
-
                 IntPtr hArchive = new IntPtr(0);
                 bool ret = SFileOpenArchive(file, 0, 0, ref hArchive);
                 if (ret)
@@ -188,14 +181,10 @@ namespace SharpWoW.Stormlib
 
             foreach (string file in listFiles)
             {
-                StringBuilder bldr = new StringBuilder(System.IO.Path.GetFileName(file));
-
                 IntPtr hArchive = new IntPtr(0);
                 bool ret = SFileOpenArchive(file, 0, 0, ref hArchive);
                 if (ret)
-                {
                     Archives.Add(file, hArchive);
-                }
             }
 
             return true;

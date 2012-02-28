@@ -109,28 +109,12 @@ namespace SharpWoW.Stormlib
                 if (bldr.ToString().ToLower().IndexOf("patch") != -1)
                 {
                     continue;
-                }
+                }   
 
-                if (ArchiveLoading != null)
-                {
-                    if (bldr.ToString().IndexOf('\0') != -1)
-                        ArchiveLoading(bldr.ToString().Substring(0, bldr.ToString().IndexOf('\0')));
-                    else
-                        ArchiveLoading(bldr.ToString());
-                }
                 IntPtr hArchive = new IntPtr(0);
                 bool ret = SFileOpenArchive(file, 0, 0, ref hArchive);
                 if (ret)
-                {
                     Archives.Add(file, hArchive);
-                    if (ArchiveLoaded != null)
-                    {
-                        if (bldr.ToString().IndexOf('\0') != -1)
-                            ArchiveLoaded(bldr.ToString().Substring(0, bldr.ToString().IndexOf('\0')));
-                        else
-                            ArchiveLoaded(bldr.ToString());
-                    }
-                }
             }
 
             Locale = Locales.Unknown;
@@ -206,36 +190,16 @@ namespace SharpWoW.Stormlib
             {
                 StringBuilder bldr = new StringBuilder(System.IO.Path.GetFileName(file));
 
-                if (ArchiveLoading != null)
-                {
-                    if (bldr.ToString().IndexOf('\0') != -1)
-                        ArchiveLoading(bldr.ToString().Substring(0, bldr.ToString().IndexOf('\0')));
-                    else
-                        ArchiveLoading(bldr.ToString());
-                }
                 IntPtr hArchive = new IntPtr(0);
                 bool ret = SFileOpenArchive(file, 0, 0, ref hArchive);
                 if (ret)
                 {
                     Archives.Add(file, hArchive);
-                    if (ArchiveLoaded != null)
-                    {
-                        if (bldr.ToString().IndexOf('\0') != -1)
-                            ArchiveLoaded(bldr.ToString().Substring(0, bldr.ToString().IndexOf('\0')));
-                        else
-                            ArchiveLoaded(bldr.ToString());
-                    }
                 }
             }
 
-            if (ArchivesLoaded != null)
-                ArchivesLoaded();
             return true;
         }
-
-        public event Action<string> ArchiveLoading;
-        public event Action<string> ArchiveLoaded;
-        public event Action ArchivesLoaded;
 
         internal Dictionary<string, IntPtr> Archives = new Dictionary<string, IntPtr>();
     }

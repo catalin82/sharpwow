@@ -57,9 +57,9 @@ namespace SharpWoW.Models.MDX
             device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
             device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
 
-            //device.SetRenderState(RenderState.AlphaTestEnable, true);
-            //device.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
-            //device.SetRenderState(RenderState.AlphaRef, 0.3f);
+            device.SetRenderState(RenderState.AlphaTestEnable, true);
+            device.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
+            device.SetRenderState(RenderState.AlphaRef, 0.3f);
 
             RenderInstances(device);
             

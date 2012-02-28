@@ -14,7 +14,6 @@ namespace SharpWoW.Video
         public Camera()
         {
             ViewFrustum = new Frustum();
-            Game.GameManager.GraphicsThread.OnFrame += UpdateCamera;
         }
 
         public void UpdateCamera(Device dev, TimeSpan diff)

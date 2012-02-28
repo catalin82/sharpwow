@@ -73,6 +73,8 @@ namespace SharpWoW.Game
             dev.SetRenderState(RenderState.Lighting, false);
             dev.SetRenderState(RenderState.CullMode, Cull.None);
 
+            GraphicsManager.Camera.UpdateCamera(GraphicsManager.Device, diff.Value);
+
             ADT.ADTManager.Render();
 
             if (OnFrame != null)

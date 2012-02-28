@@ -118,6 +118,9 @@ namespace SharpWoW.Video.Input
             {
                 if (mKeysDown.Contains(e.KeyCode) == true)
                     mKeysDown.Remove(e.KeyCode);
+
+                if(KeyUp != null)
+                    KeyUp(e.KeyCode);
             }
         }
 
@@ -127,13 +130,20 @@ namespace SharpWoW.Video.Input
             {
                 if (mKeysDown.Contains(e.KeyCode) == false)
                     mKeysDown.Add(e.KeyCode);
+
+                if (KeyDown != null)
+                    KeyDown(e.KeyCode);
             }
         }
 
         public delegate void MouseMoveDlg(int x, int y, MouseButtons pressedButtons);
         public delegate void KeyPressDlg(char chr);
+        public delegate void KeyDownDlg(Keys key);
+        public delegate void KeyUpDlg(Keys key);
         public event MouseMoveDlg MouseMoved;
         public event KeyPressDlg KeyPressed;
+        public event KeyDownDlg KeyDown;
+        public event KeyUpDlg KeyUp;
         
 
         public static InputManager Input { get; private set; }

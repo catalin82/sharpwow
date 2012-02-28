@@ -34,6 +34,7 @@
             this.loadMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.dBCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -74,6 +75,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadMapToolStripMenuItem,
+            this.toolStripMenuItem1,
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -83,20 +85,27 @@
             // loadMapToolStripMenuItem
             // 
             this.loadMapToolStripMenuItem.Name = "loadMapToolStripMenuItem";
-            this.loadMapToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.loadMapToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadMapToolStripMenuItem.Text = "Load Map";
             this.loadMapToolStripMenuItem.Click += new System.EventHandler(this.loadMapToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(124, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "&Exit";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem1.Text = "Bookmarks";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // dBCToolStripMenuItem
             // 
@@ -207,6 +216,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
         private Controls.UIPanel uiPanel1;
         private System.Windows.Forms.Integration.ElementHost elementHost1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }
 

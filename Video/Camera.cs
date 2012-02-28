@@ -14,6 +14,39 @@ namespace SharpWoW.Video
         public Camera()
         {
             ViewFrustum = new Frustum();
+
+            Input.InputManager.Input.KeyUp += new Input.InputManager.KeyUpDlg((Keys key) =>
+            {
+                if (key == Keys.F5)
+                {
+                    addBookmark();
+                }
+            });
+        }
+
+        private void addBookmark()
+        {
+            var bookmarks = Game.Bookmark.Bookmarks;
+            var pos = new Vector2(mPosition.X, mPosition.Y);
+            var chunk = Game.GameManager.WorldManager.HoveredChunk;
+            var name = "";
+            if (chunk == null)
+            {
+                name = "(unknown)";
+                return;
+            }
+
+            try
+            {
+                var ae = DBC.DBCStores.AreaTable[chunk.Header.areaId];
+                name = ae.AreaName;
+            }
+            catch (Exception)
+            {
+                name = "(unknown)";
+            }
+            bookmarks.Add(new Game.Bookmark(name, Game.GameManager.WorldManager.MapID, pos));
+            Game.Bookmark.Bookmarks = bookmarks;
         }
 
         public void UpdateCamera(Device dev, TimeSpan diff)
@@ -23,6 +56,7 @@ namespace SharpWoW.Video
 
             bool changed = false;
             var inp = Input.InputManager.Input;
+
             if (inp[Keys.W])
             {
                 mPosition += (float)diff.TotalSeconds * mFront * 50;
@@ -124,6 +158,7 @@ namespace SharpWoW.Video
         private Vector3 mRight = Vector3.Negate(Vector3.UnitY);
         private Vector3 mFront = Vector3.Negate(Vector3.UnitX);
         private Device mDevice { get { return Game.GameManager.GraphicsThread.GraphicsManager.Device; } }
+        private bool mF5Pressed = false;
         
 
         public Vector3 Position { get { return mPosition; } }

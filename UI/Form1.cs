@@ -128,5 +128,11 @@ namespace SharpWoW.UI
         {
             Game.GameManager.WorldManager.EnterWorld(mapid, continent, x, y);
         }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Dialogs.BookmarksDialog bookDialog = new Dialogs.BookmarksDialog();
+            bookDialog.ShowDialog();
+        }
     }
 }

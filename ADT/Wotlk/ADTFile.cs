@@ -107,7 +107,7 @@ namespace SharpWoW.ADT.Wotlk
             {
                 mpqFile = new Stormlib.MPQFile(FileName);
             }
-            catch (System.IO.FileFormatException)
+            catch (System.IO.FileNotFoundException)
             {
                 mLoadEvent.Set();
                 return;

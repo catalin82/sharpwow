@@ -24,7 +24,7 @@ namespace SharpWoW.Utils
             if (fi == null)
                 throw new KeyNotFoundException("The requested property was not found in the type!");
 
-            return (T)fi.GetValue(obj);
+            return (T)fi.GetValue(obj, null);
         }
 
         public static void CallMethod(object obj, string methodName, params object[] args)

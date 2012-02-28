@@ -20,7 +20,7 @@ namespace SharpWoW.Brushes
 
         public override void SetProperty<T>(string property, T value)
         {
-            GetType().GetProperty(property).SetValue(this, value);
+            GetType().GetProperty(property).SetValue(this, value, null);
         }
 
         public override void SetProperty<T>(BrushProperties property, T value)
@@ -30,7 +30,7 @@ namespace SharpWoW.Brushes
 
         public override T GetProperty<T>(string property)
         {
-            return (T)GetType().GetProperty(property).GetValue(this);
+            return (T)GetType().GetProperty(property).GetValue(this, null);
         }
 
         public override T GetProperty<T>(BrushProperties property)

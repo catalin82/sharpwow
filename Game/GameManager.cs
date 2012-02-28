@@ -22,6 +22,7 @@ namespace SharpWoW.Game
             mMainThread = System.Threading.Thread.CurrentThread;
             Application.EnableVisualStyles();
             mForm = new UI.Form1();
+            Bookmark.SetDelegate();
             GraphicsThread = new VideoThread(mForm, mForm.panel1);
             GraphicsThread.RunLoop();
         }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using SlimDX;
+using System.Windows.Forms;
+using SharpWoW.Video.Input;
 
 namespace SharpWoW.Game
 {
@@ -25,6 +27,45 @@ namespace SharpWoW.Game
             Name = "";
             Map = uint.MaxValue;
             Position = new Vector2();
+        }
+
+        public static void SetDelegate()
+        {
+            InputManager.Input.KeyUp += new InputManager.KeyUpDlg((Keys key) =>
+            {
+                if (key == Keys.F5)
+                {
+                    addBookmark();
+                }
+            });
+        }
+
+        private static void addBookmark()
+        {
+            var bookmarks = Game.Bookmark.Bookmarks;
+
+            var camPos = Game.GameManager.GraphicsThread.GraphicsManager.Camera.Position;
+            var pos = new Vector2(camPos.X, camPos.Y);
+            var name = "";
+
+            var chunk = Game.GameManager.WorldManager.HoveredChunk;
+            if (chunk == null)
+            {
+                name = "(unknown)";
+                return;
+            }
+
+            try
+            {
+                var ae = DBC.DBCStores.AreaTable[chunk.Header.areaId];
+                name = ae.AreaName;
+            }
+            catch (Exception)
+            {
+                name = "(unknown)";
+            }
+            bookmarks.Add(new Game.Bookmark(name, Game.GameManager.WorldManager.MapID, pos));
+            Game.Bookmark.Bookmarks = bookmarks;
         }
 
         public static List<Bookmark> Bookmarks

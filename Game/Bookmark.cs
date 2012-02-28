@@ -29,7 +29,7 @@ namespace SharpWoW.Game
             Position = new Vector2();
         }
 
-        public static void SetDelegate()
+        public static void SetKeyUpDelegate()
         {
             InputManager.Input.KeyUp += new InputManager.KeyUpDlg((Keys key) =>
             {

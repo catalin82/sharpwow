@@ -110,6 +110,8 @@ namespace SharpWoW.ADT.Wotlk
             for (uint i = 0; i < mHeader.nDoodadRefs; ++i)
                 mRefs.Add(mFile.Read<uint>());
 
+            LoadLiquids();
+
             return true;
         }
 
@@ -192,6 +194,47 @@ namespace SharpWoW.ADT.Wotlk
 
             return true;
         }
+
+        ///////////////////////////////////TODO//////////////////////////////////////
+        //Cleanup and implement the rendering stuff
+        //implement MH2O in ADTFile (this is pretty messy imho but it's Blizzards fault ~Night)
+        struct mclqVertex
+        {
+            public short Unk1, Unk2;
+            public float Height;
+        }
+
+        private void LoadMCLQ()
+        {
+            mFile.Position = mInfo.ofsMcnk + mHeader.ofsLiquid;
+            var sig = ReadSignature();
+            if (sig != "MCLQ")
+                return;
+
+            int n = mFile.Read<int>();
+
+            float min = mFile.ReadFloat();
+            float max = mFile.ReadFloat(); //or the other way around? max/min? y u no more accurate wowdev?
+
+            mclqVertex[] vertices = new mclqVertex[9 * 9];
+
+            vertices[0].Unk1 = vertices[0].Unk2 = 0; //le stfu vs! remove me
+            vertices[0].Height = 0f; //le stfu vs! remove me
+
+            mFile.Read(vertices);
+
+            byte[] flags = new byte[8 * 8];
+            mFile.Read(flags);
+
+            byte[] junk = mFile.Read(0x54); //is this really just junk?
+        }
+
+        private void LoadLiquids()
+        {
+            if (mHeader.sizeLiqud > 8)
+                LoadMCLQ();
+        }
+        /////////////////////////////////////////////////////////////////////////////
 
         public void Unload()
         {

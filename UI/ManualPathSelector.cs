@@ -32,13 +32,13 @@ namespace SharpWoW.UI
                     dialogTitle = "Error: There is no WoW.exe at the location '" + fbd.SelectedPath + "'.\nSelect the location of your WoW.exe. It should be 3.3.5a (build 12340).";
                     continue;
                 }
-
+                /*
                 if (Game.GameManager.IsValidWoWExe(fbd.SelectedPath) == false)
                 {
                     dialogTitle = "Error: The WoW.exe at the location '" + fbd.SelectedPath + "' is not 3.3.5a.\nSelect the location of your WoW.exe. It should be 3.3.5a (build 12340).";
                     continue;
                 }
-
+                */
                 return fbd.SelectedPath;
             }
         }

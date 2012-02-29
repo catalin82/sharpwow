@@ -21,7 +21,7 @@ namespace SharpWoW.Models.MDX
         /// <param name="doodadName">Name of the doodad (case insensitive)</param>
         public M2BatchRender(string doodadName)
         {
-            Models.MDX.M2Info inf = Game.GameManager.M2ModelCache.GetInfo(doodadName);
+            M2Info inf = Game.GameManager.M2ModelCache.GetInfo(doodadName);
             Game.GameManager.GraphicsThread.CallOnThread(
                 () =>
                 {

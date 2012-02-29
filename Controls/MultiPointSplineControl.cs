@@ -46,7 +46,6 @@ namespace SharpWoW.Controls
                 case SplineInterpolationMethod.Linear:
                     creationFun = Interpolation.CreateLinearSpline;
                     break;
-                    break;
             }
 
             createSpline();

@@ -23,7 +23,7 @@ namespace SharpWoW.ADT.Cataclysm
                         { 
                             AsyncLoadProc(); 
                         } 
-                        catch (Exception e) 
+                        catch (Exception) 
                         { 
                         } 
                     }

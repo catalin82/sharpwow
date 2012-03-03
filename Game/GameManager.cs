@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using Microsoft.Win32;
+using System.IO;
 
 namespace SharpWoW.Game
 {
@@ -170,6 +171,9 @@ namespace SharpWoW.Game
 
             var val = key.GetValue("StoredWoWPath");
             if (val == null)
+                return false;
+
+            if (Directory.Exists((string)val) == false)
                 return false;
 
             mGamePath = (string)val;

@@ -25,6 +25,9 @@ namespace SharpWoW.UI.Dialogs
                 if (entry.InternalName.IndexOf("Transport") >= 0)
                     continue;
 
+                if (!Stormlib.MPQFile.Exists(@"World\Maps\" + entry.InternalName + "\\" + entry.InternalName + ".wdl"))
+                    continue;
+
                 listBox1.Items.Add(new MapSelectionItem(entry));
             }
         }

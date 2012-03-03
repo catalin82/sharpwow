@@ -28,6 +28,9 @@ namespace SharpWoW.Stormlib
         [DllImport("Stormlib.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern bool SFileCloseFile(IntPtr hArchive);
 
+        [DllImport("Stormlib.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern bool SFileHasFile(IntPtr hArchive, string file);
+
         #endregion
 
         public enum Locales
@@ -147,6 +150,17 @@ namespace SharpWoW.Stormlib
     {
         private byte[] fileData;
         private IntPtr fileHandle = IntPtr.Zero;
+
+        public static bool Exists(string fileName)
+        {
+            foreach (var val in MPQArchiveLoader.Instance.Archives)
+            {
+                if (MPQArchiveLoader.SFileHasFile(val.Value, fileName))
+                    return true;
+            }
+
+            return false;
+        }
 
         public MPQFile(string fileName)
         {

@@ -256,6 +256,9 @@ namespace SharpWoW.ADT.Wotlk
                 );
             }
 
+            foreach (var inst in mDoodadInstances)
+                Game.GameManager.M2ModelManager.RemoveInstance(inst.Key, inst.Value);
+
             mParent = null;
             mFile = null;
             mLayers.Clear();
@@ -284,7 +287,7 @@ namespace SharpWoW.ADT.Wotlk
                 {
                     var name = mParent.DoodadNames[mParent.ModelIdentifiers[(int)mParent.ModelDefinitions[(int)re].idMMID]];
                     var id = Game.GameManager.M2ModelManager.AddInstance(name, mParent.ModelDefinitions[(int)re]);
-                    mDoodadInstances.Add(id);
+                    mDoodadInstances.Add(name, id);
                 }
                 catch (Exception)
                 {
@@ -306,6 +309,8 @@ namespace SharpWoW.ADT.Wotlk
                     mMesh.DrawSubset(0);
                 }
             );
+
+            ADTManager.VisibleChunks.Add(this);
         }
 
         private void LoadMesh()
@@ -392,7 +397,7 @@ namespace SharpWoW.ADT.Wotlk
         private Texture mAlphaTexture = null;
         private int[] mTextureFlags = new int[4] { 0, 0, 0, 0 };
         private List<uint> mRefs = new List<uint>();
-        private List<uint> mDoodadInstances = new List<uint>();
+        private Dictionary<string, uint> mDoodadInstances = new Dictionary<string, uint>();
 
         private string ReadSignature()
         {

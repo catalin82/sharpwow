@@ -12,6 +12,7 @@ namespace SharpWoW.ADT
 
         public static void Render()
         {
+            VisibleChunks.Clear();
             foreach (var file in mActiveFiles)
             {
                 file.RenderADT();
@@ -20,9 +21,12 @@ namespace SharpWoW.ADT
 
         public static bool Intersect(SlimDX.Ray ray, ref float dist)
         {
+            if (VisibleChunks.Count == 0)
+                return false;
+
             bool hasHit = false;
             float nearHit = 9999999;
-            foreach (var file in mActiveFiles)
+            foreach (var file in VisibleChunks)
             {
                 float curHit = 0;
                 if (file.Intersect(ray, ref curHit))
@@ -74,5 +78,7 @@ namespace SharpWoW.ADT
 
             return new Cataclysm.ADTFile(fileName, indexX, indexY, initial);
         }
+
+        public static List<ADT.IADTChunk> VisibleChunks = new List<IADTChunk>();
     }
 }

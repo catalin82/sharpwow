@@ -13,6 +13,8 @@ namespace SharpWoW.Models.MDX
             mFile = new Stormlib.MPQFile(modelName);
             Header = mFile.Read<M2Header>();
 
+            BoundingBox = new SlimDX.BoundingBox(Header.VertexMin, Header.VertexMax);
+
             mFile.Position = Header.ofsName;
             byte[] data = mFile.Read(Header.lenName - 1);
             ModelName = Encoding.UTF8.GetString(data);
@@ -119,5 +121,6 @@ namespace SharpWoW.Models.MDX
         public List<string> Textures = new List<string>();
         public List<MdxVertex> Vertices = new List<MdxVertex>();
         public List<M2RenderPass> Passes = new List<M2RenderPass>();
+        public SlimDX.BoundingBox BoundingBox { get; private set; }
     }
 }

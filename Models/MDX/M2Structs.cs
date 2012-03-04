@@ -50,11 +50,11 @@ namespace SharpWoW.Models.MDX
         internal uint ofsTransLookups;
         internal uint nUVAnimLookups;
         internal uint ofsUVAnimLookups;
-        internal fixed float VertexMin[3];
-        internal fixed float VertexMax[3];
+        internal SlimDX.Vector3 VertexMin;
+        internal SlimDX.Vector3 VertexMax;
         internal float VertexRadius;
-        internal fixed float BoundingMin[3];
-        internal fixed float BoundingMax[3];
+        internal SlimDX.Vector3 BoundingMin;
+        internal SlimDX.Vector3 BoundingMax;
         internal float BoundingRadius;
     }
 

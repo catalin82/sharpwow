@@ -45,6 +45,26 @@ namespace SharpWoW.Models.MDX
             }
         }
 
+        public void RemoveInstance(string name, uint instanceId)
+        {
+            renderLock.WaitOne();
+
+            int hash = name.ToLower().GetHashCode();
+            if (BatchRenderers.ContainsKey(hash))
+            {
+                var rendr = BatchRenderers[hash];
+                rendr.RemoveInstance(instanceId);
+
+                if (rendr.NumInstances == 0)
+                {
+                    Game.GameManager.M2ModelCache.ReleaseInfo(rendr.ModelName);
+                    rendr.Unload();
+                }
+            }
+
+            renderLock.ReleaseMutex();
+        }
+
         private System.Threading.Mutex renderLock = new System.Threading.Mutex();
         private Dictionary<int, M2BatchRender> BatchRenderers = new Dictionary<int, M2BatchRender>();
     }

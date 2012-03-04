@@ -21,7 +21,9 @@ namespace SharpWoW.Models.MDX
         /// <param name="doodadName">Name of the doodad (case insensitive)</param>
         public M2BatchRender(string doodadName)
         {
+            ModelName = doodadName;
             M2Info inf = Game.GameManager.M2ModelCache.GetInfo(doodadName);
+            mModelInfo = inf;
             Game.GameManager.GraphicsThread.CallOnThread(
                 () =>
                 {
@@ -80,6 +82,19 @@ namespace SharpWoW.Models.MDX
             return InstanceLoader.PushInstance(new Vector3(x, y, z), scale, rot);
         }
 
+        public void RemoveInstance(uint id)
+        {
+            InstanceLoader.RemoveInstance(id);
+        }
+
+        public void Unload()
+        {
+            InstanceLoader.Unload();
+            numInstances = 0;
+        }
+
+        public uint NumInstances { get { return InstanceLoader.GetNumInstances(); } }
+
         private void RenderInstances(Device dev)
         {
             InstanceLoader.UpdateVisibility();
@@ -123,6 +138,9 @@ namespace SharpWoW.Models.MDX
         internal int numInstances = 0;
         internal M2InstanceLoader InstanceLoader;
         internal VertexDeclaration InstanceDeclaration;
+        internal M2Info mModelInfo;
+
+        public string ModelName { get; set; }
 
         private static VertexElement[] ElemDecl = new VertexElement[]
         {
@@ -148,20 +166,23 @@ namespace SharpWoW.Models.MDX
         public bool ExecuteTask()
         {
             mInstLock.WaitOne();
+            if (mIsHalted)
+                return true;
+
             if (WaitingInstances.Count > 0)
             {
                 for (int i = 0; WaitingInstances.Count > 0; ++i)
                 {
                     var data = WaitingInstances.First();
-                    ActiveInstances.Add(data.Key, data.Value);
-                    WaitingInstances.Remove(data.Key);
+                    ActiveInstances.Add(data);
+                    WaitingInstances.Remove(data);
                 }
                 if (Renderer.InstanceDataBuffer != null)
                     Renderer.InstanceDataBuffer.Dispose();
                 int size = Marshal.SizeOf(typeof(Models.MDX.MdxInstanceData));
                 Renderer.InstanceDataBuffer = new VertexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, ActiveInstances.Count * size, Usage.WriteOnly, VertexFormat.Texture4, Pool.Managed);
                 DataStream strm = Renderer.InstanceDataBuffer.Lock(0, 0, LockFlags.None);
-                Models.MDX.MdxInstanceData[] InstData = ActiveInstances.Values.ToArray();
+                Models.MDX.MdxInstanceData[] InstData = ActiveInstances.ToArray();
                 strm.WriteRange(InstData);
                 Renderer.InstanceDataBuffer.Unlock();
                 Renderer.numInstances = ActiveInstances.Count;
@@ -174,28 +195,31 @@ namespace SharpWoW.Models.MDX
         {
             lock (mInstLock)
             {
-                Dictionary<uint, Models.MDX.MdxInstanceData> VisibleInstances = new Dictionary<uint, Models.MDX.MdxInstanceData>();
-                Dictionary<uint, Models.MDX.MdxInstanceData> TmpInvis = new Dictionary<uint, Models.MDX.MdxInstanceData>();
+                if (mIsHalted)
+                    return;
+
+                List<Models.MDX.MdxInstanceData> VisibleInstances = new List<Models.MDX.MdxInstanceData>();
+                List<Models.MDX.MdxInstanceData> TmpInvis = new List<Models.MDX.MdxInstanceData>();
                 bool changed = false;
                 foreach (var inst in InvisibleInstances)
                 {
-                    if (IsInstanceVisible(new Vector3(inst.Value.ModelMatrix.M41, inst.Value.ModelMatrix.M42, inst.Value.ModelMatrix.M43)))
+                    if (IsInstanceVisible(new Vector3(inst.ModelMatrix.M41, inst.ModelMatrix.M42, inst.ModelMatrix.M43)))
                     {
                         changed = true;
-                        VisibleInstances.Add(inst.Key, inst.Value);
+                        VisibleInstances.Add(inst);
                     }
                     else
-                        TmpInvis.Add(inst.Key, inst.Value);
+                        TmpInvis.Add(inst);
                 }
 
                 foreach (var inst in ActiveInstances)
                 {
-                    if (IsInstanceVisible(new Vector3(inst.Value.ModelMatrix.M41, inst.Value.ModelMatrix.M42, inst.Value.ModelMatrix.M43)))
-                        VisibleInstances.Add(inst.Key, inst.Value);
+                    if (IsInstanceVisible(new Vector3(inst.ModelMatrix.M41, inst.ModelMatrix.M42, inst.ModelMatrix.M43)))
+                        VisibleInstances.Add(inst);
                     else
                     {
                         changed = true;
-                        TmpInvis.Add(inst.Key, inst.Value);
+                        TmpInvis.Add(inst);
                     }
                 }
 
@@ -214,7 +238,7 @@ namespace SharpWoW.Models.MDX
                 int size = Marshal.SizeOf(typeof(Models.MDX.MdxInstanceData));
                 Renderer.InstanceDataBuffer = new VertexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, ActiveInstances.Count * size, Usage.WriteOnly, VertexFormat.Diffuse | VertexFormat.Texture4, Pool.Managed);
                 DataStream strm = Renderer.InstanceDataBuffer.Lock(0, 0, LockFlags.None);
-                Models.MDX.MdxInstanceData[] InstData = ActiveInstances.Values.ToArray();
+                Models.MDX.MdxInstanceData[] InstData = ActiveInstances.ToArray();
                 strm.WriteRange(InstData);
                 Renderer.InstanceDataBuffer.Unlock();
                 Renderer.numInstances = ActiveInstances.Count;
@@ -251,7 +275,8 @@ namespace SharpWoW.Models.MDX
             };
             mInstLock.WaitOne();
             var id = RequestInstanceId();
-            WaitingInstances.Add(id, inst);
+            inst.InstanceId = id;
+            WaitingInstances.Add(inst);
             mInstLock.ReleaseMutex();
 
             Game.GameManager.GraphicsThread.CallOnThread(
@@ -269,22 +294,55 @@ namespace SharpWoW.Models.MDX
         {
             mInstLock.WaitOne();
 
-            if (WaitingInstances.ContainsKey(instanceId))
-                WaitingInstances.Remove(instanceId);
-
-            if (ActiveInstances.ContainsKey(instanceId))
-                ActiveInstances.Remove(instanceId);
-
-            if (InvisibleInstances.ContainsKey(instanceId))
-                InvisibleInstances.ContainsKey(instanceId);
-
-            mInstLock.ReleaseMutex();
+            WaitingInstances.RemoveAll((inst) => inst.InstanceId == instanceId);
+            ActiveInstances.RemoveAll((inst) => inst.InstanceId == instanceId);
+            InvisibleInstances.RemoveAll((inst) => inst.InstanceId == instanceId);
 
             lock (mIdLock)
             {
                 mUsedInstances.Remove(instanceId);
                 mFreeInstances.Add(instanceId);
             }
+
+            mInstLock.ReleaseMutex();
+        }
+
+        public void Unload()
+        {
+            mInstLock.WaitOne();
+            mIsHalted = true;
+
+            Game.GameManager.GraphicsThread.CallOnThread(
+                () =>
+                {
+                    Renderer.InstanceDataBuffer.Dispose();
+                    Renderer.InstanceDeclaration.Dispose();
+
+                    foreach (var mesh in Renderer.Meshes)
+                        mesh.Dispose();
+
+                    foreach (var ib in Renderer.Indices)
+                        ib.Dispose();
+
+                    foreach (var tex in Renderer.Textures)
+                        Video.TextureManager.RemoveTexture(tex);
+                }
+            );
+
+            Renderer.Meshes.Clear();
+            Renderer.Indices.Clear();
+            mInstLock.ReleaseMutex();
+        }
+
+        public uint GetNumInstances()
+        {
+            mInstLock.WaitOne();
+
+            var ret = WaitingInstances.Count + ActiveInstances.Count + InvisibleInstances.Count;
+
+            mInstLock.ReleaseMutex();
+
+            return (uint)ret;
         }
 
         private uint RequestInstanceId()
@@ -311,13 +369,14 @@ namespace SharpWoW.Models.MDX
             }
         }
 
-        private Dictionary<uint, Models.MDX.MdxInstanceData> WaitingInstances = new Dictionary<uint, Models.MDX.MdxInstanceData>();
-        private Dictionary<uint, Models.MDX.MdxInstanceData> ActiveInstances = new Dictionary<uint, Models.MDX.MdxInstanceData>();
-        private Dictionary<uint, Models.MDX.MdxInstanceData> InvisibleInstances = new Dictionary<uint, Models.MDX.MdxInstanceData>();
+        private List<Models.MDX.MdxInstanceData> WaitingInstances = new List<Models.MDX.MdxInstanceData>();
+        private List<Models.MDX.MdxInstanceData> ActiveInstances = new List<Models.MDX.MdxInstanceData>();
+        private List<Models.MDX.MdxInstanceData> InvisibleInstances = new List<Models.MDX.MdxInstanceData>();
         private M2BatchRender Renderer;
         private System.Threading.Mutex mInstLock = new System.Threading.Mutex();
         private List<uint> mFreeInstances = new List<uint>();
         private List<uint> mUsedInstances = new List<uint>();
         private object mIdLock = new object();
+        private bool mIsHalted = false;
     }
 }

@@ -78,5 +78,19 @@ namespace SharpWoW.Video
             if (!flag) return ContainmentType.Contains;
             return ContainmentType.Intersects;
         }
+
+        public ContainmentType Contains(BoundingSphere sphere, Matrix worldMatrix)
+        {
+            sphere.Center = Vector3.TransformCoordinate(sphere.Center, worldMatrix);
+
+            foreach (Plane plane in planes)
+            {
+                var dot = Plane.DotCoordinate(plane, sphere.Center);
+                if (dot < -sphere.Radius)
+                    return ContainmentType.Disjoint;
+            }
+
+            return ContainmentType.Contains;
+        }
     }
 }

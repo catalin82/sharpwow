@@ -55,6 +55,7 @@ namespace SharpWoW.Models.WMO
                     foreach (var mat in mMaterials)
                     {
                         mTextures.Add(Video.TextureManager.GetTexture(mTextureNames[mat.ofsTexture1]));
+                        mDebugTextures.Add(mTextureNames[mat.ofsTexture1]);
                     }
                 }
             );
@@ -99,6 +100,8 @@ namespace SharpWoW.Models.WMO
         }
 
         public Video.TextureHandle GetTexture(uint index) { return mTextures[(int)index]; }
+        public MOMT DEBUG_GetMaterial(uint index) { return mMaterials[(int)index]; }
+        public string DEBUG_GetTextureName(uint index) { return mDebugTextures[(int)index]; }
 
         public string FileName { get; private set; }
 
@@ -110,6 +113,7 @@ namespace SharpWoW.Models.WMO
         private List<MOGI> mGroupInfos = new List<MOGI>();
         private List<WMOGroup> mGroups = new List<WMOGroup>();
         private List<Video.TextureHandle> mTextures = new List<Video.TextureHandle>();
+        private List<string> mDebugTextures = new List<string>();
 
         public SlimDX.BoundingBox BoundingBox { get; set; }
 

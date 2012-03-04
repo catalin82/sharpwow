@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SlimDX;
+using SlimDX.Direct3D9;
 
 namespace SharpWoW.Models.WMO
 {
@@ -16,7 +17,6 @@ namespace SharpWoW.Models.WMO
 
         void RenderInstances(SlimDX.Direct3D9.Device device, TimeSpan deltaTime)
         {
-            device.SetRenderState(SlimDX.Direct3D9.RenderState.AlphaBlendEnable, true);
             lock (mInstLock)
             {
                 foreach (var mat in mInstances.Values)
@@ -27,7 +27,6 @@ namespace SharpWoW.Models.WMO
                     mFile.Draw(mat);
                 }
             }
-            device.SetRenderState(SlimDX.Direct3D9.RenderState.AlphaBlendEnable, false);
         }
 
         public uint PushInstance(Vector3 pos)

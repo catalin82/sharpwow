@@ -63,6 +63,9 @@ namespace SharpWoW.Models.WMO
 
                         mMeshes.Add(mesh);
                         mTextures.Add(mParent.GetTexture(batch.textureID));
+                        var name = mParent.DEBUG_GetTextureName(batch.textureID);
+                        var mat = mParent.DEBUG_GetMaterial(batch.textureID);
+                        mMaterials.Add(mat);
                     }
                 }
             );
@@ -78,6 +81,21 @@ namespace SharpWoW.Models.WMO
             for (int i = 0; i < mMeshes.Count; ++i)
             {
                 dev.SetTexture(0, mTextures[i].Native);
+                if (mMaterials[i].blendMode > 0)
+                {
+                    dev.SetRenderState(RenderState.AlphaBlendEnable, true);
+                    dev.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                    dev.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+                    dev.SetRenderState(RenderState.AlphaTestEnable, true);
+                    dev.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
+                    dev.SetRenderState(RenderState.AlphaRef, 0.01f);
+                }
+                else
+                {
+                    dev.SetRenderState(RenderState.AlphaBlendEnable, false);
+                    dev.SetRenderState(RenderState.AlphaTestEnable, false);
+                }
+
                 mMeshes[i].DrawSubset(0);
             }
 
@@ -125,5 +143,6 @@ namespace SharpWoW.Models.WMO
         private Stormlib.MPQFile mFile;
         private List<Mesh> mMeshes = new List<Mesh>();
         private List<Video.TextureHandle> mTextures = new List<Video.TextureHandle>();
+        private List<MOMT> mMaterials = new List<MOMT>();
     }
 }

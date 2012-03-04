@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using SlimDX;
+using SlimDX.Direct3D9;
 
 namespace SharpWoW.Models.WMO
 {
@@ -22,13 +23,65 @@ namespace SharpWoW.Models.WMO
             mFile.Position += 4;
             mHeader = mFile.Read<MOGP>();
 
-            SeekChunk("TVOM");
-            uint size = mFile.Read<uint>();
-            byte[] data = mFile.Read(size);
+            Vector3[] vertices = ReadChunkAs<Vector3>("TVOM");
+            ushort[] indices = ReadChunkAs<ushort>("IVOM");
+            Vector2[] texCoords = ReadChunkAs<Vector2>("VTOM");
 
-            Vector3[] vertices = new Vector3[size / 12];
-            Utils.Memory.CopyMemory(data, vertices);
+            MOBA[] batches = ReadChunkAs<MOBA>("ABOM");
+            Game.GameManager.GraphicsThread.CallOnThread(
+                () =>
+                {
+                    foreach (var batch in batches)
+                    {
+                        WMOVertex[] vert = new WMOVertex[batch.numIndices];
+                        for (uint t = 0, j = batch.startIndex; t < batch.numIndices; ++t, ++j)
+                        {
+                            vert[t] = new WMOVertex()
+                            {
+                                x = vertices[indices[j]].X,
+                                y = vertices[indices[j]].Y,
+                                z = vertices[indices[j]].Z,
+                                u = texCoords[indices[j]].X,
+                                v = texCoords[indices[j]].Y
+                            };
+                        }
+
+                        Mesh mesh = new Mesh(Game.GameManager.GraphicsThread.GraphicsManager.Device,
+                            batch.numIndices / 3, batch.numIndices, MeshFlags.Managed, WMOVertex.FVF);
+
+                        var strm = mesh.LockVertexBuffer(LockFlags.None);
+                        strm.WriteRange(vert);
+                        mesh.UnlockVertexBuffer();
+
+                        strm = mesh.LockIndexBuffer(LockFlags.None);
+                        ushort[] meshIndices = new ushort[vert.Length];
+                        for (int i = 0; i < vert.Length; ++i)
+                            meshIndices[i] = (ushort)i;
+
+                        strm.WriteRange(meshIndices);
+                        mesh.UnlockIndexBuffer();
+
+                        mMeshes.Add(mesh);
+                        mTextures.Add(mParent.GetTexture(batch.textureID));
+                    }
+                }
+            );
+
             return true;
+        }
+
+        public void RenderGroup(Matrix transform)
+        {
+            var dev = Game.GameManager.GraphicsThread.GraphicsManager.Device;
+            dev.SetTransform(TransformState.World, transform);
+
+            for (int i = 0; i < mMeshes.Count; ++i)
+            {
+                dev.SetTexture(0, mTextures[i].Native);
+                mMeshes[i].DrawSubset(0);
+            }
+
+            dev.SetTransform(TransformState.World, Matrix.Identity);
         }
 
         private void SeekChunk(string id, bool afterHeader = true)
@@ -48,6 +101,16 @@ namespace SharpWoW.Models.WMO
             }
         }
 
+        private T[] ReadChunkAs<T>(string signature) where T : struct
+        {
+            SeekChunk(signature);
+            uint size = mFile.Read<uint>();
+            var data = mFile.Read(size);
+            T[] ret = new T[data.Length / System.Runtime.InteropServices.Marshal.SizeOf(typeof(T))];
+            Utils.Memory.CopyMemory(data, ret);
+            return ret;
+        }
+
         private string GetChunk()
         {
             byte[] sig = mFile.Read(4);
@@ -60,5 +123,7 @@ namespace SharpWoW.Models.WMO
         private MOGP mHeader;
         private WMOFile mParent;
         private Stormlib.MPQFile mFile;
+        private List<Mesh> mMeshes = new List<Mesh>();
+        private List<Video.TextureHandle> mTextures = new List<Video.TextureHandle>();
     }
 }

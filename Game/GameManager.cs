@@ -42,8 +42,6 @@ namespace SharpWoW.Game
             WorldManager = new Game.WorldManager();
             M2ModelCache = new Models.MDX.M2InfoCache();
             M2ModelManager = new Models.MDX.M2Manager();
-
-            Models.WMO.WMOCache.GetCacheEntry(@"WORLD\WMO\Azeroth\Buildings\Duskwood_MageTower\Duskwood_MageTowerPurple.wmo");
         }
 
         /// <summary>

@@ -25,7 +25,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -171,6 +171,8 @@
     <Compile Include="Models\WMO\WMOCache.cs" />
     <Compile Include="Models\WMO\WMOFile.cs" />
     <Compile Include="Models\WMO\WMOGroup.cs" />
+    <Compile Include="Models\WMO\WMOManager.cs" />
+    <Compile Include="Models\WMO\WMORender.cs" />
     <Compile Include="Models\WMO\WMOStructs.cs" />
     <Compile Include="Resources\Images.Designer.cs">
       <AutoGen>True</AutoGen>

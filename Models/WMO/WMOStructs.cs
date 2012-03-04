@@ -81,4 +81,14 @@ namespace SharpWoW.Models.WMO
         public byte unk1;
         public byte textureID;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct WMOVertex
+    {
+        public float x, y, z;
+        public float u, v;
+
+        public const SlimDX.Direct3D9.VertexFormat FVF = SlimDX.Direct3D9.VertexFormat.Position | SlimDX.Direct3D9.VertexFormat.Texture1;
+        public const uint Size = 20;
+    }
 }

@@ -22,6 +22,9 @@ namespace SharpWoW.Models.WMO
             mFile.Position += 4;
             mHeader = mFile.Read<MOHD>();
 
+            BoundingBox = new SlimDX.BoundingBox(new SlimDX.Vector3(mHeader.MinPosition.X, mHeader.MinPosition.Z, mHeader.MinPosition.Y),
+                new SlimDX.Vector3(mHeader.MaxPosition.X, mHeader.MaxPosition.Z, mHeader.MaxPosition.Y));
+
             SeekChunk("XTOM");
             uint numBytes = mFile.Read<uint>();
             byte[] texData = mFile.Read(numBytes);
@@ -46,6 +49,16 @@ namespace SharpWoW.Models.WMO
                 mMaterials.Add(mat);
             }
 
+            Game.GameManager.GraphicsThread.CallOnThread(
+                () =>
+                {
+                    foreach (var mat in mMaterials)
+                    {
+                        mTextures.Add(Video.TextureManager.GetTexture(mTextureNames[mat.ofsTexture1]));
+                    }
+                }
+            );
+
             SeekChunk("IGOM");
             mFile.Position += 4;
 
@@ -60,6 +73,12 @@ namespace SharpWoW.Models.WMO
             }
 
             isLoadFinished = true;
+        }
+
+        public void Draw(SlimDX.Matrix transform)
+        {
+            foreach (var group in mGroups)
+                group.RenderGroup(transform);
         }
 
         private void SeekChunk(string id)
@@ -79,6 +98,8 @@ namespace SharpWoW.Models.WMO
             return str;
         }
 
+        public Video.TextureHandle GetTexture(uint index) { return mTextures[(int)index]; }
+
         public string FileName { get; private set; }
 
         private MOHD mHeader;
@@ -88,6 +109,9 @@ namespace SharpWoW.Models.WMO
         private List<MOMT> mMaterials = new List<MOMT>();
         private List<MOGI> mGroupInfos = new List<MOGI>();
         private List<WMOGroup> mGroups = new List<WMOGroup>();
+        private List<Video.TextureHandle> mTextures = new List<Video.TextureHandle>();
+
+        public SlimDX.BoundingBox BoundingBox { get; set; }
 
         public bool LoadFinished { get { return isLoadFinished; } }
     }

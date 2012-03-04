@@ -91,6 +91,36 @@ namespace SharpWoW.ADT.Wotlk
             ModelDefinitions = DoodadPlacements.ToList();
             ModelIdentifiers = DoodadIds.ToList();
 
+            mpqFile.Position = 0x14 + mHeader.ofsMwmo + 0x04;
+            size = mpqFile.Read<uint>();
+            data = mpqFile.Read(size);
+            fullStr = Encoding.UTF8.GetString(data);
+            Names = fullStr.Split('\0');
+            qry = from n in Names where n != "" select n;
+            ofs = 0;
+
+            foreach (var s in qry)
+            {
+                WMONames.Add(ofs, s);
+                ofs += (uint)s.Length + 1;
+            }
+
+            mpqFile.Position = 0x14 + mHeader.ofsModf + 0x04;
+            size = mpqFile.Read<uint>();
+            ssize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(MODF));
+            numEntries = size / ssize;
+            var WmoPlacements = new MODF[numEntries];
+            mpqFile.Read(WmoPlacements);
+
+            mpqFile.Position = 0x14 + mHeader.ofsMwid + 0x04;
+            size = mpqFile.Read<uint>();
+            numEntries = size / 4;
+            var WmoIds = new uint[numEntries];
+            mpqFile.Read(WmoIds);
+
+            WMODefinitions = WmoPlacements.ToList();
+            WMOIdentifiers = WmoIds.ToList();
+
             List<ADTChunk> chunks = new List<ADTChunk>();
 
             for (uint i = 0; i < 256; ++i)

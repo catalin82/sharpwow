@@ -25,5 +25,8 @@ namespace SharpWoW.ADT
         public List<Wotlk.MDDF> ModelDefinitions { get; protected set; }
         public List<uint> ModelIdentifiers { get; protected set; }
         public Dictionary<uint, string> DoodadNames = new Dictionary<uint, string>();
+        public Dictionary<uint, string> WMONames = new Dictionary<uint, string>();
+        public List<uint> WMOIdentifiers = new List<uint>();
+        public List<Wotlk.MODF> WMODefinitions = new List<Wotlk.MODF>();
     }
 }

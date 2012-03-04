@@ -109,6 +109,8 @@ namespace SharpWoW.ADT.Wotlk
             mFile.Position = mInfo.ofsMcnk + mHeader.ofsRefs + 0x08;
             for (uint i = 0; i < mHeader.nDoodadRefs; ++i)
                 mRefs.Add(mFile.Read<uint>());
+            for (uint i = 0; i < mHeader.nMapObjRefs; ++i)
+                mWmoRefs.Add(mFile.Read<uint>());
 
             LoadLiquids();
 
@@ -294,7 +296,20 @@ namespace SharpWoW.ADT.Wotlk
                 }
             }
 
+            foreach (var re in mWmoRefs)
+            {
+                try
+                {
+                    var name = mParent.WMONames[mParent.WMOIdentifiers[(int)mParent.WMODefinitions[(int)re].idMWID]];
+                    var id = Models.WMO.WMOManager.AddInstance(name, mParent.WMODefinitions[(int)re].Position);
+                }
+                catch (Exception)
+                { 
+                }
+            }
+
             mRefs.Clear();
+            mWmoRefs.Clear();
 
             var shdr = Video.ShaderCollection.TerrainShader;
             shdr.SetTechnique(mHeader.nLayers - 1);
@@ -397,6 +412,7 @@ namespace SharpWoW.ADT.Wotlk
         private Texture mAlphaTexture = null;
         private int[] mTextureFlags = new int[4] { 0, 0, 0, 0 };
         private List<uint> mRefs = new List<uint>();
+        private List<uint> mWmoRefs = new List<uint>();
         private Dictionary<string, uint> mDoodadInstances = new Dictionary<string, uint>();
 
         private string ReadSignature()

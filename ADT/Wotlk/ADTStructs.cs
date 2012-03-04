@@ -103,7 +103,7 @@ namespace SharpWoW.ADT.Wotlk
         /// <summary>
         /// Position in the world relative to the top left corner of the world (NOT ADT)
         /// </summary>
-        public float posX, posY, posZ;
+        public SlimDX.Vector3 Position;
         /// <summary>
         /// Rotation around every axis
         /// </summary>

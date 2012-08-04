@@ -131,7 +131,7 @@ namespace SharpWoW.Controls
         {
             listBox1.SuspendLayout();
             listBox1.Items.Clear();
-            var files = (from file in mTextureFileList where file.Contains(textBox1.Text) select file).ToArray();
+            var files = (from file in mTextureFileList where file.ToLower().Contains(textBox1.Text.ToLower()) select file).ToArray();
             listBox1.Items.AddRange(files);
             listBox1.ResumeLayout();
         }

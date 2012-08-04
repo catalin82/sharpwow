@@ -267,11 +267,16 @@ namespace SharpWoW.Models.MDX
 
         public uint PushInstance(Vector3 Position, float scale, Vector3 rotation)
         {
+            Matrix matRot = Matrix.Identity;
+            matRot *= Matrix.RotationX(rotation.X);
+            matRot *= Matrix.RotationY(rotation.Z);
+            matRot *= Matrix.RotationZ(rotation.Y);
+
             Models.MDX.MdxInstanceData inst = new Models.MDX.MdxInstanceData()
             {
                 ModelMatrix =
-                Matrix.Scaling(scale, scale, scale)
-                * Matrix.RotationYawPitchRoll(rotation.X, rotation.Y, rotation.Z)
+                matRot
+                * Matrix.Scaling(scale, scale, scale)
                 * Matrix.Translation(Position),
             };
 

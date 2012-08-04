@@ -20,6 +20,9 @@ namespace SharpWoW.Controls
         private void PropertyTab_Load(object sender, EventArgs e)
         {
             propertyGrid1.SelectedObject = new UI.TerrainPropertyPanel(propertyGrid1);
+            if (this.Site != null && this.Site.DesignMode == true)
+                return;
+
             trackBar1.Value = (int)Game.GameManager.TerrainLogic.Radius;
         }
 

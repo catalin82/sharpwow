@@ -176,5 +176,10 @@ namespace SharpWoW.Controls
                     break;
             }
         }
+
+        private void radioButton21_CheckedChanged(object sender, EventArgs e)
+        {
+            trackBar4.Enabled = !radioButton21.Checked;
+        }
     }
 }

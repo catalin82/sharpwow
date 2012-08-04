@@ -127,4 +127,7 @@
   <data name="TerrainShader" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>TerrainShader.fx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="WMOShader" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>WMOShader.fx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

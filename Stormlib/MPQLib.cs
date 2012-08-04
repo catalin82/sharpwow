@@ -48,8 +48,12 @@ namespace SharpWoW.Stormlib
 
         public Locales Locale { get; private set; }
 
+        public event Action Initialized;
+
         public bool Init()
         {
+            ArchiveList = new Dictionary<string, MPQArchive>();
+
             string basePath = Game.GameManager.GamePath;
             basePath += "\\data";
             LoadArchivesFromDir(basePath);
@@ -72,6 +76,9 @@ namespace SharpWoW.Stormlib
             basePath += "\\" + Locale.ToString();
             LoadArchivesFromDir(basePath);
 
+            if (Initialized != null)
+                Initialized();
+
             return true;
         }
 
@@ -82,7 +89,10 @@ namespace SharpWoW.Stormlib
                 IntPtr hArchive = new IntPtr(0);
                 bool ret = SFileOpenArchive(file, 0, 0, ref hArchive);
                 if (ret)
+                {
                     Archives.Add(file, hArchive);
+                    ArchiveList.Add(file, new MPQArchive(hArchive));
+                }
             }
         }
 
@@ -144,6 +154,32 @@ namespace SharpWoW.Stormlib
         }
 
         internal Dictionary<string, IntPtr> Archives = new Dictionary<string, IntPtr>();
+
+        public Dictionary<string, MPQArchive> ArchiveList { get; private set; }
+    }
+
+    public class MPQArchive
+    {
+        public MPQArchive(IntPtr handle)
+        {
+            mHandle = handle;
+        }
+
+        public string[] GetFiles()
+        {
+            IntPtr lf = IntPtr.Zero;
+            bool ret = MPQArchiveLoader.SFileOpenFileEx(mHandle, "(listfile)", 0, ref lf);
+            if (ret == false)
+                return new string[] { };
+
+            MPQFile file = new MPQFile();
+            file.Load(lf);
+            var bytes = file.Read(file.FileSize);
+            string fullStr = Encoding.UTF8.GetString(bytes);
+            return fullStr.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        private IntPtr mHandle;
     }
 
     public class MPQFile : Stream
@@ -183,11 +219,11 @@ namespace SharpWoW.Stormlib
             }
         }
 
-        private MPQFile()
+        internal MPQFile()
         {
         }
 
-        private void Load(IntPtr hFile)
+        internal void Load(IntPtr hFile)
         {
             uint sizeHigh = 0;
             uint fileSize = MPQArchiveLoader.SFileGetFileSize(hFile, ref sizeHigh);

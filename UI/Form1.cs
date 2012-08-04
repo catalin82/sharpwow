@@ -33,6 +33,8 @@ namespace SharpWoW.UI
                     else
                         elementHost1.Width = 31;
                 };
+
+            
         }
 
         void PropertyChanged(Game.GameProperties prop)
@@ -62,11 +64,6 @@ namespace SharpWoW.UI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            sp.Width = sp.Height = 100;
-            sp.InnerRadius = 50;
-            sp.FallOff = 0.5f;
-            sp.UseByte = true;
-
             Game.GameManager.OnFormLoaded();
         }
 
@@ -74,6 +71,7 @@ namespace SharpWoW.UI
         {
             toolStripStatusLabel1.Text = "Used path: " + Game.GameManager.GamePath;
             Game.GameManager.GraphicsThread.OnFrame += new Game.VideoThread.FrameRenderDelegate(UpdateLogic);
+            WMOEditor = new Dialogs.WMOEditor();
         }
 
         void UpdateLogic(SlimDX.Direct3D9.Device device, TimeSpan deltaTime)
@@ -90,8 +88,6 @@ namespace SharpWoW.UI
             toolStripStatusLabel4.Text = "Time of day: " + span.Hours.ToString("D2") + ":" + span.Minutes.ToString("D2");
         }
 
-        Brushes.SprayBrush sp = new Brushes.SprayBrush();
-
         private void editorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Dialogs.DBCEditor dbc = new Dialogs.DBCEditor();
@@ -104,6 +100,9 @@ namespace SharpWoW.UI
         }
 
         public MathNet.Numerics.Interpolation.IInterpolationMethod TerrainSpline { get { return uiPanel1.TerrainSpline; } }
+        public string SelectedTexture { get { return uiPanel1.SelectedTexture; } }
+        public UI.Dialogs.WMOEditor WMOEditor { get; private set; }
+        public Controls.UIPanel ToolsPanel { get { return uiPanel1; } }
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {

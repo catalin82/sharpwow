@@ -110,6 +110,18 @@ namespace SharpWoW.ADT.Cataclysm
             strm.Position -= 4;
         }
 
+        private void SeekNextChunk(Stream strm, string id)
+        {
+            while (GetChunkSignature(strm) != id)
+            {
+                byte[] szBytes = new byte[4];
+                strm.Read(szBytes, 0, 4);
+                uint size = BitConverter.ToUInt32(szBytes, 0);
+                strm.Position += size;
+            }
+            strm.Position -= 4;
+        }
+
         private string GetChunkSignature(Stream strm)
         {
             var bytes = new byte[4];

@@ -86,9 +86,10 @@ namespace SharpWoW.Models.WMO
     public struct WMOVertex
     {
         public float x, y, z;
+        public float nx, ny, nz;
         public float u, v;
 
-        public const SlimDX.Direct3D9.VertexFormat FVF = SlimDX.Direct3D9.VertexFormat.Position | SlimDX.Direct3D9.VertexFormat.Texture1;
+        public const SlimDX.Direct3D9.VertexFormat FVF = SlimDX.Direct3D9.VertexFormat.Position | SlimDX.Direct3D9.VertexFormat.Texture1 | SlimDX.Direct3D9.VertexFormat.Normal;
         public const uint Size = 20;
     }
 }

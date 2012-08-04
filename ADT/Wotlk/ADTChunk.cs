@@ -143,7 +143,6 @@ namespace SharpWoW.ADT.Wotlk
 
         private bool LoadAlphaData()
         {
-            byte[,] alphaData = new byte[4096, 4];
             for (int i = 0; i < 64; ++i)
             {
                 for (int j = 0; j < 64; ++j)
@@ -154,7 +153,6 @@ namespace SharpWoW.ADT.Wotlk
                     uint stepy = (uint)Math.Floor(y / ADTStaticData.HoleLen);
 
                     byte factor = (byte)((mHeader.holes & (ADTStaticData.HoleBitmap[stepx, stepy])) != 0 ? 0 : 1);
-                    alphaData[i * 64 + j, 3] = (byte)(0xFF * factor);
                     //AlphaFloats[i * 64 + j, 3] = 0xFF * factor;
                     AlphaData[(i * 64 + j) * 4 + 3] = (byte)(0xFF * factor);
                 }
@@ -182,14 +180,13 @@ namespace SharpWoW.ADT.Wotlk
                         stepx = (uint)Math.Floor(x / ADTStaticData.HoleLen);
                         byte factor2 = (byte)((mHeader.holes & (ADTStaticData.HoleBitmap[stepx, stepy])) != 0 ? 0 : 1);
 
-                        alphaData[mapPtr, i - 1] = (byte)((((255 * ((int)(fileData[bufferPtr] & 0x0F))) / 0x0F)) * factor);
-                        //AlphaFloats[mapPtr, i - 1] = (float)(((255 * ((int)(fileData[bufferPtr] & 0x0F))) / 0x0F)) * factor;
-                        AlphaData[mapPtr * 4 + i - 1] = alphaData[mapPtr, i - 1];
+                        AlphaData[mapPtr * 4 + i - 1] = (byte)((((255 * ((int)(fileData[bufferPtr] & 0x0F))) / (float)0x0F)) * factor);
+                        AlphaFloats[mapPtr, i - 1] = (ushort)((AlphaData[mapPtr * 4 + i - 1] / 255.0f) * 65535.0f);
                         ++mapPtr;
-                        alphaData[mapPtr, i - 1] = (byte)((((255 * ((int)(fileData[bufferPtr++] & 0xF0))) / 0xF0)) * factor2);
-                        //AlphaFloats[mapPtr, i - 1] = (float)(((255 * ((int)(fileData[bufferPtr++] & 0xF0))) / 0xF0)) * factor2;
-                        AlphaData[mapPtr * 4 + i - 1] = alphaData[mapPtr, i - 1];
+                        AlphaData[mapPtr * 4 + i - 1] = (byte)((((255 * ((int)(fileData[bufferPtr] & 0xF0))) / 0xF0)) * factor2);
+                        AlphaFloats[mapPtr, i - 1] = (ushort)((AlphaData[mapPtr * 4 + i - 1] / 255.0f) * 65535.0f);
                         ++mapPtr;
+                        ++bufferPtr;
                     }
                 }
             }
@@ -259,7 +256,10 @@ namespace SharpWoW.ADT.Wotlk
             }
 
             foreach (var inst in mDoodadInstances)
-                Game.GameManager.M2ModelManager.RemoveInstance(inst.Key, inst.Value);
+            {
+                foreach (var id in inst.Value)
+                    Game.GameManager.M2ModelManager.RemoveInstance(inst.Key, id);
+            }
 
             mParent = null;
             mFile = null;
@@ -283,13 +283,21 @@ namespace SharpWoW.ADT.Wotlk
             if (mAlphaTexture == null)
                 LoadAlphaTexture();
 
+            if (mAlphaDirty)
+            {
+                LoadAlphaTexture();
+                mAlphaDirty = false;
+            }
+
             foreach (var re in mRefs)
             {
                 try
                 {
                     var name = mParent.DoodadNames[mParent.ModelIdentifiers[(int)mParent.ModelDefinitions[(int)re].idMMID]];
                     var id = Game.GameManager.M2ModelManager.AddInstance(name, mParent.ModelDefinitions[(int)re]);
-                    mDoodadInstances.Add(name, id);
+                    if (!mDoodadInstances.ContainsKey(name))
+                        mDoodadInstances.Add(name, new List<uint>());
+                    mDoodadInstances[name].Add(id);
                 }
                 catch (Exception)
                 {
@@ -300,8 +308,10 @@ namespace SharpWoW.ADT.Wotlk
             {
                 try
                 {
-                    var name = mParent.WMONames[mParent.WMOIdentifiers[(int)mParent.WMODefinitions[(int)re].idMWID]];
-                    var id = Models.WMO.WMOManager.AddInstance(name, mParent.WMODefinitions[(int)re].Position);
+                    var modf = mParent.WMODefinitions[(int)re];
+                    var name = mParent.WMONames[mParent.WMOIdentifiers[(int)modf.idMWID]];
+                    
+                    var id = Models.WMO.WMOManager.AddInstance(name, mParent.WMODefinitions[(int)re].Position, modf.uniqueId);
                 }
                 catch (Exception)
                 { 
@@ -344,7 +354,8 @@ namespace SharpWoW.ADT.Wotlk
 
         private void LoadAlphaTexture()
         {
-            mAlphaTexture = ADTAlphaHandler.FreeTexture();
+            if (mAlphaTexture == null)
+                mAlphaTexture = ADTAlphaHandler.FreeTexture();
             if (mAlphaTexture == null)
                 mAlphaTexture = new SlimDX.Direct3D9.Texture(Game.GameManager.GraphicsThread.GraphicsManager.Device, 64, 64, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
             Surface baseSurf = mAlphaTexture.GetSurfaceLevel(0);
@@ -406,14 +417,15 @@ namespace SharpWoW.ADT.Wotlk
         private Mesh mMesh;
         private List<MCLY> mLayers = new List<MCLY>();
         private byte[] AlphaData = new byte[4096 * 4];
-        private short[,] AlphaFloats = new short[4096, 3];
+        private ushort[,] AlphaFloats = new ushort[4096, 3];
         private ADTVertex[] vertices = new ADTVertex[145];
         private BoundingBox mBox;
         private Texture mAlphaTexture = null;
         private int[] mTextureFlags = new int[4] { 0, 0, 0, 0 };
         private List<uint> mRefs = new List<uint>();
         private List<uint> mWmoRefs = new List<uint>();
-        private Dictionary<string, uint> mDoodadInstances = new Dictionary<string, uint>();
+        private Dictionary<string, List<uint>> mDoodadInstances = new Dictionary<string, List<uint>>();
+        private bool mAlphaDirty = false;
 
         private string ReadSignature()
         {

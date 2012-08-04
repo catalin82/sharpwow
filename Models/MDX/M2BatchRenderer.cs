@@ -165,29 +165,30 @@ namespace SharpWoW.Models.MDX
 
         public bool ExecuteTask()
         {
-            mInstLock.WaitOne();
-            if (mIsHalted)
-                return true;
-
-            if (WaitingInstances.Count > 0)
+            lock (mInstLock)
             {
-                for (int i = 0; WaitingInstances.Count > 0; ++i)
+                if (mIsHalted)
+                    return true;
+
+                if (WaitingInstances.Count > 0)
                 {
-                    var data = WaitingInstances.First();
-                    ActiveInstances.Add(data);
-                    WaitingInstances.Remove(data);
+                    for (int i = 0; WaitingInstances.Count > 0; ++i)
+                    {
+                        var data = WaitingInstances.First();
+                        ActiveInstances.Add(data);
+                        WaitingInstances.Remove(data);
+                    }
+                    if (Renderer.InstanceDataBuffer != null)
+                        Renderer.InstanceDataBuffer.Dispose();
+                    int size = Marshal.SizeOf(typeof(Models.MDX.MdxInstanceData));
+                    Renderer.InstanceDataBuffer = new VertexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, ActiveInstances.Count * size, Usage.WriteOnly, VertexFormat.Texture4, Pool.Managed);
+                    DataStream strm = Renderer.InstanceDataBuffer.Lock(0, 0, LockFlags.None);
+                    Models.MDX.MdxInstanceData[] InstData = ActiveInstances.ToArray();
+                    strm.WriteRange(InstData);
+                    Renderer.InstanceDataBuffer.Unlock();
+                    Renderer.numInstances = ActiveInstances.Count;
                 }
-                if (Renderer.InstanceDataBuffer != null)
-                    Renderer.InstanceDataBuffer.Dispose();
-                int size = Marshal.SizeOf(typeof(Models.MDX.MdxInstanceData));
-                Renderer.InstanceDataBuffer = new VertexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, ActiveInstances.Count * size, Usage.WriteOnly, VertexFormat.Texture4, Pool.Managed);
-                DataStream strm = Renderer.InstanceDataBuffer.Lock(0, 0, LockFlags.None);
-                Models.MDX.MdxInstanceData[] InstData = ActiveInstances.ToArray();
-                strm.WriteRange(InstData);
-                Renderer.InstanceDataBuffer.Unlock();
-                Renderer.numInstances = ActiveInstances.Count;
             }
-            mInstLock.ReleaseMutex();
             return WaitingInstances.Count == 0;
         }
 
@@ -273,11 +274,15 @@ namespace SharpWoW.Models.MDX
                 * Matrix.RotationYawPitchRoll(rotation.X, rotation.Y, rotation.Z)
                 * Matrix.Translation(Position),
             };
-            mInstLock.WaitOne();
-            var id = RequestInstanceId();
-            inst.InstanceId = id;
-            WaitingInstances.Add(inst);
-            mInstLock.ReleaseMutex();
+
+            uint id = 0;
+
+            lock (mInstLock)
+            {
+                id = RequestInstanceId();
+                inst.InstanceId = id;
+                WaitingInstances.Add(inst);
+            }
 
             Game.GameManager.GraphicsThread.CallOnThread(
                 () =>
@@ -292,11 +297,13 @@ namespace SharpWoW.Models.MDX
 
         public void RemoveInstance(uint instanceId)
         {
-            mInstLock.WaitOne();
 
-            WaitingInstances.RemoveAll((inst) => inst.InstanceId == instanceId);
-            ActiveInstances.RemoveAll((inst) => inst.InstanceId == instanceId);
-            InvisibleInstances.RemoveAll((inst) => inst.InstanceId == instanceId);
+            lock (mInstLock)
+            {
+                WaitingInstances.RemoveAll((inst) => inst.InstanceId == instanceId);
+                ActiveInstances.RemoveAll((inst) => inst.InstanceId == instanceId);
+                InvisibleInstances.RemoveAll((inst) => inst.InstanceId == instanceId);
+            }
 
             lock (mIdLock)
             {
@@ -304,45 +311,45 @@ namespace SharpWoW.Models.MDX
                 mFreeInstances.Add(instanceId);
             }
 
-            mInstLock.ReleaseMutex();
         }
 
         public void Unload()
         {
-            mInstLock.WaitOne();
-            mIsHalted = true;
+            lock (mInstLock)
+            {
+                mIsHalted = true;
 
-            Game.GameManager.GraphicsThread.CallOnThread(
-                () =>
-                {
-                    Renderer.InstanceDataBuffer.Dispose();
-                    Renderer.InstanceDeclaration.Dispose();
+                Game.GameManager.GraphicsThread.CallOnThread(
+                    () =>
+                    {
+                        Renderer.InstanceDataBuffer.Dispose();
+                        Renderer.InstanceDeclaration.Dispose();
 
-                    foreach (var mesh in Renderer.Meshes)
-                        mesh.Dispose();
+                        foreach (var mesh in Renderer.Meshes)
+                            mesh.Dispose();
 
-                    foreach (var ib in Renderer.Indices)
-                        ib.Dispose();
+                        foreach (var ib in Renderer.Indices)
+                            ib.Dispose();
 
-                    foreach (var tex in Renderer.Textures)
-                        Video.TextureManager.RemoveTexture(tex);
-                }
-            );
+                        foreach (var tex in Renderer.Textures)
+                            Video.TextureManager.RemoveTexture(tex);
+                    },
+                    true
+                );
 
-            Renderer.Meshes.Clear();
-            Renderer.Indices.Clear();
-            mInstLock.ReleaseMutex();
+                Renderer.Meshes.Clear();
+                Renderer.Indices.Clear();
+            }
         }
 
         public uint GetNumInstances()
         {
-            mInstLock.WaitOne();
+            lock (mInstLock)
+            {
+                var ret = WaitingInstances.Count + ActiveInstances.Count + InvisibleInstances.Count;
 
-            var ret = WaitingInstances.Count + ActiveInstances.Count + InvisibleInstances.Count;
-
-            mInstLock.ReleaseMutex();
-
-            return (uint)ret;
+                return (uint)ret;
+            }
         }
 
         private uint RequestInstanceId()

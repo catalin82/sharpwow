@@ -42,5 +42,10 @@ namespace SharpWoW.Controls
         {
             Game.GameManager.TerrainLogic.Radius = trackBar1.Value;
         }
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            Video.ShaderCollection.TerrainShader.SetValue("brushType", 3);
+        }
     }
 }

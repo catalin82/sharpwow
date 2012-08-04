@@ -61,6 +61,12 @@ namespace SharpWoW.ADT
                 file.BlurTerrain(pos, lower);
         }
 
+        public static void TextureTerrain(Game.Logic.TextureChangeParam param)
+        {
+            foreach (var file in mActiveFiles)
+                file.TextureTerrain(param);
+        }
+
         public static void AddADT(IADTFile file)
         {
             mActiveFiles.Add(file);
@@ -78,6 +84,19 @@ namespace SharpWoW.ADT
 
             return new Cataclysm.ADTFile(fileName, indexX, indexY, initial);
         }
+
+        public static Models.WMO.WMOHitInformation GetWmoInformation(uint uniqueId, uint refId)
+        {
+            foreach (var file in mActiveFiles)
+            {
+                var info = file.GetWmoInfo(uniqueId, refId);
+                if (info != null)
+                    return info;
+            }
+
+            return null;
+        }
+           
 
         public static List<ADT.IADTChunk> VisibleChunks = new List<IADTChunk>();
     }

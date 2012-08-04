@@ -49,6 +49,11 @@ namespace SharpWoW.Video.Input
             }
         }
 
+        public List<Keys> Capture()
+        {
+            return mKeysDown.ToList();
+        }
+
         public void Update()
         {
             if (Mouse != null)
@@ -76,6 +81,13 @@ namespace SharpWoW.Video.Input
             ctrl.GotFocus += new EventHandler(_UpdateFocus);
             ctrl.MouseMove += new MouseEventHandler(_MouseMoved);
             ctrl.KeyPress += new KeyPressEventHandler(_KeyPress);
+            ctrl.MouseClick += new MouseEventHandler(_MouseClick);
+        }
+
+        void _MouseClick(object sender, MouseEventArgs e)
+        {
+            if (MousePress != null)
+                MousePress(e.X, e.Y, e.Button);
         }
 
         void _KeyPress(object sender, KeyPressEventArgs e)
@@ -136,6 +148,7 @@ namespace SharpWoW.Video.Input
             }
         }
 
+        public delegate void MousePressDlg(int x, int y, MouseButtons pressedButton);
         public delegate void MouseMoveDlg(int x, int y, MouseButtons pressedButtons);
         public delegate void KeyPressDlg(char chr);
         public delegate void KeyDownDlg(Keys key);
@@ -144,6 +157,7 @@ namespace SharpWoW.Video.Input
         public event KeyPressDlg KeyPressed;
         public event KeyDownDlg KeyDown;
         public event KeyUpDlg KeyUp;
+        public event MousePressDlg MousePress;
         
 
         public static InputManager Input { get; private set; }

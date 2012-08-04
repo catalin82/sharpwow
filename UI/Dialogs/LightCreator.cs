@@ -439,7 +439,8 @@ namespace SharpWoW.UI.Dialogs
             DBC.DBCStores.Light.AddEntry(light.ID, light);
 
             World.WorldLightEntry wle = new World.WorldLightEntry(light);
-            Game.GameManager.SkyManager.GetSkyForMap(light.MapID).AddNewLight(wle);
+            if (Game.GameManager.IsPandaria == false)
+                Game.GameManager.SkyManager.GetSkyForMap(light.MapID).AddNewLight(wle);
 
             DBC.DBCStores.LightIntBand.SaveDBC();
             DBC.DBCStores.LightParams.SaveDBC();

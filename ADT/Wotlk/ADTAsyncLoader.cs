@@ -135,6 +135,28 @@ namespace SharpWoW.ADT.Wotlk
             lock (mChunks) mChunks.AddRange(chunks);
         }
 
+        public int addTexture(string textureName)
+        {
+            for (int i = 0; i < mTextures.Count; ++i)
+            {
+                if (mTextures[i].Name.ToLower() == textureName.ToLower())
+                    return i;
+            }
+
+            Game.GameManager.GraphicsThread.CallOnThread(() =>
+                {
+                    mTextures.Add(Video.TextureManager.GetTexture(textureName));
+                }
+            );
+
+            return mTextures.Count - 1;
+        }
+
+        public string getTextureName(int index)
+        {
+            return GetTexture(index).Name;
+        }
+
         private MHDR mHeader;
         private MCIN[] mOffsets = new MCIN[256];
         private string[] mTextureNames;

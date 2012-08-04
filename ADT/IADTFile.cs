@@ -14,9 +14,11 @@ namespace SharpWoW.ADT
         public abstract void ChangeTerrain(Vector3 pos, bool lower);
         public abstract void FlattenTerrain(Vector3 pos, bool lower);
         public abstract void BlurTerrain(Vector3 pos, bool lower);
+        public abstract void TextureTerrain(Game.Logic.TextureChangeParam param);
         public abstract void Unload();
         public abstract void WaitLoad();
         public abstract IADTChunk GetChunk(uint index);
+        public abstract Models.WMO.WMOHitInformation GetWmoInfo(uint uniqueId, uint refId);
 
         public abstract List<string> TextureNames { get; }
         public string FileName { get; protected set; }
@@ -28,5 +30,6 @@ namespace SharpWoW.ADT
         public Dictionary<uint, string> WMONames = new Dictionary<uint, string>();
         public List<uint> WMOIdentifiers = new List<uint>();
         public List<Wotlk.MODF> WMODefinitions = new List<Wotlk.MODF>();
+       
     }
 }

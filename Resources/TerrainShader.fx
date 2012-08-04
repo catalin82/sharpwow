@@ -71,6 +71,7 @@ float fogStart = 500.0f;
 float fogEnd = 530.0f;
 float3 SunDirection = float3(-1, -1, -1);
 float CircleRadius = 6;
+float InnerRadius = 6 * 0.66f;
 int brushType = 0;
 float gameTime;
 int TextureFlags0, TextureFlags1, TextureFlags2, TextureFlags3;
@@ -104,6 +105,25 @@ float4 ApplyFog(float4 colorIn, float depth, float angle)
 	float ratio = (depth - fogStart) / (fogEnd - fogStart);
 	float4 col = float4(lerp(colorIn.rgb, skyCol.rgb, ratio), colorIn.a);
 	return col;
+}
+
+float4 ApplyCircle(float4 colorIn, float3 distVec, float mouseDist, float maxRadius) {
+	if((maxRadius - mouseDist) > (maxRadius * 0.05f))
+		return colorIn;
+
+	distVec = normalize(distVec);
+	float angle = atan2(distVec.x, distVec.y);
+	if(angle < 0)
+		angle += PI * 2;
+
+	angle = (angle * 180.0f) / PI;
+	float resid = angle % 20;
+	if(resid < 10)
+	{
+		colorIn.rgb *= 0.2f;
+	}
+
+	return colorIn;
 }
 
 float CalcDepth(float3 vertexPos)
@@ -145,6 +165,7 @@ float4 ApplyHeightLines(float4 color, float3 position)
 	float modY = abs(position.z % 11.0f);
 	if(modY < 0.05f || modY > 10.95f)
 		return float4(0.0f, 0.0f, 0.0f, 1.0f);
+
 	return color;
 }
 
@@ -228,6 +249,13 @@ float4 PixelBlendShader1Layer(PixelInput input) : COLOR0
 				BaseColor = (alpha * WhiteColor) + (1.0f - alpha) * BaseColor;
 			}
 		}
+		else if(brushType == 3) {
+			if(mouseDist < mouseRadius) {
+				BaseColor = ApplyCircle(BaseColor, mouseDiff, mouseDist, mouseRadius);
+				if(mouseDist < (InnerRadius * InnerRadius))
+					BaseColor = ApplyCircle(BaseColor, mouseDiff, mouseDist, InnerRadius * InnerRadius);
+			}
+		}
 	}
 
 	//BaseColor = ApplyDiffuse(BaseColor);
@@ -272,6 +300,13 @@ float4 PixelBlendShader2Layer(PixelInput input) : COLOR0
 			{
 				float alpha = (mouseDist - 0.6f * mouseRadius) / (0.6f * mouseRadius);
 				BaseColor = (alpha * WhiteColor) + (1.0f - alpha) * BaseColor;
+			}
+		}
+		else if(brushType == 3) {
+			if(mouseDist < mouseRadius) {
+				BaseColor = ApplyCircle(BaseColor, mouseDiff, mouseDist, mouseRadius);
+				if(mouseDist < (InnerRadius * InnerRadius))
+					BaseColor = ApplyCircle(BaseColor, mouseDiff, mouseDist, InnerRadius * InnerRadius);
 			}
 		}
 	}
@@ -325,6 +360,13 @@ float4 PixelBlendShader3Layer(PixelInput input) : COLOR0
 			{
 				float alpha = (mouseDist - 0.6f * mouseRadius) / (0.6f * mouseRadius);
 				BaseColor = (alpha * WhiteColor) + (1.0f - alpha) * BaseColor;
+			}
+		}
+		else if(brushType == 3) {
+			if(mouseDist < mouseRadius) {
+				BaseColor = ApplyCircle(BaseColor, mouseDiff, mouseDist, mouseRadius);
+				if(mouseDist < (InnerRadius * InnerRadius))
+					BaseColor = ApplyCircle(BaseColor, mouseDiff, mouseDist, InnerRadius * InnerRadius);
 			}
 		}
 	}
@@ -382,6 +424,13 @@ float4 PixelBlendShader4Layer(PixelInput input) : COLOR0
 			{
 				float alpha = (mouseDist - 0.6f * mouseRadius) / (0.6f * mouseRadius);
 				BaseColor = (alpha * WhiteColor) + (1.0f - alpha) * BaseColor;
+			}
+		}
+		else if(brushType == 3) {
+			if(mouseDist < mouseRadius) {
+				BaseColor = ApplyCircle(BaseColor, mouseDiff, mouseDist, mouseRadius);
+				if(mouseDist < (InnerRadius * InnerRadius))
+					BaseColor = ApplyCircle(BaseColor, mouseDiff, mouseDist, InnerRadius * InnerRadius);
 			}
 		}
 	}

@@ -17,6 +17,7 @@ namespace SharpWoW.Video
             mRenderWindow = dstWindow;
             mRenderWindow.MouseMove += new MouseEventHandler(MouseMoved);
             Input.InputManager.Input.InputWindow = mRenderWindow;
+            Picking.InitPicking();
         }
 
         void MouseMoved(object sender, MouseEventArgs e)
@@ -53,7 +54,9 @@ namespace SharpWoW.Video
                 1000.0f
             ));
             Device.SetTransform(TransformState.World, Matrix.Identity);
-
+            Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
+            Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
+            Device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Linear);
         }
 
         public void UpdateMouseTerrainPos(int x, int y)
@@ -81,41 +84,21 @@ namespace SharpWoW.Video
             if (hit)
             {
                 ShaderCollection.TerrainShader.SetValue("MousePosition", ray.Position + distance * ray.Direction);
+                MousePosition = ray.Position + distance * ray.Direction;
             }
+            else
+                MousePosition = new Vector3(999999, 999999, 999999);
         }
 
         public Vector3 MousePosition
         {
-            get
-            {
-                System.Drawing.Point pt = System.Windows.Forms.Cursor.Position;
-                pt = mRenderWindow.PointToClient(pt);
-
-                Vector3 screenCoord = new Vector3();
-                screenCoord.X = (((2.0f * pt.X) / Device.Viewport.Width) - 1);
-                screenCoord.Y = -(((2.0f * pt.Y) / Device.Viewport.Height) - 1);
-
-                var invProj = Matrix.Invert(Device.GetTransform(TransformState.Projection));
-                var invView = Matrix.Invert(Device.GetTransform(TransformState.View));
-
-                var nearPos = new Vector3(screenCoord.X, screenCoord.Y, 0);
-                var farPos = new Vector3(screenCoord.X, screenCoord.Y, 1);
-
-                nearPos = Vector3.TransformCoordinate(nearPos, invProj * invView);
-                farPos = Vector3.TransformCoordinate(farPos, invProj * invView);
-
-                Ray ray = new Ray(nearPos, Vector3.Normalize((farPos - nearPos)));
-                float distance = 0;
-                bool hit = ADT.ADTManager.Intersect(ray, ref distance);
-                if (!hit)
-                    return new Vector3(999999, 999999, 999999);
-
-                return ray.Position + distance * ray.Direction;
-            }
+            get;
+            private set;
         }
 
         Control mRenderWindow;
 
+        public Control RenderWindow { get { return mRenderWindow; } }
         public Device Device { get; private set; }
         public Direct3D Direct3D { get; private set; }
         public Camera Camera { get; private set; }

@@ -18,6 +18,8 @@ namespace SharpWoW.Game
         /// </summary>
         public static void RunGame()
         {
+            mActiveChange = Logic.ActiveChangeType.Height;
+            SavePath = ".\\Save\\";
             mStartTime = DateTime.Now;
             ThreadManager = new ThreadManager();
             mMainThread = System.Threading.Thread.CurrentThread;
@@ -72,6 +74,8 @@ namespace SharpWoW.Game
         public static void OnCleanup()
         {
             ThreadManager.Shutdown();
+            if (GameTerminated != null)
+                GameTerminated();
         }
 
         /// <summary>
@@ -83,6 +87,8 @@ namespace SharpWoW.Game
             if (PropertyChanged != null)
                 PropertyChanged(property);
         }
+
+        public static bool IsPandaria { get { return BuildNumber >= 15464; } }
 
         internal static string GamePath
         {
@@ -139,13 +145,30 @@ namespace SharpWoW.Game
         public static World.SkyManager SkyManager { get; private set; }
         public static Models.MDX.M2InfoCache M2ModelCache { get; private set; }
         public static Models.MDX.M2Manager M2ModelManager { get; private set; }
+        public static string SavePath { get; set; }
+        public static Logic.ActiveChangeType ActiveChangeType
+        {
+            get { return mActiveChange; }
+            set
+            {
+                mActiveChange = value;
+                if (mActiveChange == Logic.ActiveChangeType.Texturing)
+                    Video.ShaderCollection.TerrainShader.SetValue("brushType", 3);
+
+                if (ActiveChangeModeChanged != null)
+                    ActiveChangeModeChanged();
+            }
+        }
 
         public static event Action<GameProperties> PropertyChanged;
+        public static event Action GameTerminated;
+        public static event Action ActiveChangeModeChanged;
 
         private static string mGamePath = null;
         private static UI.Form1 mForm = null;
         private static System.Threading.Thread mMainThread = null;
         private static DateTime mStartTime;
+        private static Logic.ActiveChangeType mActiveChange;
 
         private static bool loadGamePathRegistry()
         {

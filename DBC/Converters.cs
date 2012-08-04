@@ -27,7 +27,10 @@ namespace SharpWoW.DBC
     {
         public AreaTableEntry Convert(object value)
         {
-            AreaTableEntry_4 ae = value as AreaTableEntry_4;
+            object ae = value as AreaTableEntry_4;
+            if (ae == null)
+                ae = value as AreaTableEntry_5;
+
             AreaTableEntry atbl = new AreaTableEntry();
             foreach (var field in atbl.GetType().GetFields())
             {
@@ -35,6 +38,8 @@ namespace SharpWoW.DBC
             }
             return atbl;
         }
+
+        public static Type GetRawType() { return Game.GameManager.IsPandaria ? typeof(AreaTableEntry_5) : typeof(AreaTableEntry_4); }
     }
 
     internal class LightParamsConverter : DBC.IDBCRowConverter<LightParams>

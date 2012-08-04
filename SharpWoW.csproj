@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{FF32C15A-ADB1-463D-888F-F398D4EAF4FA}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SharpWoW</RootNamespace>
     <AssemblyName>SharpWoW</AssemblyName>
@@ -61,6 +61,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -133,6 +134,12 @@
     <Compile Include="Controls\PropertyTab.Designer.cs">
       <DependentUpon>PropertyTab.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SimpleRenderControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SimpleRenderControl.Designer.cs">
+      <DependentUpon>SimpleRenderControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SplineControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -163,14 +170,18 @@
     <Compile Include="DBC\DBCWriter.cs" />
     <Compile Include="ADT\Wotlk\ADTAsyncLoader.cs" />
     <Compile Include="Game\Bookmark.cs" />
+    <Compile Include="Game\Logic\ActiveChangeType.cs" />
+    <Compile Include="Game\Logic\TextureChangeParam.cs" />
     <Compile Include="Models\MDX\M2BatchRenderer.cs" />
     <Compile Include="Models\MDX\M2Info.cs" />
     <Compile Include="Models\MDX\M2InfoCache.cs" />
     <Compile Include="Models\MDX\M2Manager.cs" />
     <Compile Include="Models\MDX\M2Structs.cs" />
     <Compile Include="Models\WMO\WMOCache.cs" />
+    <Compile Include="Models\WMO\WMOEditDescriptor.cs" />
     <Compile Include="Models\WMO\WMOFile.cs" />
     <Compile Include="Models\WMO\WMOGroup.cs" />
+    <Compile Include="Models\WMO\WMOHitInformation.cs" />
     <Compile Include="Models\WMO\WMOManager.cs" />
     <Compile Include="Models\WMO\WMORender.cs" />
     <Compile Include="Models\WMO\WMOStructs.cs" />
@@ -179,6 +190,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Images.resx</DependentUpon>
     </Compile>
+    <Compile Include="SimpleRender\ControlRender.cs" />
+    <Compile Include="SimpleRender\ModelCamera.cs" />
     <Compile Include="UI\Dialogs\BookmarksDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -215,7 +228,22 @@
     <Compile Include="UI\Dialogs\SkyBoxSelector.Designer.cs">
       <DependentUpon>SkyBoxSelector.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\WMOEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Dialogs\WMOEditor.Designer.cs">
+      <DependentUpon>WMOEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BinaryWriterExtension.cs" />
+    <Compile Include="UI\Font.cs" />
+    <Compile Include="UI\FontManager.cs" />
+    <Compile Include="UI\GridComboBox.cs" />
+    <Compile Include="UI\InterfaceOverlay.cs" />
+    <Compile Include="UI\TerrainInfoOverlay.cs" />
+    <Compile Include="UI\TextureInfoOverlay.cs" />
+    <Compile Include="Utils\Math.cs" />
     <Compile Include="Utils\StreamedMpq.cs" />
+    <Compile Include="Video\Picking.cs" />
     <Compile Include="World\MapSky.cs" />
     <Compile Include="World\SkyManager.cs" />
     <Compile Include="Game\GameManager.cs" />
@@ -368,6 +396,9 @@
     <EmbeddedResource Include="UI\Dialogs\SkyBoxSelector.resx">
       <DependentUpon>SkyBoxSelector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Dialogs\WMOEditor.resx">
+      <DependentUpon>WMOEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -385,6 +416,7 @@
       <DependentUpon>WoWFolderSelector.cs</DependentUpon>
     </EmbeddedResource>
     <!--None Include="app.config" /-->
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -403,6 +435,7 @@
     <None Include="Resources\TerrainShader.fx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\WMOShader.fx" />
     <Content Include="Resources\MDXShader.fx" />
     <Content Include="Resources\SkySphere.fx" />
     <None Include="Resources\WoWScrnShot_022612_095745.jpg" />

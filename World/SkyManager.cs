@@ -28,6 +28,9 @@ namespace SharpWoW.World
 
         void _RenderSky(SlimDX.Direct3D9.Device device, TimeSpan deltaTime)
         {
+            if (Game.GameManager.IsPandaria == true)
+                return;
+
             if (Game.GameManager.WorldManager.IsInWorld == false)
                 return;
 
@@ -80,8 +83,10 @@ namespace SharpWoW.World
             Video.ShaderCollection.SkyShader.SetTexture("skyTexture", mSkyTexture);
             Video.ShaderCollection.TerrainShader.SetValue("diffuseLight", mSkyMapper[mapid].GetColorEntry(ColorTableValues.GlobalDiffuse));
             Video.ShaderCollection.MDXShader.SetValue("diffuseLight", mSkyMapper[mapid].GetColorEntry(ColorTableValues.GlobalDiffuse));
+            Video.ShaderCollection.WMOShader.SetValue("diffuseLight", mSkyMapper[mapid].GetColorEntry(ColorTableValues.GlobalDiffuse));
             Video.ShaderCollection.TerrainShader.SetValue("ambientLight", mSkyMapper[mapid].GetColorEntry(ColorTableValues.GlobalAmbient));
             Video.ShaderCollection.MDXShader.SetValue("ambientLight", mSkyMapper[mapid].GetColorEntry(ColorTableValues.GlobalAmbient));
+            Video.ShaderCollection.WMOShader.SetValue("ambientLight", mSkyMapper[mapid].GetColorEntry(ColorTableValues.GlobalAmbient));
             mSphere.DrawSky();
 
         }
@@ -93,6 +98,9 @@ namespace SharpWoW.World
 
         public void Update(uint mapid, SlimDX.Vector3 position)
         {
+            if (Game.GameManager.IsPandaria)
+                return;
+
             position.X = Utils.Metrics.MidPoint + position.X;
             position.Y = Utils.Metrics.MidPoint + position.Y;
             if (mSkyMapper.ContainsKey(mapid))
@@ -100,6 +108,7 @@ namespace SharpWoW.World
                 mSkyMapper[mapid].UpdateSky(position);
                 Video.ShaderCollection.TerrainShader.SetValue("fogColor", new Vector4(mSkyMapper[mapid].GetColorEntry(ColorTableValues.Fog), 1.0f));
                 Video.ShaderCollection.MDXShader.SetValue("fogColor", new Vector4(mSkyMapper[mapid].GetColorEntry(ColorTableValues.Fog), 1.0f));
+                Video.ShaderCollection.WMOShader.SetValue("fogColor", new Vector4(mSkyMapper[mapid].GetColorEntry(ColorTableValues.Fog), 1.0f));
             }
         }
 

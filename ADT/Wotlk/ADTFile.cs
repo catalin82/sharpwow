@@ -54,6 +54,24 @@ namespace SharpWoW.ADT.Wotlk
             );
         }
 
+        public override Models.WMO.WMOHitInformation GetWmoInfo(uint uniqueId, uint refId)
+        {
+            foreach (var plc in WMODefinitions)
+            {
+                if (plc.uniqueId == uniqueId)
+                {
+                    string name = WMONames[WMOIdentifiers[(int)plc.idMWID]];
+                    return new Models.WMO.WMOHitInformation()
+                    {
+                        Name = name,
+                        Placement = plc
+                    };
+                }
+            }
+
+            return null;
+        }
+
         public override IADTChunk GetChunk(uint index)
         {
             if (index < mChunks.Count)
@@ -99,6 +117,12 @@ namespace SharpWoW.ADT.Wotlk
         {
             foreach (var chunk in mChunks)
                 chunk.BlurTerrain(pos, lower);
+        }
+
+        public override void TextureTerrain(Game.Logic.TextureChangeParam param)
+        {
+            foreach (var chunk in mChunks)
+                chunk.textureTerrain(param);
         }
 
         private void AsyncLoadProc()

@@ -37,6 +37,22 @@ namespace SharpWoW.Game
             isRunning = true;
 
             GraphicsManager.CreateDevice(true, true);
+            UI.FontManager.init();
+            CurrentOverlay = new UI.TerrainInfoOverlay();
+            Game.GameManager.ActiveChangeModeChanged += () =>
+                {
+                    switch (Game.GameManager.ActiveChangeType)
+                    {
+                        case Logic.ActiveChangeType.Height:
+                            CurrentOverlay = new UI.TerrainInfoOverlay();
+                            break;
+
+                        case Logic.ActiveChangeType.Texturing:
+                            CurrentOverlay = new UI.TextureInfoOverlay();
+                            break;
+                    }
+                };
+
             MessagePump.Run(mWindow, FrameLoop);
         }
 
@@ -82,6 +98,11 @@ namespace SharpWoW.Game
 
             GraphicsManager.UpdateMouseTerrainPos(0, 0);
 
+            UI.FontManager.beginFrame();
+            if (CurrentOverlay != null)
+                CurrentOverlay.Draw();
+            UI.FontManager.endFrame();
+
             GraphicsManager.Device.EndScene();
             GraphicsManager.Device.Present();
 
@@ -114,5 +135,6 @@ namespace SharpWoW.Game
         private DateTime mLastFPS;
         private System.Threading.Thread mMainThread;
         private uint mLastNumFrames = 0;
+        private UI.InterfaceOverlay CurrentOverlay = null;
     }
 }

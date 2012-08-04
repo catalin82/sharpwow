@@ -84,6 +84,49 @@ namespace SharpWoW.ADT.Wotlk
                     case Game.Logic.ChangeMode.Spline:
                         vertices[i].Z += (float)Game.GameManager.TerrainLogic.TerrainSpline.Interpolate(dist / radius) * amount;
                         break;
+
+                    case Game.Logic.ChangeMode.Special:
+                        {
+                            float inner = Game.GameManager.TerrainLogic.InnerRadius;
+                            if (dist <= inner)
+                            {
+                                switch (Game.GameManager.TerrainLogic.InnerChangeMode)
+                                {
+                                    case Game.Logic.ChangeMode.Flat:
+                                        vertices[i].Z += amount * (lower ? -1 : 1);
+                                        break;
+
+                                    case Game.Logic.ChangeMode.Linear:
+                                        vertices[i].Z += (amount * (1.0f - dist / inner)) * (lower ? -1 : 1);
+                                        break;
+
+                                    case Game.Logic.ChangeMode.Smooth:
+                                        vertices[i].Z += (amount / (1.0f + dist / inner)) * (lower ? -1 : 1);
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                float nradius = radius - inner;
+                                float ndist = dist - inner;
+
+                                switch (Game.GameManager.TerrainLogic.InnerChangeMode)
+                                {
+                                    case Game.Logic.ChangeMode.Flat:
+                                        vertices[i].Z += amount * (lower ? -1 : 1);
+                                        break;
+
+                                    case Game.Logic.ChangeMode.Linear:
+                                        vertices[i].Z += (amount * (1.0f - ndist / nradius)) * (lower ? -1 : 1);
+                                        break;
+
+                                    case Game.Logic.ChangeMode.Smooth:
+                                        vertices[i].Z += (amount / (1.0f + ndist / nradius)) * (lower ? -1 : 1);
+                                        break;
+                                }
+                            }
+                        }
+                        break;
                 }
 
 
@@ -260,6 +303,127 @@ namespace SharpWoW.ADT.Wotlk
                 var strm = mMesh.LockVertexBuffer(SlimDX.Direct3D9.LockFlags.None);
                 strm.WriteRange(vertices);
                 mMesh.UnlockVertexBuffer();
+            }
+        }
+
+        /// <summary>
+        /// Adds a new layer of textures to the chunk without checking if it already exists.
+        /// Returns the index inside the table.
+        /// </summary>
+        /// <param name="textureName">The name of the texture of the layer</param>
+        /// <returns></returns>
+        private int addTextureLayer(string textureName)
+        {
+            if (mLayers.Count >= 4)
+                return -1;
+
+            MCLY layer = new MCLY();
+            layer.effectId = -1;
+            layer.flags = 0;
+            layer.offsetMCAL = 0;
+            layer.textureId = (uint)mParent.addTexture(textureName);
+
+            mLayers.Add(layer);
+            mHeader.nLayers = (uint)mLayers.Count;
+            return mLayers.Count - 1;
+        }
+
+        private int getTextureLayer(string textureName)
+        {
+            for (int i = 0; i < mLayers.Count; ++i)
+            {
+                if (mParent.getTextureName(i).ToLower() == textureName.ToLower())
+                    return i;
+            }
+
+            return -1;
+        }
+
+        public void textureTerrain(Game.Logic.TextureChangeParam param)
+        {
+            // check if we actually have something to change
+            float xdiff = mHeader.position.X - param.ActionSource.X + Utils.Metrics.Chunksize / 2;
+            float zdiff = mHeader.position.Y - param.ActionSource.Y + Utils.Metrics.Chunksize / 2;
+
+            float dist = (float)Math.Sqrt(xdiff * xdiff + zdiff * zdiff);
+
+            if (dist > (param.OuterRadius + Utils.Metrics.ChunkRadius))
+                return;
+
+            int layer = getTextureLayer(param.TextureName);
+            if (layer == -1)
+            {
+                layer = addTextureLayer(param.TextureName);
+                if (layer == -1)
+                    return;
+            }
+
+            // doesnt make no sense to texture the ground layer, its opaque by default!
+            if (layer == 0)
+                return;
+
+            // ground layer uses channel 3 of the rgba
+            // layer 1 uses channel 0, layer 2 uses channel 1 and layer 3 uses channel 3
+            int alphaLayer = layer - 1;
+
+            for (int i = 0; i < 64; ++i)
+            {
+                for (int j = 0; j < 64; ++j)
+                {
+                    float posX = j * (Utils.Metrics.Chunksize / 64.0f) + mHeader.position.X;
+                    float posY = i * (Utils.Metrics.Chunksize / 64.0f) + mHeader.position.Y;
+
+                    xdiff = posX - param.ActionSource.X;
+                    zdiff = posY - param.ActionSource.Y;
+
+                    dist = (float)Math.Sqrt(xdiff * xdiff + zdiff * zdiff);
+
+                    if (dist > param.OuterRadius)
+                        continue;
+
+                    if (dist <= param.InnerRadius)
+                    {
+                        float newVal = 0.0f;
+                        switch(param.Falloff)
+                        {
+                            case Game.Logic.TextureChangeParam.FalloffMode.Cosinus:
+                                newVal = Utils.SharpMath.CosinusInterpolate(param.Strength, param.FalloffTreshold, (dist / param.InnerRadius));
+                                break;
+
+                            case Game.Logic.TextureChangeParam.FalloffMode.Linear:
+                                newVal = Utils.SharpMath.Lerp(param.Strength, param.FalloffTreshold, (dist / param.InnerRadius));
+                                break;
+                            case Game.Logic.TextureChangeParam.FalloffMode.Flat:
+                                newVal = param.Strength;
+                                break;
+                        }
+
+                        newVal += AlphaFloats[(i * 64 + j), alphaLayer];
+                        if (newVal >= 65535.0f)
+                            newVal = 65535.0f;
+
+                        AlphaFloats[(i * 64 + j), alphaLayer] = (ushort)newVal;
+                        if (AlphaFloats[(i * 64 + j), alphaLayer] > param.AlphaCap)
+                            AlphaFloats[(i * 64 + j), alphaLayer] = (ushort)param.AlphaCap;
+
+                        AlphaData[(i * 64 + j) * 4 + alphaLayer] = (byte)((AlphaFloats[(i * 64 + j), alphaLayer] / 65535.0f) * 255.0f);
+                    }
+                    else if (dist <= param.OuterRadius)
+                    {
+                        float newVal = Utils.SharpMath.Lerp((param.Falloff == Game.Logic.TextureChangeParam.FalloffMode.Flat ? param.Strength : param.FalloffTreshold), 0, (dist - param.InnerRadius) / (param.OuterRadius - param.InnerRadius));
+                        newVal += AlphaFloats[(i * 64 + j), alphaLayer];
+                        if (newVal >= 65535.0f)
+                            newVal = 65535.0f;
+
+                        AlphaFloats[(i * 64 + j), alphaLayer] = (ushort)newVal;
+                        if (AlphaFloats[(i * 64 + j), alphaLayer] > param.AlphaCap)
+                            AlphaFloats[(i * 64 + j), alphaLayer] = (ushort)param.AlphaCap;
+
+                        AlphaData[(i * 64 + j) * 4 + alphaLayer] = (byte)((AlphaFloats[(i * 64 + j), alphaLayer] / 65535.0f) * 255.0f);
+                    }
+
+                    mAlphaDirty = true;
+                }
             }
         }
     }

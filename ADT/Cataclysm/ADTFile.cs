@@ -35,6 +35,11 @@ namespace SharpWoW.ADT.Cataclysm
             ADTManager.AddADT(this);
         }
 
+        public override Models.WMO.WMOHitInformation GetWmoInfo(uint uniqueId, uint refId)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void BlurTerrain(SlimDX.Vector3 pos, bool lower)
         {
             foreach (var chunk in mChunks)
@@ -51,6 +56,11 @@ namespace SharpWoW.ADT.Cataclysm
         {
             foreach (var chunk in mChunks)
                 chunk.FlattenTerrain(pos, lower);
+        }
+
+        public override void TextureTerrain(Game.Logic.TextureChangeParam param)
+        {
+            throw new NotImplementedException();
         }
 
         public override IADTChunk GetChunk(uint index)

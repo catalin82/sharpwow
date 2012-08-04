@@ -6,13 +6,24 @@ using System.Threading.Tasks;
 
 namespace SharpWoW.Video
 {
-    public static class TextureManager
+    public class TextureManager
     {
-        private static Dictionary<int, TextureHandle> mTextures = new Dictionary<int, TextureHandle>();
-        private static Dictionary<TextureHandle, int> mRefCounts = new Dictionary<TextureHandle, int>();
-        private static object lockObject = new object();
+        private Dictionary<int, TextureHandle> mTextures = new Dictionary<int, TextureHandle>();
+        private Dictionary<TextureHandle, int> mRefCounts = new Dictionary<TextureHandle, int>();
+        private object lockObject = new object();
+        private SlimDX.Direct3D9.Device mDevice;
 
-        public static TextureHandle GetTexture(string texture)
+        private static TextureManager mDefaultManager = new TextureManager(Game.GameManager.GraphicsThread.GraphicsManager.Device);
+
+        public SlimDX.Direct3D9.Device AssociatedDevice { get { return mDevice; } }
+        public static TextureManager Default { get { return mDefaultManager; } }
+
+        public TextureManager(SlimDX.Direct3D9.Device dev)
+        {
+            mDevice = dev;
+        }
+
+        private TextureHandle _GetTexture(string texture)
         {
             lock (lockObject)
             {
@@ -24,7 +35,7 @@ namespace SharpWoW.Video
                     return retVal;
                 }
 
-                var ret = LoadTexture(texture);
+                var ret = _LoadTexture(texture);
                 ret.Name = texture;
                 if (ret == null)
                     throw new InvalidOperationException(texture + " is not a valid texture!");
@@ -35,7 +46,7 @@ namespace SharpWoW.Video
             }
         }
 
-        public static void RemoveTexture(TextureHandle handle)
+        private void _RemoveTexture(TextureHandle handle)
         {
             lock (lockObject)
             {
@@ -52,9 +63,29 @@ namespace SharpWoW.Video
             }
         }
 
-        private static TextureHandle LoadTexture(string name)
+        public TextureHandle LoadTexture(string texture)
         {
-            var device = Game.GameManager.GraphicsThread.GraphicsManager.Device;
+            return _GetTexture(texture);
+        }
+
+        public void UnloadTexture(TextureHandle handle)
+        {
+            _RemoveTexture(handle);
+        }
+
+        public static TextureHandle GetTexture(string texture)
+        {
+            return mDefaultManager._GetTexture(texture);
+        }
+
+        public static void RemoveTexture(TextureHandle handle)
+        {
+            mDefaultManager._RemoveTexture(handle);
+        }
+
+        private TextureHandle _LoadTexture(string name)
+        {
+            var device = mDevice;
             Stormlib.MPQFile fl = new Stormlib.MPQFile(name);
             System.IO.BinaryReader reader = new System.IO.BinaryReader(fl);
             uint sig = reader.ReadUInt32();
@@ -75,7 +106,7 @@ namespace SharpWoW.Video
             return null;
         }
 
-        private static TextureHandle LoadBlpTexture(SlimDX.Direct3D9.Device Render, System.IO.BinaryReader reader)
+        private TextureHandle LoadBlpTexture(SlimDX.Direct3D9.Device Render, System.IO.BinaryReader reader)
         {
             reader.BaseStream.Position += 4;
             byte compression = reader.ReadByte();

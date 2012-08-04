@@ -11,7 +11,13 @@ namespace SharpWoW.Video
     {
         public Shader(byte[] data)
         {
-            mEffect = Effect.FromMemory(Game.GameManager.GraphicsThread.GraphicsManager.Device, data, ShaderFlags.OptimizationLevel3);
+            try
+            {
+                mEffect = Effect.FromMemory(Game.GameManager.GraphicsThread.GraphicsManager.Device, data, ShaderFlags.OptimizationLevel3);
+            }
+            catch (Exception e)
+            {
+            }
         }
 
         public Shader(string fileName)

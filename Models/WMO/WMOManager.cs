@@ -10,7 +10,7 @@ namespace SharpWoW.Models.WMO
         private static Dictionary<int, WMORender> mRenders = new Dictionary<int, WMORender>();
         private static object lockobj = new object();
 
-        public static uint AddInstance(string name, SlimDX.Vector3 pos)
+        public static uint AddInstance(string name, SlimDX.Vector3 pos, uint uniqueId)
         {
             pos.X -= Utils.Metrics.MidPoint;
             float tmpY = pos.Z - Utils.Metrics.MidPoint;
@@ -22,14 +22,53 @@ namespace SharpWoW.Models.WMO
             lock (lockobj)
             {
                 if (mRenders.ContainsKey(hash))
-                    return mRenders[hash].PushInstance(pos);
+                    return mRenders[hash].PushInstance(uniqueId, pos);
                 else
                 {
                     WMORender rdr = new WMORender(name);
                     mRenders.Add(hash, rdr);
-                    return rdr.PushInstance(pos);
+                    return rdr.PushInstance(uniqueId, pos);
                 }
             }
         }
+
+        public static bool IsWmoHit(out WMOHitInformation info, out SlimDX.Vector3 hitPos)
+        {
+            info = null;
+            bool hasHit = false;
+            uint uniqueId = 0;
+            uint refId = 0;
+            hitPos = SlimDX.Vector3.Zero;
+            lock (lockobj)
+            {
+                float curNear = 99999;
+                
+                foreach (var rndr in mRenders)
+                {
+                    float curHit = 0;
+                    uint curInst = 0;
+                    uint curRef = 0;
+                    SlimDX.Vector3 pos;
+                    if (rndr.Value.IsInstanceHit(out curHit, out curInst, out curRef, out pos))
+                    {
+                        hasHit = true;
+                        if (curHit < curNear)
+                        {
+                            curNear = curHit;
+                            uniqueId = curInst;
+                            refId = curRef;
+                            hitPos = pos;
+                        }
+                    }
+                }
+            }
+
+            if (hasHit)
+            {
+                info = ADT.ADTManager.GetWmoInformation(uniqueId, refId);
+            }
+
+            return hasHit;
+        }          
     }
 }

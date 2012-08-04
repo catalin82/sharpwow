@@ -23,8 +23,11 @@ namespace SharpWoW.DBC
             LoadingScreen = new DBCFile<LoadingScreenEntry>("DBFilesClient\\LoadingScreens.dbc");
             AreaTable = new DBCFile<AreaTableEntry>("DBFilesClient\\AreaTable.dbc");
             Light = new DBCFile<DBC.Light>("DBFilesClient\\Light.dbc");
-            LightIntBand = new DBCFile<DBC.LightIntBand>("DBFilesClient\\LightIntBand.dbc");
-            LightFloatBand = new DBCFile<DBC.LightFloatBand>("DBFilesClient\\LightFloatBand.dbc");
+            if (Game.GameManager.IsPandaria == false)
+            {
+                LightIntBand = new DBCFile<DBC.LightIntBand>("DBFilesClient\\LightIntBand.dbc");
+                LightFloatBand = new DBCFile<DBC.LightFloatBand>("DBFilesClient\\LightFloatBand.dbc");
+            }
             LightParams = new DBCFile<DBC.LightParams>("DBFilesClient\\LightParams.dbc");
             LightSkyBox = new DBCFile<DBC.LightSkyBox>("DBFilesClient\\LightSkybox.dbc");
 
@@ -35,16 +38,19 @@ namespace SharpWoW.DBC
             LoadingScreen.LoadData();
 
             if (Game.GameManager.BuildNumber > 12340)
-                AreaTable.SetLoadType(typeof(AreaTableEntry_4), new AreaTableConverter());
+                AreaTable.SetLoadType(AreaTableConverter.GetRawType(), new AreaTableConverter());
             AreaTable.LoadData();
             Light.LoadData();
-            LightIntBand.LoadData();
+            if (Game.GameManager.IsPandaria == false)
+            {
+                LightFloatBand.LoadData();
+                LightIntBand.LoadData();
+            }
 
             if (Game.GameManager.BuildNumber > 12340)
                 LightParams.SetLoadType(typeof(LightParams_4), new LightParamsConverter());
             LightParams.LoadData();
             LightSkyBox.LoadData();
-            LightFloatBand.LoadData();
         }
     }
 }

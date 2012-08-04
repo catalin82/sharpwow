@@ -26,6 +26,7 @@ namespace SharpWoW.Models.WMO
             Vector3[] vertices = ReadChunkAs<Vector3>("TVOM");
             ushort[] indices = ReadChunkAs<ushort>("IVOM");
             Vector2[] texCoords = ReadChunkAs<Vector2>("VTOM");
+            Vector3[] normals = ReadChunkAs<Vector3>("RNOM");
 
             MOBA[] batches = ReadChunkAs<MOBA>("ABOM");
             Game.GameManager.GraphicsThread.CallOnThread(
@@ -41,12 +42,15 @@ namespace SharpWoW.Models.WMO
                                 x = vertices[indices[j]].X,
                                 y = vertices[indices[j]].Y,
                                 z = vertices[indices[j]].Z,
+                                nx = normals[indices[j]].X,
+                                ny = normals[indices[j]].Y,
+                                nz = normals[indices[j]].Z,
                                 u = texCoords[indices[j]].X,
                                 v = texCoords[indices[j]].Y
                             };
                         }
 
-                        Mesh mesh = new Mesh(Game.GameManager.GraphicsThread.GraphicsManager.Device,
+                        Mesh mesh = new Mesh(mParent.TextureManager.AssociatedDevice,
                             batch.numIndices / 3, batch.numIndices, MeshFlags.Managed, WMOVertex.FVF);
 
                         var strm = mesh.LockVertexBuffer(LockFlags.None);
@@ -62,10 +66,8 @@ namespace SharpWoW.Models.WMO
                         mesh.UnlockIndexBuffer();
 
                         mMeshes.Add(mesh);
-                        mTextures.Add(mParent.GetTexture(batch.textureID));
-                        var name = mParent.DEBUG_GetTextureName(batch.textureID);
-                        var mat = mParent.DEBUG_GetMaterial(batch.textureID);
-                        mMaterials.Add(mat);
+                        mTextureIndices.Add(batch.textureID);
+                        mMaterials.Add(mParent.GetMaterial(batch.textureID));
                     }
                 }
             );
@@ -73,14 +75,41 @@ namespace SharpWoW.Models.WMO
             return true;
         }
 
-        public void RenderGroup(Matrix transform)
+        public bool Intersects(Ray ray, out float nearHit)
         {
-            var dev = Game.GameManager.GraphicsThread.GraphicsManager.Device;
-            dev.SetTransform(TransformState.World, transform);
+            nearHit = 0;
+            float curNear = 99999;
+            bool hasHit = false;
+            for (int i = 0; i < mMeshes.Count; ++i)
+            {
+                float curHit = 0;
+                if (mMeshes[i].Intersects(ray, out curHit))
+                {
+                    hasHit = true;
+                    if (curHit < curNear)
+                        curNear = curHit;
+                }
+            }
+
+            nearHit = curNear;
+            return hasHit;
+        }
+
+        public void RenderGroup(Matrix transform, bool noShader)
+        {
+            var dev = mParent.TextureManager.AssociatedDevice;
+
+            var shdr = Video.ShaderCollection.WMOShader;
+            if (noShader == false)
+                shdr.SetValue("worldTransform", transform);
 
             for (int i = 0; i < mMeshes.Count; ++i)
             {
-                dev.SetTexture(0, mTextures[i].Native);
+                if (noShader == false)
+                    shdr.SetTexture("MeshTexture", mParent.GetTexture(mTextureIndices[i]));
+                else
+                    dev.SetTexture(0, mParent.GetTexture(mTextureIndices[i]).Native);
+
                 if (mMaterials[i].blendMode > 0)
                 {
                     dev.SetRenderState(RenderState.AlphaBlendEnable, true);
@@ -96,7 +125,10 @@ namespace SharpWoW.Models.WMO
                     dev.SetRenderState(RenderState.AlphaTestEnable, false);
                 }
 
-                mMeshes[i].DrawSubset(0);
+                if (noShader == false)
+                    shdr.DoRender((d) => mMeshes[i].DrawSubset(0));
+                else
+                    mMeshes[i].DrawSubset(0);
             }
 
             dev.SetTransform(TransformState.World, Matrix.Identity);
@@ -142,7 +174,7 @@ namespace SharpWoW.Models.WMO
         private WMOFile mParent;
         private Stormlib.MPQFile mFile;
         private List<Mesh> mMeshes = new List<Mesh>();
-        private List<Video.TextureHandle> mTextures = new List<Video.TextureHandle>();
         private List<MOMT> mMaterials = new List<MOMT>();
+        private List<uint> mTextureIndices = new List<uint>();
     }
 }

@@ -16,6 +16,8 @@ namespace SharpWoW.Game.Logic
             Video.Input.InputManager.Input.KeyPressed += new Video.Input.InputManager.KeyPressDlg(keyPressed);
             TerrainBrush = new Brushes.TerrainBrush();
             Radius = 30.0f;
+            InnerRadius = Radius * 0.66f;
+            InnerChangeMode = Logic.ChangeMode.Flat;
             TerrainBrush.InnerSharpness = 0.75f;
             TerrainBrush.OuterSharpness = 0.8f;
         }
@@ -33,10 +35,26 @@ namespace SharpWoW.Game.Logic
                     Intensity += 0.3f;
                     break;
                 case 'r':
-                    Radius += 0.5f;
+                    InnerRadius += 0.5f;
                     break;
                 case 't':
+                    InnerRadius -= 0.5f;
+                    break;
+                case 'R':
+                    Radius += 0.5f;
+                    break;
+                case 'T':
                     Radius -= 0.5f;
+                    break;
+
+                case 'y':
+                case 'Y':
+                    {
+                        if (Game.GameManager.ActiveChangeType == ActiveChangeType.Height)
+                            Game.GameManager.ActiveChangeType = ActiveChangeType.Texturing;
+                        else
+                            Game.GameManager.ActiveChangeType = ActiveChangeType.Height;
+                    }
                     break;
             }
 
@@ -58,20 +76,51 @@ namespace SharpWoW.Game.Logic
                     return;
 
                 bool lower = ctrl;
-                switch (ChangeType)
-                {
-                    case Logic.ChangeType.Raise:
-                        ADT.ADTManager.ChangeTerrain(mpos, lower);
-                        break;
+                if (Game.GameManager.ActiveChangeType == ActiveChangeType.Height)
+                    ChangeTerrain(mpos, lower);
+                else
+                    TextureTerrain(mpos, lower);
+                
+            }
+        }
 
-                    case Logic.ChangeType.Flatten:
-                        ADT.ADTManager.FlattenTerrain(mpos, lower);
-                        break;
+        void TextureTerrain(SlimDX.Vector3 mpos, bool lower)
+        {
+            if (Game.GameManager.GameWindow.ToolsPanel.SelectedTexture == "(none)")
+                return;
 
-                    case Logic.ChangeType.Blur:
-                        ADT.ADTManager.BlurTerrain(mpos, lower);
-                        break;
-                }
+            Game.Logic.TextureChangeParam tcp = new TextureChangeParam()
+            {
+                TextureName = SelectedTexture,
+                Strength = Game.GameManager.GameWindow.ToolsPanel.TextureStrength,
+                FalloffTreshold = Game.GameManager.GameWindow.ToolsPanel.TextureFalloff,
+                Falloff = Game.GameManager.GameWindow.ToolsPanel.TextureFallofMode,
+                AlphaCap = Game.GameManager.GameWindow.ToolsPanel.TextureAlphaCap,
+                ActionSource = new SlimDX.Vector2(mpos.X, mpos.Y),
+                InnerRadius = InnerRadius,
+                OuterRadius = Radius
+            };
+
+            tcp.ConvertValuesToUShort();
+
+            ADT.ADTManager.TextureTerrain(tcp);
+        }
+
+        void ChangeTerrain(SlimDX.Vector3 mpos, bool lower)
+        {
+            switch (ChangeType)
+            {
+                case Logic.ChangeType.Raise:
+                    ADT.ADTManager.ChangeTerrain(mpos, lower);
+                    break;
+
+                case Logic.ChangeType.Flatten:
+                    ADT.ADTManager.FlattenTerrain(mpos, lower);
+                    break;
+
+                case Logic.ChangeType.Blur:
+                    ADT.ADTManager.BlurTerrain(mpos, lower);
+                    break;
             }
         }
 
@@ -90,10 +139,31 @@ namespace SharpWoW.Game.Logic
                     return;
 
                 mRadius = value;
+
+                if (mInnerRadius >= mRadius)
+                    InnerRadius = mRadius;
+
                 Video.ShaderCollection.TerrainShader.SetValue("CircleRadius", value);
                 TerrainBrush.OuterRadius = mRadius;
                 TerrainBrush.InnerRadius = mRadius * 0.75f;
             } 
+        }
+
+        public float InnerRadius
+        {
+            get { return mInnerRadius; }
+            set
+            {
+                if (mInnerRadius == value)
+                    return;
+
+                mInnerRadius = value;
+
+                if (mInnerRadius >= mRadius)
+                    mInnerRadius = mRadius;
+
+                Video.ShaderCollection.TerrainShader.SetValue("InnerRadius", value);
+            }
         }
 
         /// <summary>
@@ -103,9 +173,14 @@ namespace SharpWoW.Game.Logic
         public float Intensity { get; set; }
 
         /// <summary>
-        /// Gets or sets the way the changes are interpolated inside the radius of interaction.
+        /// Gets or sets the way the changes are interpolated inside the outer radius of interaction.
         /// </summary>
         public ChangeMode ChangeMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the way the changes are interpolated inside the inner radius of interaction.
+        /// </summary>
+        public ChangeMode InnerChangeMode { get; set; }
 
         /// <summary>
         /// Gets of sets the type of interaction performed on the terrain
@@ -117,9 +192,12 @@ namespace SharpWoW.Game.Logic
         /// </summary>
         public MathNet.Numerics.Interpolation.IInterpolationMethod TerrainSpline { get { return Game.GameManager.GameWindow.TerrainSpline; } }
 
+        public string SelectedTexture { get { return Game.GameManager.GameWindow.SelectedTexture; } }
+
         public Brushes.TerrainBrush TerrainBrush { get; private set; }
 
         private float mRadius = 6.0f;
+        private float mInnerRadius = 6.0f * 0.66f;
     }
 
     public enum ChangeMode
@@ -128,7 +206,8 @@ namespace SharpWoW.Game.Logic
         Linear,
         Smooth,
         Quadratic,
-        Spline
+        Spline,
+        Special
     }
 
     public enum ChangeType

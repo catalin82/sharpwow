@@ -29,11 +29,51 @@ namespace SharpWoW.Models.WMO
             }
         }
 
-        public uint PushInstance(Vector3 pos)
+        public bool IsInstanceHit(out float nearestHit, out uint nearestInstance, out uint refId, out Vector3 pos)
         {
+            nearestHit = 0;
+            nearestInstance = 0;
+            refId = 0;
+            float curNear = 99999;
+            bool hasHit = false;
+            pos = Vector3.Zero;
+
+            lock (mInstLock)
+            {
+                foreach (var mat in mInstances)
+                {
+                    var ray = Video.Picking.CalcRayForTransform(mat.Value);
+                    float curHit = 0;
+                    if (mFile.Intersects(ray, out curHit))
+                    {
+                        hasHit = true;
+                        if (curHit < curNear)
+                        {
+                            curNear = curHit;
+                            nearestInstance = mUniqueId[mat.Key];
+                            refId = mat.Key;
+                            pos = Vector3.TransformCoordinate(ray.Position + curHit * ray.Direction, mat.Value);
+                        }
+                    }
+                }
+            }
+
+            nearestHit = curNear;
+            return hasHit;
+        }
+
+        public uint PushInstance(uint unique, Vector3 pos)
+        {
+            lock (mUniqueLock)
+            {
+                if (mUniqueId.ContainsValue(unique))
+                    return 0xFFFFFFFF;
+            }
+
             Matrix mat = Matrix.Translation(pos);
             uint id = RequestInstanceId();
             lock (mInstLock) mInstances.Add(id, mat);
+            lock (mUniqueLock) mUniqueId.Add(id, unique);
             return id;
         }
 
@@ -67,5 +107,7 @@ namespace SharpWoW.Models.WMO
         private List<uint> mUsedInstances = new List<uint>();
         private object mIdLock = new object();
         private object mInstLock = new object();
+        private object mUniqueLock = new object();
+        private Dictionary<uint, uint> mUniqueId = new Dictionary<uint, uint>();
     }
 }

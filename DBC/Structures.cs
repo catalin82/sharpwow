@@ -107,6 +107,29 @@ namespace SharpWoW.DBC
         public uint unk1, unk2, unk3, unk4, unk5, unk6;
     }
 
+    public class AreaTableEntry_5
+    {
+        public uint ID;
+        public uint mapid;
+        public uint parentId;
+        public uint exploreFlag;
+        public uint flags;
+        public uint refSoundPref;
+        public uint refSoundPrefUWater;
+        public uint refSoundAmbi;
+        public uint refZoneMusic;
+        public uint refZoneIntro;
+        public int area_level;
+        public int unkMOP;
+        public string AreaName;
+        public uint refFactionGroup;
+        public uint liquidType1, liquidType2, liquidType3, liquidType4;
+        public float minElevation;
+        public float ambientMultiplier;
+        public uint lightid;
+        public uint unk1, unk2, unk3, unk4, unk5, unk6;
+    }
+
     public class Light
     {
         public uint ID;
@@ -122,6 +145,16 @@ namespace SharpWoW.DBC
         public uint otherParam;
         public uint deathParam;
         public uint unk1, unk2, unk3;
+    }
+
+    public class LightData
+    {
+        public uint ID;
+        public uint NumValues;
+        [Array(11)]
+        public uint[] Times;
+        [Array(11)]
+        public uint[] Values;
     }
 
     public class LightIntBand

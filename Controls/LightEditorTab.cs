@@ -78,11 +78,13 @@ namespace SharpWoW.Controls
             Graphics g = Graphics.FromImage(InitialImage);
             insertLights(g);
             minimapControl1.Minimap = InitialImage.Clone() as Bitmap;
-            listBox1.DataSource = Game.GameManager.SkyManager.GetSkyForMap(newId).VisualLightEntries;
+            if (Game.GameManager.IsPandaria == false)
+                listBox1.DataSource = Game.GameManager.SkyManager.GetSkyForMap(newId).VisualLightEntries;
         }
 
         void insertLights(Graphics g)
         {
+            return;
             uint mapSize = 64 * 17;
             float realSize = 64 * Utils.Metrics.Tilesize;
             float step = realSize / mapSize;

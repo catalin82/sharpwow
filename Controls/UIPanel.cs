@@ -136,6 +136,7 @@ namespace SharpWoW.Controls
             listBox1.ResumeLayout();
         }
 
+        public Controls.PropertyTab PropertyPanel { get { return propertyTab1; } }
         public string SelectedTexture { get { return (listBox1.SelectedItem != null) ? (string)listBox1.SelectedItem : "(none)"; } }
         public float TextureStrength { get { return trackBar3.Value / 10.0f; } }
         public float TextureFalloff { get { return trackBar4.Value / 10.0f; } }

@@ -25,16 +25,25 @@ namespace SharpWoW.Controls
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
+            if (Game.GameManager.ActiveChangeType == Game.Logic.ActiveChangeType.Texturing)
+                return;
+
             Video.ShaderCollection.TerrainShader.SetValue("brushType", 2);
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
+            if (Game.GameManager.ActiveChangeType == Game.Logic.ActiveChangeType.Texturing)
+                return;
+
             Video.ShaderCollection.TerrainShader.SetValue("brushType", 0);
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
+            if (Game.GameManager.ActiveChangeType == Game.Logic.ActiveChangeType.Texturing)
+                return;
+
             Video.ShaderCollection.TerrainShader.SetValue("brushType", 1);
         }
 
@@ -45,7 +54,27 @@ namespace SharpWoW.Controls
 
         private void radioButton4_CheckedChanged(object sender, EventArgs e)
         {
+            if (Game.GameManager.ActiveChangeType == Game.Logic.ActiveChangeType.Texturing)
+                return;
+
             Video.ShaderCollection.TerrainShader.SetValue("brushType", 3);
+        }
+
+        public int BrushType
+        {
+            get
+            {
+                if (radioButton1.Checked)
+                    return 2;
+                if (radioButton2.Checked)
+                    return 0;
+                if (radioButton3.Checked)
+                    return 1;
+                if (radioButton4.Checked)
+                    return 3;
+
+                return 0;
+            }
         }
     }
 }

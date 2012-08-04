@@ -103,6 +103,7 @@ namespace SharpWoW.UI
         public string SelectedTexture { get { return uiPanel1.SelectedTexture; } }
         public UI.Dialogs.WMOEditor WMOEditor { get; private set; }
         public Controls.UIPanel ToolsPanel { get { return uiPanel1; } }
+        public Controls.PropertyTab PropertyPanel { get { return uiPanel1.PropertyPanel; } }
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {

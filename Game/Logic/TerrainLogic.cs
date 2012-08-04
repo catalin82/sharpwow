@@ -20,6 +20,27 @@ namespace SharpWoW.Game.Logic
             InnerChangeMode = Logic.ChangeMode.Flat;
             TerrainBrush.InnerSharpness = 0.75f;
             TerrainBrush.OuterSharpness = 0.8f;
+
+            Game.GameManager.ActiveChangeModeChanged += () =>
+                {
+                    if (Game.GameManager.ActiveChangeType == ActiveChangeType.Height)
+                    {
+                        switch (mChangeMode)
+                        {
+                            case Logic.ChangeMode.Flat:
+                            case Logic.ChangeMode.Linear:
+                            case Logic.ChangeMode.Quadratic:
+                            case Logic.ChangeMode.Smooth:
+                            case Logic.ChangeMode.Spline:
+                                Video.ShaderCollection.TerrainShader.SetValue("brushType", Game.GameManager.GameWindow.PropertyPanel.BrushType);
+                                break;
+
+                            case Logic.ChangeMode.Special:
+                                Video.ShaderCollection.TerrainShader.SetValue("brushType", 3);
+                                break;
+                        }
+                    }
+                };
         }
 
         void keyPressed(char chr)
@@ -175,7 +196,28 @@ namespace SharpWoW.Game.Logic
         /// <summary>
         /// Gets or sets the way the changes are interpolated inside the outer radius of interaction.
         /// </summary>
-        public ChangeMode ChangeMode { get; set; }
+        public ChangeMode ChangeMode
+        {
+            get { return mChangeMode; }
+            set
+            {
+                mChangeMode = value;
+                switch (value)
+                {
+                    case Logic.ChangeMode.Flat:
+                    case Logic.ChangeMode.Linear:
+                    case Logic.ChangeMode.Quadratic:
+                    case Logic.ChangeMode.Smooth:
+                    case Logic.ChangeMode.Spline:
+                        Video.ShaderCollection.TerrainShader.SetValue("brushType", Game.GameManager.GameWindow.PropertyPanel.BrushType);
+                        break;
+
+                    case Logic.ChangeMode.Special:
+                        Video.ShaderCollection.TerrainShader.SetValue("brushType", 3);
+                        break;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the way the changes are interpolated inside the inner radius of interaction.
@@ -198,6 +240,7 @@ namespace SharpWoW.Game.Logic
 
         private float mRadius = 6.0f;
         private float mInnerRadius = 6.0f * 0.66f;
+        private ChangeMode mChangeMode;
     }
 
     public enum ChangeMode

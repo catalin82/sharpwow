@@ -67,6 +67,33 @@ namespace SharpWoW.ADT
                 file.TextureTerrain(param);
         }
 
+        public static void AddModel(string modelName, SlimDX.Vector3 position)
+        {
+            uint adtIndexX = (uint)((position.X + Utils.Metrics.MidPoint) / Utils.Metrics.Tilesize);
+            uint adtIndexY = (uint)((position.Y + Utils.Metrics.MidPoint) / Utils.Metrics.Tilesize);
+
+            float ofsX = (position.X + Utils.Metrics.MidPoint) - (adtIndexX * Utils.Metrics.Tilesize);
+            float ofsY = (position.Y + Utils.Metrics.MidPoint) - (adtIndexY * Utils.Metrics.Tilesize);
+
+            uint cnkIndexX = (uint)(ofsX / Utils.Metrics.Chunksize);
+            uint cnkIndexY = (uint)(ofsY / Utils.Metrics.Chunksize);
+
+            var adtFile = GetADTFile(adtIndexX, adtIndexY);
+            var chunk = adtFile.GetChunk(cnkIndexX + cnkIndexY * 16);
+            chunk.addModel(modelName, position);
+        }
+
+        public static IADTFile GetADTFile(uint indexX, uint indexY)
+        {
+            foreach (var adt in mActiveFiles)
+            {
+                if (adt.IndexX == indexX && adt.IndexY == indexY)
+                    return adt;
+            }
+
+            return null;
+        }
+
         public static void AddADT(IADTFile file)
         {
             mActiveFiles.Add(file);

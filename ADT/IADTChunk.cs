@@ -14,6 +14,7 @@ namespace SharpWoW.ADT
         public abstract void ChangeTerrain(Vector3 pos, bool lower);
         public abstract void FlattenTerrain(SlimDX.Vector3 pos, bool lower);
         public abstract void BlurTerrain(Vector3 pos, bool lower);
+        public abstract void addModel(string name, Vector3 pos);
 
         public Wotlk.MCNK Header { get { return mHeader; } }
 

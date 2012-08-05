@@ -10,7 +10,7 @@ namespace SharpWoW.Models.WMO
         private static Dictionary<int, WMORender> mRenders = new Dictionary<int, WMORender>();
         private static object lockobj = new object();
 
-        public static uint AddInstance(string name, SlimDX.Vector3 pos, uint uniqueId)
+        public static uint AddInstance(string name, SlimDX.Vector3 pos, uint uniqueId, SlimDX.Vector3 rotation)
         {
             pos.X -= Utils.Metrics.MidPoint;
             float tmpY = pos.Z - Utils.Metrics.MidPoint;
@@ -22,12 +22,12 @@ namespace SharpWoW.Models.WMO
             lock (lockobj)
             {
                 if (mRenders.ContainsKey(hash))
-                    return mRenders[hash].PushInstance(uniqueId, pos);
+                    return mRenders[hash].PushInstance(uniqueId, pos, rotation);
                 else
                 {
                     WMORender rdr = new WMORender(name);
                     mRenders.Add(hash, rdr);
-                    return rdr.PushInstance(uniqueId, pos);
+                    return rdr.PushInstance(uniqueId, pos, rotation);
                 }
             }
         }

@@ -426,5 +426,36 @@ namespace SharpWoW.ADT.Wotlk
                 }
             }
         }
+
+        public override void addModel(string modelName, SlimDX.Vector3 pos)
+        {
+            bool isMdx = modelName.ToLower().EndsWith(".mdx") || modelName.ToLower().EndsWith(".m2");
+            bool isWmo = modelName.ToLower().EndsWith(".wmo");
+
+            if (!isMdx && !isWmo)
+                throw new Exception("'" + modelName + "' is no valid model!");
+
+            if (isMdx)
+                addMdxModel(modelName, pos);
+            else if (isWmo)
+                addWmoModel(modelName, pos);
+        }
+
+        private void addMdxModel(string modelName, SlimDX.Vector3 pos)
+        {
+            ADT.Wotlk.MDDF mdf = new MDDF();
+            mdf.orientationX = mdf.orientationY = mdf.orientationZ = 0.0f;
+            mdf.posX = pos.X + Utils.Metrics.MidPoint;
+            mdf.posZ = pos.Y + Utils.Metrics.MidPoint;
+            mdf.posY = pos.Z;
+
+            mdf.scaleFactor = 1024;
+            mdf.idMMID = (uint)mParent.addMdxName(modelName);
+            mRefs.Add(mParent.addModelDefintion(mdf));
+        }
+
+        private void addWmoModel(string modelName, SlimDX.Vector3 pos)
+        {
+        }
     }
 }

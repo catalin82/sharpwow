@@ -21,24 +21,25 @@ namespace SharpWoW.Models.MDX
         {
             renderLock.WaitOne();
             int hash = modelName.ToLower().GetHashCode();
-            float wowRotY = df.orientationX;
+            float wowRotY = Utils.SharpMath.mirrorAngle(df.orientationX);
             float wowRotZ = df.orientationY;
             float wowRotX = df.orientationZ;
             wowRotY *= 0.017453f;
             wowRotZ *= 0.017453f;
             wowRotX *= 0.017453f;
-            wowRotZ += (float)Math.PI;
+            wowRotZ += (float)Math.PI / 2.0f;
+            wowRotZ = Utils.SharpMath.mirrorAngleRadian(wowRotZ);
 
             if (BatchRenderers.ContainsKey(hash))
             {
-                uint id = BatchRenderers[hash].AddInstance(-Utils.Metrics.MidPoint + df.posX, -Utils.Metrics.MidPoint + df.posZ, df.posY, df.scaleFactor / 1024.0f, new SlimDX.Vector3(-wowRotY, wowRotX, wowRotZ));
+                uint id = BatchRenderers[hash].AddInstance(-Utils.Metrics.MidPoint + df.posX, -Utils.Metrics.MidPoint + df.posZ, df.posY, df.scaleFactor / 1024.0f, new SlimDX.Vector3(wowRotY, wowRotX, wowRotZ));
                 renderLock.ReleaseMutex();
                 return id;
             }
             try
             {
                 M2BatchRender rndr = new M2BatchRender(modelName);
-                uint ret = rndr.AddInstance(-Utils.Metrics.MidPoint + df.posX, -Utils.Metrics.MidPoint + df.posZ, df.posY, df.scaleFactor / 1024.0f, new SlimDX.Vector3(-wowRotY, wowRotX, wowRotZ));
+                uint ret = rndr.AddInstance(-Utils.Metrics.MidPoint + df.posX, -Utils.Metrics.MidPoint + df.posZ, df.posY, df.scaleFactor / 1024.0f, new SlimDX.Vector3(wowRotY, wowRotX, wowRotZ));
                 BatchRenderers.Add(hash, rndr);
                 renderLock.ReleaseMutex();
                 return ret;

@@ -157,6 +157,23 @@ namespace SharpWoW.ADT.Wotlk
             return GetTexture(index).Name;
         }
 
+        public int addMdxName(string name)
+        {
+            uint id = 0;
+            if(DoodadNames.Count != 0)
+                id = DoodadNames.Keys.Last() + (uint)DoodadNames.Values.Last().Length + 1;
+
+            DoodadNames.Add(id, name);
+            ModelIdentifiers.Add(id);
+            return ModelIdentifiers.Count - 1;
+        }
+
+        public uint addModelDefintion(MDDF ddf)
+        {
+            ModelDefinitions.Add(ddf);
+            return (uint)(ModelDefinitions.Count - 1);
+        }
+
         private MHDR mHeader;
         private MCIN[] mOffsets = new MCIN[256];
         private string[] mTextureNames;

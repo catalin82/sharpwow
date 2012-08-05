@@ -14,6 +14,7 @@ namespace SharpWoW.Game.Logic
             ChangeMode = Logic.ChangeMode.Flat;
             Intensity = 30.0f;
             Video.Input.InputManager.Input.KeyPressed += new Video.Input.InputManager.KeyPressDlg(keyPressed);
+            Video.Input.InputManager.Input.MousePress += Input_MousePress;
             TerrainBrush = new Brushes.TerrainBrush();
             Radius = 30.0f;
             InnerRadius = Radius * 0.66f;
@@ -41,6 +42,14 @@ namespace SharpWoW.Game.Logic
                         }
                     }
                 };
+        }
+
+        void Input_MousePress(int x, int y, System.Windows.Forms.MouseButtons pressedButton)
+        {
+            var mpos = Game.GameManager.GraphicsThread.GraphicsManager.MousePosition;
+            if (Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.CapsLock))
+                ADT.ADTManager.AddModel(Game.GameManager.GameWindow.ToolsPanel.SelectedMdxModel, mpos);
+            
         }
 
         void keyPressed(char chr)

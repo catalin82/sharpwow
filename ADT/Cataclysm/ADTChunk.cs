@@ -575,6 +575,11 @@ namespace SharpWoW.ADT.Cataclysm
             return false;
         }
 
+        public override void addModel(string name, Vector3 pos)
+        {
+            throw new NotImplementedException();
+        }
+
         private void RecalcNormals()
         {
             for (uint i = 0; i < 145; ++i)

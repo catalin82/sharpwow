@@ -24,5 +24,20 @@ namespace SharpWoW.Utils
             float cos = (1 + (float)System.Math.Cos(pct * System.Math.PI)) / 2.0f;
             return (src + (dst - src) * cos);
         }
+
+        public static float mirrorAngle(float angle)
+        {
+            /*while (angle < 0)
+                angle += 360;
+            while (angle > 360)
+                angle -= 360;*/
+
+            return 360 - angle;
+        }
+
+        public static float mirrorAngleRadian(float angle)
+        {
+            return (float)(Math.PI * 2 - angle);
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace SharpWoW.Controls
         {
             InitializeComponent();
             List<string> fileList = new List<string>();
+            List<ListBoxPathEntry> mdxFileList = new List<ListBoxPathEntry>();
             Stormlib.MPQArchiveLoader.Instance.Initialized += () =>
                 {
                     foreach (var archive in Stormlib.MPQArchiveLoader.Instance.ArchiveList)
@@ -27,12 +28,23 @@ namespace SharpWoW.Controls
                                        select file;
 
                         fileList.AddRange(tilesets);
+
+                        var mdxModels = from file in files
+                                        where file.ToLower().EndsWith(".mdx") || file.ToLower().EndsWith(".m2")
+                                        select new ListBoxPathEntry(file);
+
+                        mdxFileList.AddRange(mdxModels);
                     }
 
                     mTextureFileList.AddRange(fileList);
+                    mMdxModelList.AddRange(mdxFileList);
                 };
 
-            HandleCreated += (sender, e) => listBox1.Items.AddRange(fileList.ToArray());
+            HandleCreated += (sender, e) =>
+                {
+                    listBox1.Items.AddRange(fileList.ToArray());
+                    listBox2.Items.AddRange(mMdxModelList.ToArray());
+                };
 
             Game.GameManager.ActiveChangeModeChanged += () =>
                 {
@@ -47,6 +59,28 @@ namespace SharpWoW.Controls
                             break;
                     }
                 };
+        }
+
+        private class ListBoxPathEntry
+        {
+            public ListBoxPathEntry(string path)
+            {
+                mText = path;
+                StripPath = false;
+            }
+
+            private string mText;
+
+            public bool StripPath { get; set; }
+            public string FullText { get { return mText; } }
+
+            public override string ToString()
+            {
+                if (StripPath)
+                    return System.IO.Path.GetFileName(mText);
+
+                return mText;
+            }
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -126,6 +160,7 @@ namespace SharpWoW.Controls
         }
 
         private List<string> mTextureFileList = new List<string>();
+        private List<ListBoxPathEntry> mMdxModelList = new List<ListBoxPathEntry>();
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -155,6 +190,7 @@ namespace SharpWoW.Controls
                 return Game.Logic.TextureChangeParam.FalloffMode.Flat;
             }
         }
+        public string SelectedMdxModel { get { return (listBox2.SelectedItem != null) ? ((ListBoxPathEntry)listBox2.SelectedItem).FullText : "(none)"; } }
 
         private void trackBar3_Scroll(object sender, EventArgs e)
         {
@@ -180,6 +216,17 @@ namespace SharpWoW.Controls
         private void radioButton21_CheckedChanged(object sender, EventArgs e)
         {
             trackBar4.Enabled = !radioButton21.Checked;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            listBox2.SuspendLayout();
+            foreach (var mdxEntry in mMdxModelList)
+                mdxEntry.StripPath = checkBox1.Checked;
+
+            Utils.Reflection.CallMethod(listBox2, "RefreshItems");
+            listBox2.ResumeLayout();
+
         }
     }
 }

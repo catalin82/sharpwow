@@ -269,15 +269,16 @@ namespace SharpWoW.Models.MDX
         {
             Matrix matRot = Matrix.Identity;
             matRot *= Matrix.RotationX(rotation.X);
-            matRot *= Matrix.RotationY(rotation.Z);
-            matRot *= Matrix.RotationZ(rotation.Y);
+            matRot *= Matrix.RotationY(rotation.Y);
+            matRot *= Matrix.RotationZ(rotation.Z);
+
+            Matrix matTrans = Matrix.Translation(Position);
+            Matrix matScale = Matrix.Scaling(scale, scale, scale);
 
             Models.MDX.MdxInstanceData inst = new Models.MDX.MdxInstanceData()
             {
                 ModelMatrix =
-                matRot
-                * Matrix.Scaling(scale, scale, scale)
-                * Matrix.Translation(Position),
+                matRot * matScale * matTrans
             };
 
             uint id = 0;

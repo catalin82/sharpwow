@@ -62,7 +62,7 @@ namespace SharpWoW.Models.WMO
             return hasHit;
         }
 
-        public uint PushInstance(uint unique, Vector3 pos)
+        public uint PushInstance(uint unique, Vector3 pos, Vector3 rotation)
         {
             lock (mUniqueLock)
             {
@@ -70,7 +70,11 @@ namespace SharpWoW.Models.WMO
                     return 0xFFFFFFFF;
             }
 
-            Matrix mat = Matrix.Translation(pos);
+            Matrix matRot = Matrix.RotationX(Utils.SharpMath.mirrorAngle(rotation.X) * 0.017453f);
+            matRot *= Matrix.RotationY(Utils.SharpMath.mirrorAngle(rotation.Z) * 0.017453f);
+            matRot *= Matrix.RotationZ(Utils.SharpMath.mirrorAngle(rotation.Y) * 0.017453f + (float)Math.PI / 2.0f);
+
+            Matrix mat = matRot * Matrix.Translation(pos);
             uint id = RequestInstanceId();
             lock (mInstLock) mInstances.Add(id, mat);
             lock (mUniqueLock) mUniqueId.Add(id, unique);

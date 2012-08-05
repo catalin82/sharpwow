@@ -311,7 +311,7 @@ namespace SharpWoW.ADT.Wotlk
                     var modf = mParent.WMODefinitions[(int)re];
                     var name = mParent.WMONames[mParent.WMOIdentifiers[(int)modf.idMWID]];
                     
-                    var id = Models.WMO.WMOManager.AddInstance(name, mParent.WMODefinitions[(int)re].Position, modf.uniqueId);
+                    var id = Models.WMO.WMOManager.AddInstance(name, mParent.WMODefinitions[(int)re].Position, modf.uniqueId, mParent.WMODefinitions[(int)re].Rotation);
                 }
                 catch (Exception)
                 { 

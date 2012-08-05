@@ -107,7 +107,7 @@ namespace SharpWoW.ADT.Wotlk
         /// <summary>
         /// Rotation around every axis
         /// </summary>
-        public float orientationX, orientationY, orientationZ;
+        public SlimDX.Vector3 Rotation;
         /// <summary>
         /// Not really known what theyre for...
         /// </summary>

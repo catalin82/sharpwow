@@ -17,7 +17,7 @@ namespace SharpWoW.Controls
         {
             InitializeComponent();
             List<string> fileList = new List<string>();
-            List<ListBoxPathEntry> mdxFileList = new List<ListBoxPathEntry>();
+            List<string> mdxFileList = new List<string>();
             Stormlib.MPQArchiveLoader.Instance.Initialized += () =>
                 {
                     foreach (var archive in Stormlib.MPQArchiveLoader.Instance.ArchiveList)
@@ -31,7 +31,7 @@ namespace SharpWoW.Controls
 
                         var mdxModels = from file in files
                                         where file.ToLower().EndsWith(".mdx") || file.ToLower().EndsWith(".m2")
-                                        select new ListBoxPathEntry(file);
+                                        select file;
 
                         mdxFileList.AddRange(mdxModels);
                     }
@@ -43,7 +43,7 @@ namespace SharpWoW.Controls
             HandleCreated += (sender, e) =>
                 {
                     listBox1.Items.AddRange(fileList.ToArray());
-                    listBox2.Items.AddRange(mMdxModelList.ToArray());
+                    loadTreeViewItems(mdxFileList);
                 };
 
             Game.GameManager.ActiveChangeModeChanged += () =>
@@ -61,26 +61,28 @@ namespace SharpWoW.Controls
                 };
         }
 
-        private class ListBoxPathEntry
+        private void loadTreeViewItems(List<string> items)
         {
-            public ListBoxPathEntry(string path)
+            TreeNode rootNode = new TreeNode("Models");
+            foreach (var item in items)
             {
-                mText = path;
-                StripPath = false;
+                TreeNode startNode = rootNode;
+                var parts = item.Split('\\');
+                foreach (var part in parts)
+                {
+                    startNode = addNode(startNode, part);
+                }
             }
 
-            private string mText;
+            treeView1.Nodes.Add(rootNode);
+        }
 
-            public bool StripPath { get; set; }
-            public string FullText { get { return mText; } }
+        private TreeNode addNode(TreeNode parentNode, string part)
+        {
+            if (parentNode.Nodes.ContainsKey(part.ToLower()))
+                return parentNode.Nodes[part];
 
-            public override string ToString()
-            {
-                if (StripPath)
-                    return System.IO.Path.GetFileName(mText);
-
-                return mText;
-            }
+            return parentNode.Nodes.Add(part.ToLower(), part);
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -160,7 +162,7 @@ namespace SharpWoW.Controls
         }
 
         private List<string> mTextureFileList = new List<string>();
-        private List<ListBoxPathEntry> mMdxModelList = new List<ListBoxPathEntry>();
+        private List<string> mMdxModelList = new List<string>();
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -190,7 +192,7 @@ namespace SharpWoW.Controls
                 return Game.Logic.TextureChangeParam.FalloffMode.Flat;
             }
         }
-        public string SelectedMdxModel { get { return (listBox2.SelectedItem != null) ? ((ListBoxPathEntry)listBox2.SelectedItem).FullText : "(none)"; } }
+        public string SelectedMdxModel { get { return (treeView1.SelectedNode != null) ? (treeView1.SelectedNode.FullPath.Remove(0, 7)) : "(none)"; } }
 
         private void trackBar3_Scroll(object sender, EventArgs e)
         {
@@ -216,17 +218,6 @@ namespace SharpWoW.Controls
         private void radioButton21_CheckedChanged(object sender, EventArgs e)
         {
             trackBar4.Enabled = !radioButton21.Checked;
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            listBox2.SuspendLayout();
-            foreach (var mdxEntry in mMdxModelList)
-                mdxEntry.StripPath = checkBox1.Checked;
-
-            Utils.Reflection.CallMethod(listBox2, "RefreshItems");
-            listBox2.ResumeLayout();
-
         }
     }
 }

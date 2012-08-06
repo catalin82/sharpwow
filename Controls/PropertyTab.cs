@@ -15,7 +15,11 @@ namespace SharpWoW.Controls
         public PropertyTab()
         {
             InitializeComponent();
-            textBox1.Text = System.IO.Path.GetFullPath(Game.GameManager.SavePath);
+            if (this.Site != null && this.Site.DesignMode == true)
+                return;
+
+            if (Game.GameManager.SavePath != null)
+                textBox1.Text = System.IO.Path.GetFullPath(Game.GameManager.SavePath);
             Game.GameManager.GraphicsThreadCreated += () =>
                 {
                     Game.GameManager.GraphicsThread.GraphicsManager.DeviceLoaded += () => propertyGrid2.SelectedObject = Game.GameManager.GraphicsThread.GraphicsManager.CurrentConfig;

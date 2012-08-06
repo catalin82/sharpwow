@@ -46,6 +46,7 @@
             this.radioButton10 = new System.Windows.Forms.RadioButton();
             this.radioButton9 = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.multiPointSplineControl1 = new SharpWoW.Controls.MultiPointSplineControl();
             this.radioButton8 = new System.Windows.Forms.RadioButton();
             this.radioButton7 = new System.Windows.Forms.RadioButton();
             this.radioButton6 = new System.Windows.Forms.RadioButton();
@@ -71,8 +72,7 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.listBox2 = new System.Windows.Forms.ListBox();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.propertyTab1 = new SharpWoW.Controls.PropertyTab();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -82,7 +82,6 @@
             this.RightToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
-            this.multiPointSplineControl1 = new SharpWoW.Controls.MultiPointSplineControl();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -332,6 +331,14 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Spline Options";
             this.groupBox2.Visible = false;
+            // 
+            // multiPointSplineControl1
+            // 
+            this.multiPointSplineControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.multiPointSplineControl1.Location = new System.Drawing.Point(13, 21);
+            this.multiPointSplineControl1.Name = "multiPointSplineControl1";
+            this.multiPointSplineControl1.Size = new System.Drawing.Size(74, 75);
+            this.multiPointSplineControl1.TabIndex = 6;
             // 
             // radioButton8
             // 
@@ -618,8 +625,7 @@
             // 
             // tabPage5
             // 
-            this.tabPage5.Controls.Add(this.checkBox1);
-            this.tabPage5.Controls.Add(this.listBox2);
+            this.tabPage5.Controls.Add(this.treeView1);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
@@ -628,25 +634,13 @@
             this.tabPage5.Text = "Objects";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // treeView1
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(236, 20);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(72, 17);
-            this.checkBox1.TabIndex = 1;
-            this.checkBox1.Text = "Hide path";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // listBox2
-            // 
-            this.listBox2.FormattingEnabled = true;
-            this.listBox2.HorizontalScrollbar = true;
-            this.listBox2.Location = new System.Drawing.Point(6, 43);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(310, 225);
-            this.listBox2.TabIndex = 0;
+            this.treeView1.HideSelection = false;
+            this.treeView1.Location = new System.Drawing.Point(6, 36);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(314, 522);
+            this.treeView1.TabIndex = 2;
             // 
             // tabPage3
             // 
@@ -661,9 +655,10 @@
             // 
             // propertyTab1
             // 
-            this.propertyTab1.Location = new System.Drawing.Point(0, 1);
+            this.propertyTab1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyTab1.Location = new System.Drawing.Point(3, 3);
             this.propertyTab1.Name = "propertyTab1";
-            this.propertyTab1.Size = new System.Drawing.Size(326, 678);
+            this.propertyTab1.Size = new System.Drawing.Size(320, 672);
             this.propertyTab1.TabIndex = 0;
             // 
             // tabPage4
@@ -721,14 +716,6 @@
             // 
             this.ContentPanel.Size = new System.Drawing.Size(276, 350);
             // 
-            // multiPointSplineControl1
-            // 
-            this.multiPointSplineControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.multiPointSplineControl1.Location = new System.Drawing.Point(13, 21);
-            this.multiPointSplineControl1.Name = "multiPointSplineControl1";
-            this.multiPointSplineControl1.Size = new System.Drawing.Size(74, 75);
-            this.multiPointSplineControl1.TabIndex = 6;
-            // 
             // UIPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -760,7 +747,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).EndInit();
             this.tabPage5.ResumeLayout(false);
-            this.tabPage5.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -787,7 +773,6 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
-        private PropertyTab propertyTab1;
         private System.Windows.Forms.TabPage tabPage4;
         private LightEditorTab lightEditorTab1;
         private System.Windows.Forms.ToolStripPanel BottomToolStripPanel;
@@ -821,8 +806,8 @@
         private System.Windows.Forms.RadioButton radioButton20;
         private System.Windows.Forms.RadioButton radioButton19;
         private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.ListBox listBox2;
-        private System.Windows.Forms.CheckBox checkBox1;
         private MultiPointSplineControl multiPointSplineControl1;
+        private System.Windows.Forms.TreeView treeView1;
+        private PropertyTab propertyTab1;
     }
 }

@@ -92,6 +92,10 @@ namespace SharpWoW.Models.MDX
             mFile.Position = Header.ofsTexUnits;
             mFile.Read(texUnitLookUp);
 
+            M2RenderFlags[] renderFlags = new M2RenderFlags[Header.nRenderFlags];
+            mFile.Position = Header.ofsRenderFlags;
+            mFile.Read(renderFlags);
+
             ushort[] indices = new ushort[mView.nTriangles];
             for (int i = 0; i < mView.nTriangles; ++i)
                 indices[i] = indexLookup[triangles[i]];
@@ -102,6 +106,7 @@ namespace SharpWoW.Models.MDX
                 SKINSubMesh mesh = SubMeshes[TexUnits[i].SubMesh1];
                 pass.Vertices = new MdxVertex[mesh.nTriangles];
                 pass.Texture = Textures[(int)texLookUp[TexUnits[i].Texture]];
+                pass.BlendMode = renderFlags[TexUnits[i].RenderFlags];
 
                 for (ushort t = mesh.startTriangle, k = 0; k < mesh.nTriangles; ++t, ++k)
                 {

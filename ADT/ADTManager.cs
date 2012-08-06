@@ -79,6 +79,9 @@ namespace SharpWoW.ADT
             uint cnkIndexY = (uint)(ofsY / Utils.Metrics.Chunksize);
 
             var adtFile = GetADTFile(adtIndexX, adtIndexY);
+            if (adtFile == null)
+                return;
+
             var chunk = adtFile.GetChunk(cnkIndexX + cnkIndexY * 16);
             chunk.addModel(modelName, position);
         }

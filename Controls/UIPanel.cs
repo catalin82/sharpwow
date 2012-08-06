@@ -18,6 +18,7 @@ namespace SharpWoW.Controls
             InitializeComponent();
             List<string> fileList = new List<string>();
             List<string> mdxFileList = new List<string>();
+            TreeNode mdxNode = null;
             Stormlib.MPQArchiveLoader.Instance.Initialized += () =>
                 {
                     foreach (var archive in Stormlib.MPQArchiveLoader.Instance.ArchiveList)
@@ -38,12 +39,13 @@ namespace SharpWoW.Controls
 
                     mTextureFileList.AddRange(fileList);
                     mMdxModelList.AddRange(mdxFileList);
+                    mdxNode = loadTreeViewItems(mdxFileList);
                 };
 
             HandleCreated += (sender, e) =>
                 {
                     listBox1.Items.AddRange(fileList.ToArray());
-                    loadTreeViewItems(mdxFileList);
+                    treeView1.Nodes.Add(mdxNode);
                 };
 
             Game.GameManager.ActiveChangeModeChanged += () =>
@@ -61,7 +63,7 @@ namespace SharpWoW.Controls
                 };
         }
 
-        private void loadTreeViewItems(List<string> items)
+        private TreeNode loadTreeViewItems(List<string> items)
         {
             TreeNode rootNode = new TreeNode("Models");
             foreach (var item in items)
@@ -74,7 +76,7 @@ namespace SharpWoW.Controls
                 }
             }
 
-            treeView1.Nodes.Add(rootNode);
+            return rootNode;
         }
 
         private TreeNode addNode(TreeNode parentNode, string part)

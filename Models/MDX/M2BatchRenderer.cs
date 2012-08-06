@@ -112,6 +112,8 @@ namespace SharpWoW.Models.MDX
                 dev.SetStreamSource(1, InstanceDataBuffer, 0, Marshal.SizeOf(typeof(Models.MDX.MdxInstanceData)));
                 dev.SetStreamSourceFrequency(1, 1, StreamSource.InstanceData);
 
+                setRenderValues(counter);
+
                 dev.Indices = Indices[counter];
 
                 shdr.SetTexture("MeshTexture", Textures[counter]);
@@ -122,12 +124,71 @@ namespace SharpWoW.Models.MDX
                     }
                 );
 
+                unsetRenderValues();
+
                 ++counter;
             }
             dev.VertexDeclaration = null;
 
             dev.ResetStreamSourceFrequency(0);
             dev.ResetStreamSourceFrequency(1);
+        }
+
+        private void setRenderValues(int pass)
+        {
+            if (pass >= mModelInfo.Passes.Count)
+                throw new Exception("pass >= mModelInfo.Passes.Count");
+
+            Device dev = Game.GameManager.GraphicsThread.GraphicsManager.Device;
+
+            var flags = mModelInfo.Passes[pass].BlendMode;
+            switch (flags.blend)
+            {
+                case 0:
+                    {
+                        dev.SetRenderState(RenderState.AlphaBlendEnable, false);
+                        dev.SetRenderState(RenderState.AlphaTestEnable, false);
+                        break;
+                    }
+                case 1:
+                    {
+                        dev.SetRenderState(RenderState.AlphaBlendEnable, true);
+                        dev.SetRenderState(RenderState.AlphaTestEnable, true);
+                        dev.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
+                        dev.SetRenderState(RenderState.AlphaRef, 0.01f);
+                        break;
+                    }
+                case 2:
+                    {
+                        dev.SetRenderState(RenderState.AlphaTestEnable, true);
+                        dev.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                        dev.SetRenderState(RenderState.SourceBlend, Blend.One);
+                        break;
+                    }
+                case 3:
+                    {
+                        dev.SetRenderState(RenderState.AlphaTestEnable, true);
+                        dev.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                        dev.SetRenderState(RenderState.SourceBlend, Blend.SourceColor);
+                        break;
+                    }
+                case 4:
+                    {
+                        dev.SetRenderState(RenderState.AlphaTestEnable, true);
+                        dev.SetRenderState(RenderState.DestinationBlend, Blend.One);
+                        dev.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                        break;
+                    }
+            }
+        }
+
+        private void unsetRenderValues()
+        {
+            Device dev = Game.GameManager.GraphicsThread.GraphicsManager.Device;
+            dev.SetRenderState(RenderState.AlphaTestEnable, false);
+            dev.SetRenderState(RenderState.AlphaBlendEnable, true);
+            dev.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+            dev.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
         }
 
         internal List<VertexBuffer> Meshes = new List<VertexBuffer>();

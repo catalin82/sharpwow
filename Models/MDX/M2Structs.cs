@@ -108,6 +108,14 @@ namespace SharpWoW.Models.MDX
         /// The texture used in this pass
         /// </summary>
         public string Texture;
+
+        public M2RenderFlags BlendMode;
+    }
+
+    public struct M2RenderFlags
+    {
+        public ushort flags;
+        public ushort blend;
     }
 
     [StructLayout(LayoutKind.Sequential)]

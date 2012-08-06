@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using SlimDX.Direct3D9;
+using System.ComponentModel;
 
 namespace SharpWoW.Video
 {
@@ -117,11 +118,17 @@ namespace SharpWoW.Video
             DepthStencilFormat = fmt;
         }
 
+        [Category("Graphics Settings"), Description("Multisampling is used in antialiasing. The better the quality, the worse the performance.")]
         public MultisampleType Multisampling { get; set; }
+        [Category("Graphics Settings")]
         public uint MultisampleQuality { get; set; }
+        [Category("Graphics Settings")]
         public TextureFilterMode Filtering { get; set; }
+        [Category("Graphics Settings")]
         public uint Anisotropy { get; set; }
+        [Category("Graphics Settings")]
         public Format DepthStencilFormat { get; set; }
+        [Browsable(false)]
         public AdapterDetails Adapter { get; set; }
     }
 }

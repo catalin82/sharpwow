@@ -29,6 +29,7 @@ namespace SharpWoW.Video
         {
             Direct3D = new SlimDX.Direct3D9.Direct3D();
             VideoConfig cfg = VideoConfig.Load(useRegistry, showDialog);
+            CurrentConfig = cfg;
 
             Device = new Device(Direct3D, cfg.Adapter.Adapter, DeviceType.Hardware, mRenderWindow.Handle,
                 CreateFlags.HardwareVertexProcessing,
@@ -57,6 +58,9 @@ namespace SharpWoW.Video
             Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
             Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
             Device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Linear);
+
+            if (DeviceLoaded != null)
+                DeviceLoaded();
         }
 
         public void UpdateMouseTerrainPos(int x, int y)
@@ -102,5 +106,7 @@ namespace SharpWoW.Video
         public Device Device { get; private set; }
         public Direct3D Direct3D { get; private set; }
         public Camera Camera { get; private set; }
+        public VideoConfig CurrentConfig { get; set; }
+        public event Action DeviceLoaded;
     }
 }

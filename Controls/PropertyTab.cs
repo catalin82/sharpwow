@@ -15,6 +15,11 @@ namespace SharpWoW.Controls
         public PropertyTab()
         {
             InitializeComponent();
+            textBox1.Text = System.IO.Path.GetFullPath(Game.GameManager.SavePath);
+            Game.GameManager.GraphicsThreadCreated += () =>
+                {
+                    Game.GameManager.GraphicsThread.GraphicsManager.DeviceLoaded += () => propertyGrid2.SelectedObject = Game.GameManager.GraphicsThread.GraphicsManager.CurrentConfig;
+                };
         }
 
         private void PropertyTab_Load(object sender, EventArgs e)
@@ -83,6 +88,25 @@ namespace SharpWoW.Controls
         public float CameraSensitivity
         {
             get { return trackBar2.Value / 100.0f; }
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            label2.Text = "Camera Sensitivity: " + trackBar2.Value / 100.0f;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            Game.GameManager.SavePath = textBox1.Text;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var res = folderBrowserDialog1.ShowDialog();
+            if (res != DialogResult.OK)
+                return;
+
+            textBox1.Text = folderBrowserDialog1.SelectedPath;
         }
     }
 }

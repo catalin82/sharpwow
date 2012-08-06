@@ -46,7 +46,6 @@
             this.radioButton10 = new System.Windows.Forms.RadioButton();
             this.radioButton9 = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.multiPointSplineControl1 = new SharpWoW.Controls.MultiPointSplineControl();
             this.radioButton8 = new System.Windows.Forms.RadioButton();
             this.radioButton7 = new System.Windows.Forms.RadioButton();
             this.radioButton6 = new System.Windows.Forms.RadioButton();
@@ -83,6 +82,7 @@
             this.RightToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
+            this.multiPointSplineControl1 = new SharpWoW.Controls.MultiPointSplineControl();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -332,14 +332,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Spline Options";
             this.groupBox2.Visible = false;
-            // 
-            // multiPointSplineControl1
-            // 
-            this.multiPointSplineControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.multiPointSplineControl1.Location = new System.Drawing.Point(15, 19);
-            this.multiPointSplineControl1.Name = "multiPointSplineControl1";
-            this.multiPointSplineControl1.Size = new System.Drawing.Size(81, 82);
-            this.multiPointSplineControl1.TabIndex = 6;
             // 
             // radioButton8
             // 
@@ -729,6 +721,14 @@
             // 
             this.ContentPanel.Size = new System.Drawing.Size(276, 350);
             // 
+            // multiPointSplineControl1
+            // 
+            this.multiPointSplineControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.multiPointSplineControl1.Location = new System.Drawing.Point(13, 21);
+            this.multiPointSplineControl1.Name = "multiPointSplineControl1";
+            this.multiPointSplineControl1.Size = new System.Drawing.Size(74, 75);
+            this.multiPointSplineControl1.TabIndex = 6;
+            // 
             // UIPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -820,9 +820,9 @@
         private System.Windows.Forms.RadioButton radioButton21;
         private System.Windows.Forms.RadioButton radioButton20;
         private System.Windows.Forms.RadioButton radioButton19;
-        private MultiPointSplineControl multiPointSplineControl1;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.ListBox listBox2;
         private System.Windows.Forms.CheckBox checkBox1;
+        private MultiPointSplineControl multiPointSplineControl1;
     }
 }

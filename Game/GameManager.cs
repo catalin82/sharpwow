@@ -27,6 +27,9 @@ namespace SharpWoW.Game
             mForm = new UI.Form1();
             Bookmark.SetKeyUpDelegate();
             GraphicsThread = new VideoThread(mForm, mForm.panel1);
+            if (GraphicsThreadCreated != null)
+                GraphicsThreadCreated();
+
             GraphicsThread.RunLoop();
         }
 
@@ -163,6 +166,7 @@ namespace SharpWoW.Game
         public static event Action<GameProperties> PropertyChanged;
         public static event Action GameTerminated;
         public static event Action ActiveChangeModeChanged;
+        public static event Action GraphicsThreadCreated;
 
         private static string mGamePath = null;
         private static UI.Form1 mForm = null;

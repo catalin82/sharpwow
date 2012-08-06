@@ -51,5 +51,7 @@ namespace SharpWoW.Controls
         {
             expander.IsExpanded = false;
         }
+
+        public bool IsStatic { get { return staticToggleButton.IsChecked.Value; } }
     }
 }

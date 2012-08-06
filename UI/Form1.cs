@@ -22,16 +22,20 @@ namespace SharpWoW.UI
             SharpWoW.Controls.ExpanderControl exp = new SharpWoW.Controls.ExpanderControl();
             exp.Host.Child = uiPanel1;
             elementHost1.Child = exp;
-            panel1.MouseEnter += (sender, args) => exp.Collapse();
-            menuStrip1.MouseEnter += (sender, args) => exp.Collapse();
-            statusStrip1.MouseEnter += (sender, args) => exp.Collapse();
+            panel1.MouseEnter += (sender, args) => { if(exp.IsStatic == false) exp.Collapse(); };
+            menuStrip1.MouseEnter += (sender, args) => { if (exp.IsStatic == false) exp.Collapse(); };
+            statusStrip1.MouseEnter += (sender, args) => { if (exp.IsStatic == false) exp.Collapse(); };
             
             exp.ExpandedChanged += (expanded) =>
                 {
                     if (expanded)
+                    {
                         elementHost1.Width = 360;
+                    }
                     else
+                    {
                         elementHost1.Width = 31;
+                    }
                 };
 
             
@@ -104,6 +108,8 @@ namespace SharpWoW.UI
         public UI.Dialogs.WMOEditor WMOEditor { get; private set; }
         public Controls.UIPanel ToolsPanel { get { return uiPanel1; } }
         public Controls.PropertyTab PropertyPanel { get { return uiPanel1.PropertyPanel; } }
+
+        private bool mIsToolbarStaticVisible = false;
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {

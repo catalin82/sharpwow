@@ -79,5 +79,10 @@ namespace SharpWoW.Controls
                 return 0;
             }
         }
+
+        public float CameraSensitivity
+        {
+            get { return trackBar2.Value / 100.0f; }
+        }
     }
 }

@@ -73,5 +73,12 @@ namespace SharpWoW.Resources {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Bitmap pinIcon {
+            get {
+                object obj = ResourceManager.GetObject("pinIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

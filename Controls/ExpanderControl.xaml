@@ -9,6 +9,8 @@
         <Expander MouseEnter="Grid_MouseEnter" Header="" ExpandDirection="Right" Expanded="Expander_Expanded" Name="expander" Collapsed="Expander_Expanded">
             <WindowsFormsHost Name="winFormsHost"/>
         </Expander>
-
+        <ToggleButton HorizontalAlignment="Left" Width="23" VerticalAlignment="Top" Margin="0,30" Height="23" Name="staticToggleButton">
+            <Image Source="/SharpWoW;component/Resources/394580430943859083405.png" />
+        </ToggleButton>
     </Grid>
 </UserControl>

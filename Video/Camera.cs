@@ -23,6 +23,7 @@ namespace SharpWoW.Video
 
             bool changed = false;
             var inp = Input.InputManager.Input;
+            float sensitivity = Game.GameManager.GameWindow.PropertyPanel.CameraSensitivity;
 
             if (inp[Keys.W])
             {
@@ -73,7 +74,7 @@ namespace SharpWoW.Video
                     if (state.X != 0)
                     {
                         int fac = (state.X < 0) ? -1 : 1;
-                        Matrix rot = Matrix.RotationZ(state.X * 0.005f);
+                        Matrix rot = Matrix.RotationZ(state.X * 0.005f * sensitivity);
                         mFront = Vector3.TransformCoordinate(mFront, rot);
                         mFront.Normalize();
                         mTarget = mPosition + mFront;
@@ -86,7 +87,7 @@ namespace SharpWoW.Video
                     if (state.Y != 0)
                     {
                         int fac = (state.Y < 0) ? -1 : 1;
-                        Matrix rot = Matrix.RotationAxis(mRight, state.Y * 0.005f);
+                        Matrix rot = Matrix.RotationAxis(mRight, state.Y * 0.005f * sensitivity);
                         mFront = Vector3.TransformCoordinate(mFront, rot);
                         mFront.Normalize();
                         mTarget = mPosition + mFront;

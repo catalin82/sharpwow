@@ -159,6 +159,9 @@ namespace SharpWoW.ADT.Wotlk
 
         public int addMdxName(string name)
         {
+            if (DoodadNames.ContainsValue(name))
+                return (int)DoodadNames.First((kvp) => kvp.Value == name).Key;
+
             uint id = 0;
             if(DoodadNames.Count != 0)
                 id = DoodadNames.Keys.Last() + (uint)DoodadNames.Values.Last().Length + 1;
@@ -168,10 +171,30 @@ namespace SharpWoW.ADT.Wotlk
             return ModelIdentifiers.Count - 1;
         }
 
+        public int addWmoName(string name)
+        {
+            if (WMONames.ContainsValue(name))
+                return (int)WMONames.First((kvp) => kvp.Value == name).Key;
+
+            uint id = 0;
+            if (WMONames.Count != 0)
+                id = WMONames.Keys.Last() + (uint)WMONames.Values.Last().Length + 1;
+
+            WMONames.Add(id, name);
+            WMOIdentifiers.Add(id);
+            return WMOIdentifiers.Count - 1;
+        }
+
         public uint addModelDefintion(MDDF ddf)
         {
             ModelDefinitions.Add(ddf);
             return (uint)(ModelDefinitions.Count - 1);
+        }
+
+        public uint addWmoDefintion(MODF ddf)
+        {
+            WMODefinitions.Add(ddf);
+            return (uint)(WMODefinitions.Count - 1);
         }
 
         private MHDR mHeader;

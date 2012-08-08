@@ -18,7 +18,8 @@ namespace SharpWoW.Controls
             InitializeComponent();
             List<string> fileList = new List<string>();
             List<string> mdxFileList = new List<string>();
-            TreeNode mdxNode = null;
+            List<string> wmoModelList = new List<string>();
+            TreeNode mdxNode = null, wmoNode = null;
             Stormlib.MPQArchiveLoader.Instance.Initialized += () =>
                 {
                     foreach (var archive in Stormlib.MPQArchiveLoader.Instance.ArchiveList)
@@ -35,17 +36,41 @@ namespace SharpWoW.Controls
                                         select file;
 
                         mdxFileList.AddRange(mdxModels);
+
+                        Func<string, bool> groupLambda = (file) => {
+                            if(file.Length <= 4)
+                                return false;
+
+                            if(file[file.Length - 4] != '_')
+                                return false;
+
+                            var last = new string(file.Skip(file.Length - 3).ToArray());
+                            uint groupNum = 0;
+                            if (uint.TryParse(last, out groupNum))
+                                return true;
+
+                            return false;
+                        };
+
+                        var wmoModels = from file in files
+                                        where file.ToLower().EndsWith(".wmo") && groupLambda(System.IO.Path.GetFileNameWithoutExtension(file)) == false
+                                        select file;
+
+                        wmoModelList.AddRange(wmoModels);
                     }
 
                     mTextureFileList.AddRange(fileList);
                     mMdxModelList.AddRange(mdxFileList);
                     mdxNode = loadTreeViewItems(mdxFileList);
+                    mWmoModelList.AddRange(wmoModelList);
+                    wmoNode = loadTreeViewItems(wmoModelList, "WMO");
                 };
 
             HandleCreated += (sender, e) =>
                 {
                     listBox1.Items.AddRange(fileList.ToArray());
                     treeView1.Nodes.Add(mdxNode);
+                    treeView1.Nodes.Add(wmoNode);
                 };
 
             Game.GameManager.ActiveChangeModeChanged += () =>
@@ -63,9 +88,9 @@ namespace SharpWoW.Controls
                 };
         }
 
-        private TreeNode loadTreeViewItems(List<string> items)
+        private TreeNode loadTreeViewItems(List<string> items, string nodeRoot = "Models")
         {
-            TreeNode rootNode = new TreeNode("Models");
+            TreeNode rootNode = new TreeNode(nodeRoot);
             foreach (var item in items)
             {
                 TreeNode startNode = rootNode;
@@ -165,6 +190,7 @@ namespace SharpWoW.Controls
 
         private List<string> mTextureFileList = new List<string>();
         private List<string> mMdxModelList = new List<string>();
+        private List<string> mWmoModelList = new List<string>();
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -194,7 +220,17 @@ namespace SharpWoW.Controls
                 return Game.Logic.TextureChangeParam.FalloffMode.Flat;
             }
         }
-        public string SelectedMdxModel { get { return (treeView1.SelectedNode != null) ? (treeView1.SelectedNode.FullPath.Remove(0, 7)) : "(none)"; } }
+        public string SelectedMdxModel
+        { 
+            get 
+            {
+                if (treeView1.SelectedNode == null)
+                    return "(none)";
+
+                int io = treeView1.SelectedNode.FullPath.IndexOf('\\');
+                return treeView1.SelectedNode.FullPath.Substring(io + 1);
+            } 
+        }
 
         private void trackBar3_Scroll(object sender, EventArgs e)
         {
@@ -220,6 +256,25 @@ namespace SharpWoW.Controls
         private void radioButton21_CheckedChanged(object sender, EventArgs e)
         {
             trackBar4.Enabled = !radioButton21.Checked;
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox2.Text.Length < 2)
+            {
+                label5.Text = "Search (min. 2 characters):";
+                return;
+            }
+
+            label5.Text = "Search:";
+
+            var node = loadTreeViewItems((from file in mMdxModelList where file.ToLower().Contains(textBox2.Text.ToLower()) select file).ToList());
+            var node2 = loadTreeViewItems((from file in mWmoModelList where file.ToLower().Contains(textBox2.Text.ToLower()) select file).ToList(), "WMO");
+            treeView1.SuspendLayout();
+            treeView1.Nodes.Clear();
+            treeView1.Nodes.Add(node);
+            treeView1.Nodes.Add(node2);
+            treeView1.ResumeLayout();
         }
     }
 }

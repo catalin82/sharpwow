@@ -456,6 +456,19 @@ namespace SharpWoW.ADT.Wotlk
 
         private void addWmoModel(string modelName, SlimDX.Vector3 pos)
         {
+            MODF modf = new MODF();
+            modf.flags = 0;
+            modf.lextentX = modf.lextentY = modf.lextentZ = 0;
+            modf.padding = 0;
+            modf.Position = new Vector3(pos.X + Utils.Metrics.MidPoint, pos.Z, pos.Y + Utils.Metrics.MidPoint);
+            modf.Rotation = Vector3.Zero;
+            modf.setIndex = 0;
+            modf.uextentX = modf.uextentY = modf.uextentZ = 0;
+            modf.uniqueId = 0;
+            modf.unknown = 0;
+
+            modf.idMWID = (uint)mParent.addWmoName(modelName);
+            mWmoRefs.Add(mParent.addWmoDefintion(modf));
         }
     }
 }

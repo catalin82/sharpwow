@@ -10,6 +10,7 @@ namespace SharpWoW.Models.MDX
     {
         internal M2Manager()
         {
+            VectorInterpolator.Init();
         }
 
         /// <summary>

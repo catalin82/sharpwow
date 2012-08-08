@@ -40,7 +40,14 @@ namespace SharpWoW.Models.MDX
                         for (int j = 0; j < pass.Vertices.Length; ++j)
                             strm.Write((short)j);
                         ib.Unlock();
-                        Textures.Add(Video.TextureManager.GetTexture(pass.Texture));
+                        try
+                        {
+                            Textures.Add(Video.TextureManager.GetTexture(pass.Texture));
+                        }
+                        catch (Exception)
+                        {
+                            Textures.Add(Video.TextureManager.Default.ErrorTexture);
+                        }
                         NumTriangles.Add(pass.Vertices.Length / 3);
                         Indices.Add(ib);
                         Meshes.Add(vb);
@@ -101,9 +108,13 @@ namespace SharpWoW.Models.MDX
             if (Meshes.Count == 0 || Textures.Count == 0 || InstanceDataBuffer == null || numInstances == 0)
                 return;
 
+            mModelInfo.BoneAnimator.OnFrame();
+
             int counter = 0;
             var shdr = Video.ShaderCollection.MDXShader;
             dev.VertexDeclaration = InstanceDeclaration;
+            dev.SetRenderState(RenderState.VertexBlend, VertexBlend.Weights3);
+
             foreach (VertexBuffer vb in Meshes)
             {
                 dev.SetStreamSource(0, vb, 0, Marshal.SizeOf(typeof(Models.MDX.MdxVertex)));
@@ -117,6 +128,8 @@ namespace SharpWoW.Models.MDX
                 dev.Indices = Indices[counter];
 
                 shdr.SetTexture("MeshTexture", Textures[counter]);
+                shdr.SetValue<Matrix>("BoneMatrices", mModelInfo.Passes[counter].BoneMatrices);
+                shdr.SetValue("useAnimation", mModelInfo.Passes[counter].BoneMatrices.Length > 0);
 
                 shdr.DoRender((device) =>
                     {
@@ -132,12 +145,15 @@ namespace SharpWoW.Models.MDX
 
             dev.ResetStreamSourceFrequency(0);
             dev.ResetStreamSourceFrequency(1);
+            dev.SetRenderState(RenderState.VertexBlend, VertexBlend.Disable);
         }
 
         private void setRenderValues(int pass)
         {
             if (pass >= mModelInfo.Passes.Count)
                 throw new Exception("pass >= mModelInfo.Passes.Count");
+
+            mModelInfo.Passes[pass].UpdatePass();
 
             Device dev = Game.GameManager.GraphicsThread.GraphicsManager.Device;
 
@@ -155,7 +171,7 @@ namespace SharpWoW.Models.MDX
                         dev.SetRenderState(RenderState.AlphaBlendEnable, true);
                         dev.SetRenderState(RenderState.AlphaTestEnable, true);
                         dev.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
-                        dev.SetRenderState(RenderState.AlphaRef, 0.01f);
+                        dev.SetRenderState(RenderState.AlphaRef, 1.0f / 255.0f);
                         break;
                     }
                 case 2:
@@ -206,8 +222,10 @@ namespace SharpWoW.Models.MDX
         private static VertexElement[] ElemDecl = new VertexElement[]
         {
             new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
-            new VertexElement(0, 12, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
-            new VertexElement(0, 24, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
+            new VertexElement(0, 12, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.BlendWeight, 0),
+            new VertexElement(0, 28, DeclarationType.Ubyte4, DeclarationMethod.Default, DeclarationUsage.BlendIndices, 0),
+            new VertexElement(0, 32, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
+            new VertexElement(0, 44, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
             new VertexElement(1, 0, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
             new VertexElement(1, 4, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 1),
             new VertexElement(1, 20, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 2),

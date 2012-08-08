@@ -172,7 +172,10 @@
     <Compile Include="Game\Bookmark.cs" />
     <Compile Include="Game\Logic\ActiveChangeType.cs" />
     <Compile Include="Game\Logic\TextureChangeParam.cs" />
+    <Compile Include="Models\MDX\M2Animator.cs" />
     <Compile Include="Models\MDX\M2BatchRenderer.cs" />
+    <Compile Include="Models\MDX\M2BoneAnimator.cs" />
+    <Compile Include="Models\MDX\M2Converters.cs" />
     <Compile Include="Models\MDX\M2Info.cs" />
     <Compile Include="Models\MDX\M2InfoCache.cs" />
     <Compile Include="Models\MDX\M2Manager.cs" />
@@ -436,6 +439,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\394580430943859083405.png" />
+    <None Include="Resources\21.png" />
     <Content Include="Resources\WMOShader.fx" />
     <Content Include="Resources\MDXShader.fx" />
     <Content Include="Resources\SkySphere.fx" />

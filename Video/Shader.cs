@@ -23,7 +23,6 @@ namespace SharpWoW.Video
         public Shader(string fileName)
             : this(System.IO.File.ReadAllBytes(fileName))
         {
-
         }
 
         public void SetTexture(string name, TextureHandle handle)
@@ -37,6 +36,11 @@ namespace SharpWoW.Video
         }
 
         public void SetValue<T>(string name, T value) where T : struct
+        {
+            mEffect.SetValue(GetHandle(name), value);
+        }
+
+        public void SetValue<T>(string name, T[] value) where T : struct
         {
             mEffect.SetValue(GetHandle(name), value);
         }

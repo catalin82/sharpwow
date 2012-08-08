@@ -24,6 +24,7 @@ namespace SharpWoW.Models.MDX
                 if (cacheTable.ContainsKey(hash))
                 {
                     M2CacheEntry ret = cacheTable[hash];
+                    ++ret.numRefs;
                     return ret.Info;
                 }
             }

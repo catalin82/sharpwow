@@ -266,6 +266,15 @@ namespace SharpWoW.Stormlib
             hdl.Free();
         }
 
+        public T ReadAt<T>(uint offset) where T : struct
+        {
+            var oldPos = Position;
+            Position = offset;
+            T ret = Read<T>();
+            Position = oldPos;
+            return ret;
+        }
+
         public T Read<T>() where T : struct
         {
             T ret = new T();

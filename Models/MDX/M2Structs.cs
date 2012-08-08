@@ -71,8 +71,8 @@ namespace SharpWoW.Models.MDX
     internal unsafe struct M2Vertex
     {
         internal float x, y, z;
-        internal fixed byte boneWeight[4];
-        internal fixed byte bonIndex[4];
+        internal byte bw1, bw2, bw3, bw4;
+        internal byte bi1, bi2, bi3, bi4;
         internal float nx, ny, nz;
         internal float u, v;
         internal fixed float unk[2];
@@ -82,10 +82,13 @@ namespace SharpWoW.Models.MDX
     public struct MdxVertex
     {
         public float X, Y, Z;
+        public float w1, w2, w3, w4;
+        public byte bi1, bi2, bi3, bi4;
         public float NX, NY, NZ;
         public float U, V;
 
-        public const SlimDX.Direct3D9.VertexFormat FVF = SlimDX.Direct3D9.VertexFormat.Position | SlimDX.Direct3D9.VertexFormat.Normal | SlimDX.Direct3D9.VertexFormat.Texture1;
+        public const SlimDX.Direct3D9.VertexFormat FVF = SlimDX.Direct3D9.VertexFormat.Normal | SlimDX.Direct3D9.VertexFormat.Texture1
+            | SlimDX.Direct3D9.VertexFormat.PositionBlend5 | SlimDX.Direct3D9.VertexFormat.LastBetaUByte4;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -110,6 +113,78 @@ namespace SharpWoW.Models.MDX
         public string Texture;
 
         public M2RenderFlags BlendMode;
+
+        public ushort BoneBaseIndex = 0;
+        public SlimDX.Matrix[] BoneMatrices;
+        public M2Info ParentModel;
+
+        public void UpdatePass()
+        {
+            for (ushort i = 0; i < BoneMatrices.Length; ++i)
+            {
+                BoneMatrices[i] = ParentModel.BoneAnimator.GetBone((short)(ParentModel.BoneLookupTable[i + BoneBaseIndex])).Matrix;
+            }
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AnimationLineHeader
+    {
+        public uint nEntries;
+        public uint ofsEntries;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AnimationBlock
+    {
+        public ushort Type;
+        public short SequenceID;
+        public uint numTimeStamps;
+        public uint ofsTimeStamps;
+        public uint numKeyFrames;
+        public uint ofsKeyFrames;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct M2Bone
+    {
+        public int KeyBoneID;
+        public uint Flags;
+        public short ParentBone;
+        public short geoID;
+        public int unk;
+        public AnimationBlock Translation;
+        public AnimationBlock Rotation;
+        public AnimationBlock Scaling;
+        public SlimDX.Vector3 PivotPoint;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct M2Animation
+    {
+        public ushort AnimationID;
+        public ushort SubAnimationID;
+        public uint Length;
+        public float MoveSpeed;
+        public uint flags;
+        public ushort Probability;
+        public ushort Unused;
+        public uint Unk1;
+        public uint Unk2;
+        public uint PlaybackSpeed;
+        public SlimDX.Vector3 MaxExtent;
+        public SlimDX.Vector3 MinExtent;
+        public float SphereRadius;
+        public short NextAnimation;
+        public ushort Index;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TextureAnim
+    {
+        public AnimationBlock Translation;
+        public AnimationBlock Rotation;
+        public AnimationBlock Scaling;
     }
 
     public struct M2RenderFlags

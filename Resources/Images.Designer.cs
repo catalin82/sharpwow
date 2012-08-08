@@ -60,6 +60,13 @@ namespace SharpWoW.Resources {
             }
         }
         
+        internal static System.Drawing.Bitmap Error {
+            get {
+                object obj = ResourceManager.GetObject("Error", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Img_glowHigh {
             get {
                 object obj = ResourceManager.GetObject("Img_glowHigh", resourceCulture);

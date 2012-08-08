@@ -27,6 +27,8 @@ float fogEnd = 530.0f;
 float3 diffuseLight = float3(1, 1, 1);
 float3 ambientLight = float3(0, 0, 0);
 float3 SunDirection = float3(-1, -1, -1);
+float4x4 BoneMatrices[61];
+bool useAnimation = false;
 
 
 ///////////////////////////////////////////////////
@@ -88,6 +90,8 @@ struct PixelInput
 struct VertexInput
 {
 	float4 Position : POSITION0;
+	float4 Weights : BLENDWEIGHT;
+	int4 Indices : BLENDINDICES;
 	float3 Normal : NORMAL;
 
 	float2 TextureCoords : TEXCOORD0;
@@ -115,7 +119,29 @@ PixelInput MeshShader(VertexInput input)
 		input.mat3
 	};
 
-	float4 instancePos = mul(input.Position, modelMatrix);
+	float4 posTmp = float4(input.Position.xyz, 1.0f);
+
+	if(useAnimation)
+	{
+		float fW;
+		float fBlendW[4] = (float[4])input.Weights;
+		int iIndices[4] = (int[4])input.Indices;
+		float4 posOrig = posTmp;
+		float4 posTrans = posTmp;
+
+		for(int i = 0; i < 4; ++i)
+		{
+			fW = fBlendW[i];
+			if(fW == 0.0f)
+				continue;
+
+			posTrans.xyz += mul(posOrig, BoneMatrices[iIndices[i]]) * fW;
+		}
+
+		posTmp.xyz = posTrans.xyz - posTmp.xyz;
+	}
+
+	float4 instancePos = mul(posTmp, modelMatrix);
 	float3 instanceNorm = mul(float4(input.Normal.xyz, 1), modelMatrix).xyz;
 
 	retVal.Position = mul(instancePos, matrixViewProj);

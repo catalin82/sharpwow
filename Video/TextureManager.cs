@@ -17,10 +17,25 @@ namespace SharpWoW.Video
 
         public SlimDX.Direct3D9.Device AssociatedDevice { get { return mDevice; } }
         public static TextureManager Default { get { return mDefaultManager; } }
+        public TextureHandle ErrorTexture { get; private set; }
 
         public TextureManager(SlimDX.Direct3D9.Device dev)
         {
             mDevice = dev;
+            ErrorTexture = fromMemoryGDI(Resources.Images.Error);
+        }
+
+        private TextureHandle fromMemoryGDI(System.Drawing.Bitmap bmp)
+        {
+            var locked = bmp.LockBits(new System.Drawing.Rectangle(System.Drawing.Point.Empty, bmp.Size), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var texRet = new SlimDX.Direct3D9.Texture(mDevice, bmp.Width, bmp.Height, 1, SlimDX.Direct3D9.Usage.None, SlimDX.Direct3D9.Format.A8R8G8B8, SlimDX.Direct3D9.Pool.Managed);
+            var surf = texRet.LockRectangle(0, SlimDX.Direct3D9.LockFlags.None);
+            surf.Data.WriteRange(locked.Scan0, locked.Stride * locked.Height);
+            texRet.UnlockRectangle(0);
+
+            bmp.UnlockBits(locked);
+
+            return new TextureHandle(texRet);
         }
 
         private TextureHandle _GetTexture(string texture)

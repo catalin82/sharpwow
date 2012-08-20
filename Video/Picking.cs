@@ -9,9 +9,18 @@ namespace SharpWoW.Video
 {
     static class Picking
     {
-        public static bool HitModelTransformed(Mesh mesh, Matrix worldTrans)
+        public static bool HitModelTransformed(Ray ray, Mesh mesh, Matrix worldTrans, out float distance)
         {
-            return false;
+            var newRay = TransformRay(ray, worldTrans);
+
+            return mesh.Intersects(newRay, out distance);
+        }
+
+        public static Ray TransformRay(Ray ray, Matrix mat)
+        {
+            ray.Position = Vector3.TransformCoordinate(ray.Direction, mat);
+            ray.Direction = Vector3.TransformNormal(ray.Position, mat);
+            return ray;
         }
 
         public static Ray CalcRayForTransform(Matrix mat)
@@ -54,18 +63,43 @@ namespace SharpWoW.Video
 
                 Models.WMO.WMOHitInformation hit = null;
                 Vector3 hitPos;
+                var ray = CalcRayForTransform(Matrix.Identity);
+                Models.MDX.MdxIntersectionResult result;
+                Game.GameManager.M2ModelManager.HitModels(ray, out result);
+                float mdxDistance = result.Distance;
+
+                var terrainPos = Game.GameManager.GraphicsThread.GraphicsManager.MousePosition;
+                var camPos = Game.GameManager.GraphicsThread.GraphicsManager.Camera.Position;
+                var terrainDist = (terrainPos - camPos).Length();
+
                 if (Models.WMO.WMOManager.IsWmoHit(out hit, out hitPos))
                 {
-                    var terrainPos = Game.GameManager.GraphicsThread.GraphicsManager.MousePosition;
-                    var camPos = Game.GameManager.GraphicsThread.GraphicsManager.Camera.Position;
-
                     var wmoDist = (hitPos - camPos).Length();
-                    var terrainDist = (terrainPos - camPos).Length();
 
                     if (wmoDist < terrainDist)
+                    {
+                        if (mdxDistance >= 0 && mdxDistance < wmoDist)
+                        {
+                            Game.GameManager.SelectionManager.SelectMdxModel(result);
+                            return;
+                        }
                         Game.GameManager.GameWindow.WMOEditor.SetWMO(hit.Name);
+                        Game.GameManager.SelectionManager.SelectWMOModel(hit);
+                        return;
+                    }
+                    else if (mdxDistance >= 0 && mdxDistance < terrainDist)
+                    {
+                        Game.GameManager.SelectionManager.SelectMdxModel(result);
+                        return;
+                    }
+                }
+                else if (mdxDistance >= 0 && mdxDistance < terrainDist)
+                {
+                    Game.GameManager.SelectionManager.SelectMdxModel(result);
                     return;
                 }
+
+                Game.GameManager.SelectionManager.ClearSelection();
             }
         }
     }

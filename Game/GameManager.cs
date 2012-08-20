@@ -47,6 +47,7 @@ namespace SharpWoW.Game
             WorldManager = new Game.WorldManager();
             M2ModelCache = new Models.MDX.M2InfoCache();
             M2ModelManager = new Models.MDX.M2Manager();
+            SelectionManager = new Models.SelectionManager();
         }
 
         /// <summary>
@@ -149,6 +150,7 @@ namespace SharpWoW.Game
         public static Models.MDX.M2InfoCache M2ModelCache { get; private set; }
         public static Models.MDX.M2Manager M2ModelManager { get; private set; }
         public static string SavePath { get; set; }
+        public static Models.SelectionManager SelectionManager { get; private set; }
         public static Logic.ActiveChangeType ActiveChangeType
         {
             get { return mActiveChange; }

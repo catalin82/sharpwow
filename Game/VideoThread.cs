@@ -96,6 +96,8 @@ namespace SharpWoW.Game
             if (OnFrame != null)
                 OnFrame(GraphicsManager.Device, diff.Value);
 
+            Game.GameManager.SelectionManager.renderSelection();
+
             GraphicsManager.UpdateMouseTerrainPos(0, 0);
 
             UI.FontManager.beginFrame();

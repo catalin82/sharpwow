@@ -21,6 +21,7 @@ namespace SharpWoW.Models.MDX
         /// <param name="doodadName">Name of the doodad (case insensitive)</param>
         public M2BatchRender(string doodadName)
         {
+            Intersector = new ModelIntersector(this);
             ModelName = doodadName;
             M2Info inf = Game.GameManager.M2ModelCache.GetInfo(doodadName);
             mModelInfo = inf;
@@ -30,16 +31,35 @@ namespace SharpWoW.Models.MDX
                     for (int i = 0; i < inf.Passes.Count; ++i)
                     {
                         Models.MDX.M2RenderPass pass = inf.Passes[i];
+                        Mesh mesh = new Mesh(
+                           Game.GameManager.GraphicsThread.GraphicsManager.Device,
+                           pass.Vertices.Length / 3,
+                           pass.Vertices.Length,
+                           MeshFlags.Managed,
+                           MdxVertex.FVF
+                       );
+
                         VertexBuffer vb = new VertexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, pass.Vertices.Length * Marshal.SizeOf(typeof(Models.MDX.MdxVertex)), Usage.None,
                             Models.MDX.MdxVertex.FVF, Pool.Managed);
                         DataStream strm = vb.Lock(0, 0, LockFlags.None);
                         strm.WriteRange(pass.Vertices);
                         vb.Unlock();
+
+                        strm = mesh.VertexBuffer.Lock(0, 0, LockFlags.None);
+                        strm.WriteRange(pass.Vertices);
+                        mesh.VertexBuffer.Unlock();
+
                         IndexBuffer ib = new IndexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, pass.Vertices.Length * 2, Usage.None, Pool.Managed, true);
                         strm = ib.Lock(0, 0, LockFlags.None);
                         for (int j = 0; j < pass.Vertices.Length; ++j)
                             strm.Write((short)j);
                         ib.Unlock();
+
+                        strm = mesh.IndexBuffer.Lock(0, 0, LockFlags.None);
+                        for (int j = 0; j < pass.Vertices.Length; ++j)
+                            strm.Write((short)j);
+                        mesh.IndexBuffer.Unlock();
+
                         try
                         {
                             Textures.Add(Video.TextureManager.GetTexture(pass.Texture));
@@ -51,6 +71,7 @@ namespace SharpWoW.Models.MDX
                         NumTriangles.Add(pass.Vertices.Length / 3);
                         Indices.Add(ib);
                         Meshes.Add(vb);
+                        mMeshPasses.Add(mesh);
                     }
                 }
             );
@@ -100,6 +121,13 @@ namespace SharpWoW.Models.MDX
             numInstances = 0;
         }
 
+        public List<MdxInstanceData> LockInstances()
+        {
+            return InstanceLoader.LockInstances();
+        }
+
+        public List<Mesh> MeshPasses { get { return mMeshPasses; } }
+
         public uint NumInstances { get { return InstanceLoader.GetNumInstances(); } }
 
         private void RenderInstances(Device dev)
@@ -129,7 +157,7 @@ namespace SharpWoW.Models.MDX
 
                 shdr.SetTexture("MeshTexture", Textures[counter]);
                 shdr.SetValue<Matrix>("BoneMatrices", mModelInfo.Passes[counter].BoneMatrices);
-                shdr.SetValue("useAnimation", mModelInfo.Passes[counter].BoneMatrices.Length > 0);
+                shdr.SetValue("useAnimation", false);//mModelInfo.Passes[counter].BoneMatrices.Length > 0);
 
                 shdr.DoRender((device) =>
                     {
@@ -153,7 +181,7 @@ namespace SharpWoW.Models.MDX
             if (pass >= mModelInfo.Passes.Count)
                 throw new Exception("pass >= mModelInfo.Passes.Count");
 
-            mModelInfo.Passes[pass].UpdatePass();
+            //mModelInfo.Passes[pass].UpdatePass();
 
             Device dev = Game.GameManager.GraphicsThread.GraphicsManager.Device;
 
@@ -207,6 +235,7 @@ namespace SharpWoW.Models.MDX
             dev.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
         }
 
+        internal List<Mesh> mMeshPasses = new List<Mesh>();
         internal List<VertexBuffer> Meshes = new List<VertexBuffer>();
         internal List<IndexBuffer> Indices = new List<IndexBuffer>();
         internal List<int> NumTriangles = new List<int>();
@@ -218,6 +247,7 @@ namespace SharpWoW.Models.MDX
         internal M2Info mModelInfo;
 
         public string ModelName { get; set; }
+        public ModelIntersector Intersector { get; private set; }
 
         private static VertexElement[] ElemDecl = new VertexElement[]
         {
@@ -227,10 +257,11 @@ namespace SharpWoW.Models.MDX
             new VertexElement(0, 32, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
             new VertexElement(0, 44, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
             new VertexElement(1, 0, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 0),
-            new VertexElement(1, 4, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 1),
-            new VertexElement(1, 20, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 2),
-            new VertexElement(1, 36, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 3),
-            new VertexElement(1, 52, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 4),
+            new VertexElement(1, 4, DeclarationType.Color, DeclarationMethod.Default, DeclarationUsage.Color, 1),
+            new VertexElement(1, 8, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 1),
+            new VertexElement(1, 24, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 2),
+            new VertexElement(1, 40, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 3),
+            new VertexElement(1, 56, DeclarationType.Float4, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 4),            
             VertexElement.VertexDeclarationEnd,
         };
     }
@@ -260,7 +291,7 @@ namespace SharpWoW.Models.MDX
                     if (Renderer.InstanceDataBuffer != null)
                         Renderer.InstanceDataBuffer.Dispose();
                     int size = Marshal.SizeOf(typeof(Models.MDX.MdxInstanceData));
-                    Renderer.InstanceDataBuffer = new VertexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, ActiveInstances.Count * size, Usage.WriteOnly, VertexFormat.Texture4, Pool.Managed);
+                    Renderer.InstanceDataBuffer = new VertexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, ActiveInstances.Count * size, Usage.WriteOnly, VertexFormat.Diffuse, Pool.Managed);
                     DataStream strm = Renderer.InstanceDataBuffer.Lock(0, 0, LockFlags.None);
                     Models.MDX.MdxInstanceData[] InstData = ActiveInstances.ToArray();
                     strm.WriteRange(InstData);
@@ -309,19 +340,21 @@ namespace SharpWoW.Models.MDX
                 if (ActiveInstances.Count == 0)
                     return;
 
-                if (changed == false)
+                if (changed == false && mUpdateLists == false)
                     return;
 
                 if (Renderer.InstanceDataBuffer != null)
                     Renderer.InstanceDataBuffer.Dispose();
 
                 int size = Marshal.SizeOf(typeof(Models.MDX.MdxInstanceData));
-                Renderer.InstanceDataBuffer = new VertexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, ActiveInstances.Count * size, Usage.WriteOnly, VertexFormat.Diffuse | VertexFormat.Texture4, Pool.Managed);
+                Renderer.InstanceDataBuffer = new VertexBuffer(Game.GameManager.GraphicsThread.GraphicsManager.Device, ActiveInstances.Count * size, Usage.WriteOnly, VertexFormat.Diffuse, Pool.Managed);
                 DataStream strm = Renderer.InstanceDataBuffer.Lock(0, 0, LockFlags.None);
                 Models.MDX.MdxInstanceData[] InstData = ActiveInstances.ToArray();
                 strm.WriteRange(InstData);
                 Renderer.InstanceDataBuffer.Unlock();
                 Renderer.numInstances = ActiveInstances.Count;
+
+                mUpdateLists = false;
             }
         }
 
@@ -344,6 +377,19 @@ namespace SharpWoW.Models.MDX
             return true;
         }
 
+        public List<MdxInstanceData> LockInstances()
+        {
+            List<MdxInstanceData> retVal = new List<MdxInstanceData>();
+            lock (mInstLock)
+            {
+                retVal.AddRange(WaitingInstances);
+                retVal.AddRange(ActiveInstances);
+                retVal.AddRange(InvisibleInstances);
+            }
+
+            return retVal;
+        }
+
         public uint PushInstance(Vector3 Position, float scale, Vector3 rotation)
         {
             Matrix matRot = Matrix.Identity;
@@ -357,7 +403,8 @@ namespace SharpWoW.Models.MDX
             Models.MDX.MdxInstanceData inst = new Models.MDX.MdxInstanceData()
             {
                 ModelMatrix =
-                matRot * matScale * matTrans
+                matRot * matScale * matTrans,
+                IsSelected = 0xFFFFFFFF,
             };
 
             uint id = 0;
@@ -461,6 +508,55 @@ namespace SharpWoW.Models.MDX
             }
         }
 
+        public MdxInstanceData GetInstanceById(uint id)
+        {
+            lock (mInstLock)
+            {
+                var sel = from file in WaitingInstances.Union(ActiveInstances).Union(InvisibleInstances)
+                          where file.InstanceId == id
+                          select file;
+
+                if (sel.Count() == 0)
+                    throw new Exception();
+
+                return sel.First();
+            }
+        }
+
+        public void setInstance(uint id, MdxInstanceData data)
+        {
+            lock (mInstLock)
+            {
+                for (int i = 0; i < WaitingInstances.Count; ++i)
+                {
+                    if (WaitingInstances[i].InstanceId == id)
+                    {
+                        WaitingInstances[i] = data;
+                        return;
+                    }
+                }
+
+                for (int i = 0; i < ActiveInstances.Count; ++i)
+                {
+                    if (ActiveInstances[i].InstanceId == id)
+                    {
+                        ActiveInstances[i] = data;
+                        mUpdateLists = true;
+                        return;
+                    }
+                }
+
+                for (int i = 0; i < InvisibleInstances.Count; ++i)
+                {
+                    if (InvisibleInstances[i].InstanceId == id)
+                    {
+                        InvisibleInstances[i] = data;
+                        return;
+                    }
+                }
+            }
+        }
+
         private List<Models.MDX.MdxInstanceData> WaitingInstances = new List<Models.MDX.MdxInstanceData>();
         private List<Models.MDX.MdxInstanceData> ActiveInstances = new List<Models.MDX.MdxInstanceData>();
         private List<Models.MDX.MdxInstanceData> InvisibleInstances = new List<Models.MDX.MdxInstanceData>();
@@ -470,5 +566,6 @@ namespace SharpWoW.Models.MDX
         private List<uint> mUsedInstances = new List<uint>();
         private object mIdLock = new object();
         private bool mIsHalted = false;
+        private bool mUpdateLists = false;
     }
 }

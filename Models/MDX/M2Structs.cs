@@ -95,7 +95,8 @@ namespace SharpWoW.Models.MDX
     public struct MdxInstanceData
     {
         public uint InstanceId;
-        public SlimDX.Matrix ModelMatrix;       
+        public uint IsSelected;
+        public SlimDX.Matrix ModelMatrix;
     }
 
     /// <summary>

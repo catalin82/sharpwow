@@ -178,8 +178,12 @@
     <Compile Include="Models\MDX\M2Converters.cs" />
     <Compile Include="Models\MDX\M2Info.cs" />
     <Compile Include="Models\MDX\M2InfoCache.cs" />
+    <Compile Include="Models\MDX\M2Instance.cs" />
     <Compile Include="Models\MDX\M2Manager.cs" />
     <Compile Include="Models\MDX\M2Structs.cs" />
+    <Compile Include="Models\MDX\ModelIntersector.cs" />
+    <Compile Include="Models\SelectionBox.cs" />
+    <Compile Include="Models\SelectionManager.cs" />
     <Compile Include="Models\WMO\WMOCache.cs" />
     <Compile Include="Models\WMO\WMOEditDescriptor.cs" />
     <Compile Include="Models\WMO\WMOFile.cs" />
@@ -440,6 +444,7 @@
   <ItemGroup>
     <Resource Include="Resources\394580430943859083405.png" />
     <None Include="Resources\21.png" />
+    <None Include="Resources\BoxShader.fx" />
     <Content Include="Resources\WMOShader.fx" />
     <Content Include="Resources\MDXShader.fx" />
     <Content Include="Resources\SkySphere.fx" />

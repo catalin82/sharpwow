@@ -12,6 +12,7 @@ namespace SharpWoW.Video
         public static Shader SkyShader { get; private set; }
         public static Shader MDXShader { get; private set; }
         public static Shader WMOShader { get; private set; }
+        public static Shader BoxShader { get; private set; }
 
         static ShaderCollection()
         {
@@ -23,6 +24,8 @@ namespace SharpWoW.Video
             MDXShader.SetTechnique(0);
             WMOShader = ShaderManager.Shaders.GetShader("WMOShader");
             WMOShader.SetTechnique(0);
+            BoxShader = ShaderManager.Shaders.GetShader("BoxShader");
+            BoxShader.SetTechnique(0);
         }
 
         public static void CameraChanged(Video.Camera cam)
@@ -34,6 +37,7 @@ namespace SharpWoW.Video
             MDXShader.SetValue("CameraPosition", cam.Position);
             WMOShader.SetValue("matrixViewProj", cam.ViewProj);
             WMOShader.SetValue("CameraPosition", cam.Position);
+            BoxShader.SetValue("matrixViewProj", cam.ViewProj);
         }
 
         public static void UpdateTime(TimeSpan time)

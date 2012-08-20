@@ -29,6 +29,7 @@ float3 ambientLight = float3(0, 0, 0);
 float3 SunDirection = float3(-1, -1, -1);
 float4x4 BoneMatrices[61];
 bool useAnimation = false;
+bool isSelected = false;
 
 
 ///////////////////////////////////////////////////
@@ -85,6 +86,7 @@ struct PixelInput
 	float Depth : TEXCOORD1;
 	float Angle : TEXCOORD2;
 	float3 Normal : TEXCOORD3;
+	float4 VariableInput : COLOR1;
 };
 
 struct VertexInput
@@ -93,8 +95,9 @@ struct VertexInput
 	float4 Weights : BLENDWEIGHT;
 	int4 Indices : BLENDINDICES;
 	float3 Normal : NORMAL;
-
 	float2 TextureCoords : TEXCOORD0;
+
+	float4 VariableInput : COLOR1;
 	float4 mat0 : TEXCOORD1;
 	float4 mat1 : TEXCOORD2;
 	float4 mat2 : TEXCOORD3;
@@ -148,6 +151,7 @@ PixelInput MeshShader(VertexInput input)
 	retVal.TextureCoords = input.TextureCoords;
 	retVal.Depth = CalcDepth(instancePos.xyz);
 	retVal.Normal = normalize(instanceNorm);
+	retVal.VariableInput = input.VariableInput;
 
 	//float3 diff = input.Position - CameraPosition;
 	//float diff2D = sqrt(diff.x * diff.x + diff.z * diff.z);
@@ -167,7 +171,11 @@ float4 PixelBlendShader(PixelInput input) : COLOR0
 	float4 BaseColor = tex2D(MeshSampler, input.TextureCoords);
 	BaseColor = ApplySunLight(BaseColor, input.Normal);
 
-	return ApplyFog(BaseColor, input.Depth, input.Angle);
+	BaseColor = ApplyFog(BaseColor, input.Depth, input.Angle);
+	
+	BaseColor.rgb *= input.VariableInput.rgb;
+
+	return BaseColor;
 }
 
 ///////////////////////////////////////////////////

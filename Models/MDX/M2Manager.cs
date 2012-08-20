@@ -72,6 +72,31 @@ namespace SharpWoW.Models.MDX
             renderLock.ReleaseMutex();
         }
 
+        public void HitModels(SlimDX.Ray camRay, out MdxIntersectionResult result)
+        {
+            result = new MdxIntersectionResult();
+            result.Distance = -1;
+            renderLock.WaitOne();
+
+            foreach (var couple in BatchRenderers)
+            {
+                float curDist = 0.0f;
+                uint instanceId;
+                if (couple.Value.Intersector.Intersect(camRay, out curDist, out instanceId))
+                {
+                    if (curDist < result.Distance || result.Distance < 0)
+                    {
+                        result.InstanceID = instanceId;
+                        result.Distance = curDist;
+                        result.Model = couple.Value.mModelInfo;
+                        result.Renderer = couple.Value;
+                        result.InstanceData = result.Renderer.InstanceLoader.GetInstanceById(instanceId);
+                    }
+                }
+            }
+            renderLock.ReleaseMutex();
+        }
+
         private System.Threading.Mutex renderLock = new System.Threading.Mutex();
         private Dictionary<int, M2BatchRender> BatchRenderers = new Dictionary<int, M2BatchRender>();
     }

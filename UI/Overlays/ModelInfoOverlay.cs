@@ -9,7 +9,7 @@ namespace SharpWoW.UI.Overlays
     {
         public ModelInfoOverlay(Models.MDX.MdxIntersectionResult result)
         {
-            mModelName = result.Model.FileDirectory;
+            mModelName = result.Model.ModelPath;
             initOverlay();
         }
 
@@ -64,12 +64,16 @@ namespace SharpWoW.UI.Overlays
                 Opacity = 200
             };
 
+            BorderElement nameBorder = new BorderElement()
+            {
+            };
+
             mBorderElements.Add(colorBorder);
         }
 
         public void UpdateModel(Models.MDX.MdxIntersectionResult result)
         {
-            mModelName = result.Model.FileDirectory;
+            mModelName = result.Model.ModelPath;
             mTextElements[0].Text = "Selected model: " + mModelName;
         }
 

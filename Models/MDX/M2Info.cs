@@ -10,6 +10,7 @@ namespace SharpWoW.Models.MDX
     {
         public M2Info(string modelName)
         {
+            ModelPath = modelName;
             mFile = new Stormlib.MPQFile(modelName);
             Header = mFile.Read<M2Header>();
 
@@ -154,6 +155,7 @@ namespace SharpWoW.Models.MDX
         public M2Header Header { get; private set; }
         public string ModelName { get; private set; }
         public string FileDirectory { get; private set; }
+        public string ModelPath { get; private set; }
         public List<string> Textures = new List<string>();
         public List<MdxVertex> Vertices = new List<MdxVertex>();
         public List<M2RenderPass> Passes = new List<M2RenderPass>();

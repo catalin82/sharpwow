@@ -37,13 +37,17 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>Resources\app.manifest</ApplicationManifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <OutputPath>bin\Debug\</OutputPath>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Resources\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\wobd_earth.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MathNet.Iridium">
@@ -446,6 +450,8 @@
     <None Include="Resources\TerrainShader.fx" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\wobd_earth.ico" />
+    <None Include="Resources\wobd_earth.png" />
     <Resource Include="Resources\394580430943859083405.png" />
     <None Include="Resources\21.png" />
     <None Include="Resources\BoxShader.fx" />

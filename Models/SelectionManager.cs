@@ -99,6 +99,7 @@ namespace SharpWoW.Models
         {
             mMdxResult = null;
             mWmoResult = wmoHit;
+            mSelectionBox.UpdateSelectionBox(wmoHit.Model.BoundingBox, wmoHit.ModelMatrix);
         }
 
         public void ClearSelection()

@@ -261,6 +261,8 @@
     <Compile Include="Utils\Math.cs" />
     <Compile Include="Utils\StreamedMpq.cs" />
     <Compile Include="Video\Picking.cs" />
+    <Compile Include="Video\VideoResource.cs" />
+    <Compile Include="Video\VideoResourceManager.cs" />
     <Compile Include="World\MapSky.cs" />
     <Compile Include="World\SkyManager.cs" />
     <Compile Include="Game\GameManager.cs" />

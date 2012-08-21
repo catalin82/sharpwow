@@ -14,6 +14,7 @@ namespace SharpWoW.Video
             try
             {
                 mEffect = Effect.FromMemory(Game.GameManager.GraphicsThread.GraphicsManager.Device, data, ShaderFlags.OptimizationLevel3);
+                Game.GameManager.GraphicsThread.GraphicsManager.VideoResourceMgr.AddVideoResource(new VideoResource(mEffect.OnLostDevice, mEffect.OnResetDevice));
             }
             catch (Exception e)
             {

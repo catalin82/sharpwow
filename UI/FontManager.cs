@@ -15,6 +15,7 @@ namespace SharpWoW.UI
         public static void init()
         {
             mSprite = new Sprite(Game.GameManager.GraphicsThread.GraphicsManager.Device);
+            Game.GameManager.GraphicsThread.GraphicsManager.VideoResourceMgr.AddVideoResource(new Video.VideoResource(mSprite.OnLostDevice, mSprite.OnResetDevice));
         }
 
         public static void beginFrame()

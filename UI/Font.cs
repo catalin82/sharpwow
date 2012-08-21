@@ -17,6 +17,8 @@ namespace SharpWoW.UI
             mBaseFont = new SlimDX.Direct3D9.Font(Game.GameManager.GraphicsThread.GraphicsManager.Device,
                 30, 0, FontWeight.SemiBold, 1, false, CharacterSet.Ansi, Precision.TrueTypeOnly, FontQuality.Antialiased,
                 PitchAndFamily.Default, familyName);
+
+            Game.GameManager.GraphicsThread.GraphicsManager.VideoResourceMgr.AddVideoResource(new Video.VideoResource(mBaseFont.OnLostDevice, mBaseFont.OnResetDevice));
         }
 
         public void DrawString(Vector2 position, string text, Color color, float emSize)

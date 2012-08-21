@@ -109,8 +109,6 @@ namespace SharpWoW.UI
         public Controls.UIPanel ToolsPanel { get { return uiPanel1; } }
         public Controls.PropertyTab PropertyPanel { get { return uiPanel1.PropertyPanel; } }
 
-        private bool mIsToolbarStaticVisible = false;
-
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
             if (Video.Input.InputManager.Input.IsAsyncKeyDown(Keys.ShiftKey) == true || Video.Input.InputManager.Input.IsAsyncKeyDown(Keys.ControlKey) == true)

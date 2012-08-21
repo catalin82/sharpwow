@@ -119,7 +119,6 @@ namespace SharpWoW.Models
         }
 
         bool mDrawBox = false;
-        Line mLine;
         Matrix mTransform;
         BoundingBox mBox;
         LinePlaneVertex[] mPlaneVertices = new LinePlaneVertex[8];

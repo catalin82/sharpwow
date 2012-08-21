@@ -31,9 +31,7 @@ namespace SharpWoW.Video
             VideoConfig cfg = VideoConfig.Load(useRegistry, showDialog);
             CurrentConfig = cfg;
 
-            Device = new Device(Direct3D, cfg.Adapter.Adapter, DeviceType.Hardware, mRenderWindow.Handle,
-                CreateFlags.HardwareVertexProcessing,
-                new PresentParameters()
+            mPresentParams = new PresentParameters()
                 {
                     AutoDepthStencilFormat = cfg.DepthStencilFormat,
                     EnableAutoDepthStencil = true,
@@ -44,8 +42,14 @@ namespace SharpWoW.Video
                     Windowed = true,
                     Multisample = cfg.Multisampling,
                     MultisampleQuality = (int)cfg.MultisampleQuality
-                }
+                };
+
+            Device = new Device(Direct3D, cfg.Adapter.Adapter, DeviceType.Hardware, mRenderWindow.Handle,
+                CreateFlags.HardwareVertexProcessing,
+                mPresentParams
             );
+
+            VideoResourceMgr = new VideoResourceManager();
 
             Camera = new Camera();
             Device.SetTransform(TransformState.Projection, SlimDX.Matrix.PerspectiveFovLH(
@@ -100,7 +104,19 @@ namespace SharpWoW.Video
             private set;
         }
 
+        public void DoDeviceReset()
+        {
+            while (Device.TestCooperativeLevel().Code != (((1 << 31) | (0x876 << 16) | 2153)))
+            {
+                System.Threading.Thread.Sleep(0);
+            }
+            VideoResourceMgr.BeforeReset();
+            Device.Reset(mPresentParams);
+            VideoResourceMgr.AfterReset();
+        }
+
         Control mRenderWindow;
+        PresentParameters mPresentParams;
 
         public Control RenderWindow { get { return mRenderWindow; } }
         public Device Device { get; private set; }
@@ -108,5 +124,6 @@ namespace SharpWoW.Video
         public Camera Camera { get; private set; }
         public VideoConfig CurrentConfig { get; set; }
         public event Action DeviceLoaded;
+        public VideoResourceManager VideoResourceMgr { get; private set; }
     }
 }

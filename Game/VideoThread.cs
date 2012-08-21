@@ -84,37 +84,47 @@ namespace SharpWoW.Game
                 mLastNumFrames = 0;
             }
 
-            Video.Input.InputManager.Input.Update();
-            Video.ShaderCollection.UpdateTime(Game.GameManager.GameTime);
+            try
+            {
+                Video.Input.InputManager.Input.Update();
+                Video.ShaderCollection.UpdateTime(Game.GameManager.GameTime);
 
-            GraphicsManager.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-            GraphicsManager.Device.BeginScene();
+                GraphicsManager.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+                GraphicsManager.Device.BeginScene();
 
-            var dev = GraphicsManager.Device;
-            dev.SetRenderState(RenderState.ZEnable, true);
-            dev.SetRenderState(RenderState.Lighting, false);
-            dev.SetRenderState(RenderState.CullMode, Cull.None);
+                var dev = GraphicsManager.Device;
+                dev.SetRenderState(RenderState.ZEnable, true);
+                dev.SetRenderState(RenderState.Lighting, false);
+                dev.SetRenderState(RenderState.CullMode, Cull.None);
 
-            GraphicsManager.Camera.UpdateCamera(GraphicsManager.Device, diff.Value);
+                GraphicsManager.Camera.UpdateCamera(GraphicsManager.Device, diff.Value);
 
-            ADT.ADTManager.Render();
+                ADT.ADTManager.Render();
 
-            if (OnFrame != null)
-                OnFrame(GraphicsManager.Device, diff.Value);
+                if (OnFrame != null)
+                    OnFrame(GraphicsManager.Device, diff.Value);
 
-            Game.GameManager.SelectionManager.renderSelection();
+                Game.GameManager.SelectionManager.renderSelection();
 
-            GraphicsManager.UpdateMouseTerrainPos(0, 0);
+                GraphicsManager.UpdateMouseTerrainPos(0, 0);
 
-            UI.FontManager.beginFrame();
+                UI.FontManager.beginFrame();
 
-            foreach (var overlay in mOverlays)
-                overlay.Draw();
+                foreach (var overlay in mOverlays)
+                    overlay.Draw();
 
-            UI.FontManager.endFrame();
+                UI.FontManager.endFrame();
 
-            GraphicsManager.Device.EndScene();
-            GraphicsManager.Device.Present();
+                GraphicsManager.Device.EndScene();
+                GraphicsManager.Device.Present();
+            }
+            catch (SlimDX.Direct3D9.Direct3D9Exception e)
+            {
+                if (e.ResultCode.Code == ((1 << 31) | (0x876 << 16) | 2152))
+                    GraphicsManager.DoDeviceReset();
+                else
+                    throw;
+            }
 
             mLastFrame = thisFrame;
             ++mLastNumFrames;

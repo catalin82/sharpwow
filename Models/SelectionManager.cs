@@ -9,6 +9,7 @@ namespace SharpWoW.Models
     {
         public SelectionManager()
         {
+            HadModelMovement = false;
             Video.Input.InputManager.Input.MouseMoved += MouseMove;
         }
 
@@ -25,14 +26,17 @@ namespace SharpWoW.Models
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Left) != 0)
                 {
                     mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitX, mMdxResult.InstanceData.ModelMatrix), diff.X / 2.0f);
+                    HadModelMovement = true;
                 }
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Middle) != 0)
                 {
                     mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitY, mMdxResult.InstanceData.ModelMatrix), diff.X / 2.0f);
+                    HadModelMovement = true;
                 }
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Right) != 0)
                 {
                     mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitZ, mMdxResult.InstanceData.ModelMatrix), diff.X / 2.0f);
+                    HadModelMovement = true;
                 }
             }
             else if (Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.ControlKey))
@@ -53,6 +57,8 @@ namespace SharpWoW.Models
                 return (isAlt && (isMiddle || isLeft || isRight));
             }
         }
+
+        public bool HadModelMovement { get; set; }
 
         public void SelectMdxModel(MDX.MdxIntersectionResult result)
         {

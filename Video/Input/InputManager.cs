@@ -82,6 +82,22 @@ namespace SharpWoW.Video.Input
             ctrl.MouseMove += new MouseEventHandler(_MouseMoved);
             ctrl.KeyPress += new KeyPressEventHandler(_KeyPress);
             ctrl.MouseClick += new MouseEventHandler(_MouseClick);
+            ctrl.MouseDown += _MouseDown;
+            ctrl.MouseUp += _MouseUp;
+        }
+
+        void _MouseUp(object sender, MouseEventArgs e)
+        {
+            mMouseLastPos = new SlimDX.Vector2(e.X, e.Y);
+            if (MouseUp != null)
+                MouseUp(e.X, e.Y, e.Button);
+        }
+
+        void _MouseDown(object sender, MouseEventArgs e)
+        {
+            mMouseLastPos = new SlimDX.Vector2(e.X, e.Y);
+            if (MouseDown != null)
+                MouseDown(e.X, e.Y, e.Button);
         }
 
         void _MouseClick(object sender, MouseEventArgs e)
@@ -164,6 +180,7 @@ namespace SharpWoW.Video.Input
         public event KeyDownDlg KeyDown;
         public event KeyUpDlg KeyUp;
         public event MousePressDlg MousePress;
+        public event MousePressDlg MouseUp, MouseDown;
 
         private SlimDX.Vector2? mMouseLastPos = null;
         

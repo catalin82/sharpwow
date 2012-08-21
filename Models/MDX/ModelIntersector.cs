@@ -39,12 +39,15 @@ namespace SharpWoW.Models.MDX
                     if (mesh.Intersects(newRay, out dist))
                     {
                         hasHit = true;
+                        hitPoint = newRay.Position + dist * newRay.Direction;
+                        hitPoint = Vector3.TransformCoordinate(hitPoint, instance.ModelMatrix);
+                        var realDistance = Game.GameManager.GraphicsThread.GraphicsManager.Camera.Position - hitPoint;
+                        dist = realDistance.Length();
+
                         if (dist < distance || distance < 0)
                         {
                             distance = dist;
                             id = instance.InstanceId;
-                            hitPoint = newRay.Position + dist * newRay.Direction;
-                            hitPoint = Vector3.TransformCoordinate(hitPoint, instance.ModelMatrix);
                         }
                     }
                 }

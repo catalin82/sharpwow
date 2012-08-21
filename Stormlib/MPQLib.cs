@@ -244,6 +244,12 @@ namespace SharpWoW.Stormlib
         public override long Position { get; set; }
         public string FileName { get; private set; }
 
+        public GCHandle GetPointer()
+        {
+            var handle = GCHandle.Alloc(fileData, GCHandleType.Pinned);
+            return handle;
+        }
+
         public void Read<T>(ref T input) where T : struct
         {
             int size = Marshal.SizeOf(input);

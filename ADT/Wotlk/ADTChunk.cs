@@ -184,6 +184,13 @@ namespace SharpWoW.ADT.Wotlk
             for (int i = 1; i < mHeader.nLayers; ++i)
             {
                 mFile.Position = mInfo.ofsMcnk + mHeader.ofsAlpha + 0x08 + mLayers[i].offsetMCAL;
+
+                if ((mLayers[i].flags & 0x200) != 0)
+                {
+                    loadAlphaSelfCompress(i);
+                    continue;
+                }
+                
                 byte[] fileData = mFile.Read(2048);
 
                 uint bufferPtr = 0;
@@ -215,6 +222,34 @@ namespace SharpWoW.ADT.Wotlk
             }
 
             return true;
+        }
+
+        private unsafe void loadAlphaSelfCompress(int layer)
+        {
+            var handle = mFile.GetPointer();
+            byte* p = (byte*)handle.AddrOfPinnedObject().ToPointer();
+            p += mFile.Position;
+            uint counterIn = 0;
+            uint counterOut = 0;
+            while (counterOut < 4096)
+            {
+                byte curByte = p[counterIn];
+                bool fill = (curByte & 0x80) != 0;
+                uint n = (uint)(curByte & 0x7F);
+                ++counterIn;
+
+                for (uint k = 0; k < n; ++k)
+                {
+                    AlphaData[counterOut * 4 + layer - 1] = p[counterIn];
+                    AlphaFloats[counterOut, layer - 1] = p[counterIn];
+                    ++counterOut;
+                    if (!fill)
+                        ++counterIn;
+                }
+                if (fill)
+                    ++counterIn;
+            }
+            handle.Free();
         }
 
         ///////////////////////////////////TODO//////////////////////////////////////

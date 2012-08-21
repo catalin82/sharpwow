@@ -84,37 +84,37 @@ namespace SharpWoW.Game
                 mLastNumFrames = 0;
             }
 
+            Video.Input.InputManager.Input.Update();
+            Video.ShaderCollection.UpdateTime(Game.GameManager.GameTime);
+
+            GraphicsManager.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+            GraphicsManager.Device.BeginScene();
+
+            var dev = GraphicsManager.Device;
+            dev.SetRenderState(RenderState.ZEnable, true);
+            dev.SetRenderState(RenderState.Lighting, false);
+            dev.SetRenderState(RenderState.CullMode, Cull.None);
+
+            GraphicsManager.Camera.UpdateCamera(GraphicsManager.Device, diff.Value);
+
+            ADT.ADTManager.Render();
+
+            if (OnFrame != null)
+                OnFrame(GraphicsManager.Device, diff.Value);
+
+            Game.GameManager.SelectionManager.renderSelection();
+
+            GraphicsManager.UpdateMouseTerrainPos(0, 0);
+
+            UI.FontManager.beginFrame();
+
+            foreach (var overlay in mOverlays)
+                overlay.Draw();
+
+            UI.FontManager.endFrame();
+
             try
             {
-                Video.Input.InputManager.Input.Update();
-                Video.ShaderCollection.UpdateTime(Game.GameManager.GameTime);
-
-                GraphicsManager.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-                GraphicsManager.Device.BeginScene();
-
-                var dev = GraphicsManager.Device;
-                dev.SetRenderState(RenderState.ZEnable, true);
-                dev.SetRenderState(RenderState.Lighting, false);
-                dev.SetRenderState(RenderState.CullMode, Cull.None);
-
-                GraphicsManager.Camera.UpdateCamera(GraphicsManager.Device, diff.Value);
-
-                ADT.ADTManager.Render();
-
-                if (OnFrame != null)
-                    OnFrame(GraphicsManager.Device, diff.Value);
-
-                Game.GameManager.SelectionManager.renderSelection();
-
-                GraphicsManager.UpdateMouseTerrainPos(0, 0);
-
-                UI.FontManager.beginFrame();
-
-                foreach (var overlay in mOverlays)
-                    overlay.Draw();
-
-                UI.FontManager.endFrame();
-
                 GraphicsManager.Device.EndScene();
                 GraphicsManager.Device.Present();
             }

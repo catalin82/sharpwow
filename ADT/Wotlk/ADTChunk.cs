@@ -106,6 +106,8 @@ namespace SharpWoW.ADT.Wotlk
             if (!LoadNormals())
                 return false;
 
+            LoadShadows();
+
             mFile.Position = mInfo.ofsMcnk + mHeader.ofsRefs + 0x08;
             for (uint i = 0; i < mHeader.nDoodadRefs; ++i)
                 mRefs.Add(mFile.Read<uint>());
@@ -135,6 +137,27 @@ namespace SharpWoW.ADT.Wotlk
                     vertices[counter].NX = nx;
                     vertices[counter].NY = ny;
                     vertices[counter++].NZ = nz;
+                }
+            }
+
+            return true;
+        }
+
+        private bool LoadShadows()
+        {
+            mFile.Position = mInfo.ofsMcnk + mHeader.ofsShadow;
+            if (ReadSignature() != "MCSH")
+                return false;
+
+            uint size = mFile.Read<uint>();
+            uint curPtr = 0;
+            for (int i = 0; i < 64; ++i)
+            {
+                for (int j = 0; j < 8; ++j)
+                {
+                    byte mask = mFile.Read<byte>();
+                    for (int k = 0; k < 8; ++k)
+                        ShadowData[curPtr++] = ((mask & (1 << k)) == 0) ? (byte)0xFF : (byte)0x7B;
                 }
             }
 
@@ -245,6 +268,9 @@ namespace SharpWoW.ADT.Wotlk
                         if (mAlphaTexture != null)
                             ADTAlphaHandler.AddFreeTexture(mAlphaTexture);
 
+                        if (mShadowTexture != null)
+                            ADTAlphaHandler.AddFreeShadowTexture(mShadowTexture);
+
                         if (mMesh != null)
                         {
                             mMesh.Dispose();
@@ -288,6 +314,9 @@ namespace SharpWoW.ADT.Wotlk
 
             if (mAlphaTexture == null)
                 LoadAlphaTexture();
+
+            if (mShadowTexture == null)
+                LoadShadowTexture();
 
             if (mAlphaDirty)
             {
@@ -336,6 +365,7 @@ namespace SharpWoW.ADT.Wotlk
             var shdr = Video.ShaderCollection.TerrainShader;
             shdr.SetTechnique(mHeader.nLayers - 1);
             shdr.SetTexture("alphaTexture", mAlphaTexture);
+            shdr.SetTexture("shadowTexture", mShadowTexture);
             for(int i = 0; i < 4; ++i)
                 shdr.SetValue("TextureFlags" + i, mTextureFlags[i]);
             for (int i = 0; i < mLayers.Count; ++i)
@@ -373,6 +403,19 @@ namespace SharpWoW.ADT.Wotlk
             Surface baseSurf = mAlphaTexture.GetSurfaceLevel(0);
             System.Drawing.Rectangle rec = System.Drawing.Rectangle.FromLTRB(0, 0, 64, 64);
             Surface.FromMemory(baseSurf, AlphaData, Filter.None, 0, Format.A8R8G8B8, 4 * 64, rec);
+            baseSurf.Dispose();
+        }
+
+        private void LoadShadowTexture()
+        {
+            if (mShadowTexture == null)
+                mShadowTexture = ADTAlphaHandler.FreeShadowTexture();
+            if (mShadowTexture == null)
+                mShadowTexture = new Texture(Game.GameManager.GraphicsThread.GraphicsManager.Device, 64, 64, 1, Usage.None, Format.A8, Pool.Managed);
+            
+            Surface baseSurf = mShadowTexture.GetSurfaceLevel(0);
+            System.Drawing.Rectangle rec = System.Drawing.Rectangle.FromLTRB(0, 0, 64, 64);
+            Surface.FromMemory(baseSurf, ShadowData, Filter.None, 0, Format.A8, 64, rec);
             baseSurf.Dispose();
         }
 
@@ -428,11 +471,13 @@ namespace SharpWoW.ADT.Wotlk
         private MCIN mInfo;
         private Mesh mMesh;
         private List<MCLY> mLayers = new List<MCLY>();
+        byte[] ShadowData = new byte[4096];
         private byte[] AlphaData = new byte[4096 * 4];
         private ushort[,] AlphaFloats = new ushort[4096, 3];
         private ADTVertex[] vertices = new ADTVertex[145];
         private BoundingBox mBox;
         private Texture mAlphaTexture = null;
+        private Texture mShadowTexture = null;
         private int[] mTextureFlags = new int[4] { 0, 0, 0, 0 };
         private List<uint> mRefs = new List<uint>();
         private List<uint> mWmoRefs = new List<uint>();

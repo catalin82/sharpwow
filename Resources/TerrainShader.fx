@@ -2,6 +2,7 @@ texture blendTexture0;
 texture blendTexture1;
 texture blendTexture2;
 texture blendTexture3;
+texture shadowTexture;
 
 
 texture alphaTexture;
@@ -24,6 +25,16 @@ sampler BlendSampler1 = sampler_state
 	mipfilter = LINEAR;
 	AddressU = wrap;
 	AddressV = wrap;
+};
+
+sampler ShadowSampler = sampler_state
+{
+	texture = <shadowTexture>; 
+	magfilter = LINEAR;
+	minfilter = LINEAR;
+	mipfilter = LINEAR;
+	AddressU = clamp;
+	AddressV = clamp;
 };
 
 sampler BlendSampler2 = sampler_state
@@ -77,6 +88,23 @@ float gameTime;
 int TextureFlags0, TextureFlags1, TextureFlags2, TextureFlags3;
 float3 diffuseLight = float3(1, 1, 1);
 float3 ambientLight = float3(0, 0, 0);
+
+float4 ApplyShadows(float4 base, float2 coords)
+{
+	float4 shadow1 = tex2D(ShadowSampler, coords);
+	float4 shadow2 = tex2D(ShadowSampler, coords + float2(0.015, 0));
+	float4 shadow3 = tex2D(ShadowSampler, coords + float2(0, 0.015));
+	float4 shadow4 = tex2D(ShadowSampler, coords + float2(0.015, 0.015));
+	float4 shadow5 = tex2D(ShadowSampler, coords - float2(0.015, 0));
+	float4 shadow6 = tex2D(ShadowSampler, coords - float2(0, 0.015));
+	float4 shadow7 = tex2D(ShadowSampler, coords - float2(0.015, 0.015));
+	float4 shadow8 = tex2D(ShadowSampler, coords + float2(-0.015, 0.015));
+	float4 shadow9 = tex2D(ShadowSampler, coords - float2(-0.015, 0.015));
+
+	float4 shadow = (shadow1.a + shadow2.a + shadow3.a + shadow4.a + shadow5.a + shadow6.a + shadow7.a + shadow8.a + shadow9.a) / 9.0;
+	base.rgb *= shadow.a;
+	return base;
+}
 
 float4 ApplySunLight(float4 base, float3 normal)
 {
@@ -258,8 +286,11 @@ float4 PixelBlendShader1Layer(PixelInput input) : COLOR0
 		}
 	}
 
+	BaseColor *= AlphaValue.a;
+
 	//BaseColor = ApplyDiffuse(BaseColor);
 	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplyShadows(BaseColor, input.AlphaCoords);
 	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyTileLines(BaseColor, input.PositionSpace);
@@ -311,8 +342,11 @@ float4 PixelBlendShader2Layer(PixelInput input) : COLOR0
 		}
 	}
 
+	BaseColor *= AlphaValues.a;
+
 	//BaseColor = ApplyDiffuse(BaseColor);
 	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplyShadows(BaseColor, input.AlphaCoords);
 	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyTileLines(BaseColor, input.PositionSpace);
@@ -371,8 +405,11 @@ float4 PixelBlendShader3Layer(PixelInput input) : COLOR0
 		}
 	}
 
+	BaseColor *= AlphaValues.a;
+
 	//BaseColor = ApplyDiffuse(BaseColor);
 	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplyShadows(BaseColor, input.AlphaCoords);
 	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyTileLines(BaseColor, input.PositionSpace);
@@ -435,8 +472,11 @@ float4 PixelBlendShader4Layer(PixelInput input) : COLOR0
 		}
 	}
 
+	BaseColor *= AlphaValues.a;
+
 	//BaseColor = ApplyDiffuse(BaseColor);
 	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplyShadows(BaseColor, input.AlphaCoords);
 	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyTileLines(BaseColor, input.PositionSpace);

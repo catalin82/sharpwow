@@ -10,6 +10,7 @@ namespace SharpWoW.ADT
     {
         private static object mLockObj = new object();
         private static List<SlimDX.Direct3D9.Texture> mFreeTextures = new List<SlimDX.Direct3D9.Texture>();
+        private static List<SlimDX.Direct3D9.Texture> mFreeShadowTextures = new List<SlimDX.Direct3D9.Texture>();
 
         public static SlimDX.Direct3D9.Texture FreeTexture()
         {
@@ -29,6 +30,27 @@ namespace SharpWoW.ADT
             lock (mLockObj)
             {
                 mFreeTextures.Add(texture);
+            }
+        }
+
+        public static SlimDX.Direct3D9.Texture FreeShadowTexture()
+        {
+            lock (mLockObj)
+            {
+                if (mFreeShadowTextures.Count == 0)
+                    return null;
+
+                var ret = mFreeTextures[0];
+                mFreeShadowTextures.RemoveAt(0);
+                return ret;
+            }
+        }
+
+        public static void AddFreeShadowTexture(SlimDX.Direct3D9.Texture texture)
+        {
+            lock (mLockObj)
+            {
+                mFreeShadowTextures.Add(texture);
             }
         }
     }

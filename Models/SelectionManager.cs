@@ -44,7 +44,19 @@ namespace SharpWoW.Models
             {
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Left) != 0)
                 {
-                    mModelMover.rotateModel(/*SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitX, mMdxResult.InstanceData.ModelMatrix)*/SlimDX.Vector3.UnitX, diff.X / 10.0f);
+                    mModelMover.rotateModel(SlimDX.Vector3.UnitX, diff.X / 10.0f);
+                    HadModelMovement = true;
+                }
+
+                if ((pressedButtons & System.Windows.Forms.MouseButtons.Middle) != 0)
+                {
+                    mModelMover.rotateModel(SlimDX.Vector3.UnitY, diff.X / 10.0f);
+                    HadModelMovement = true;
+                }
+
+                if ((pressedButtons & System.Windows.Forms.MouseButtons.Right) != 0)
+                {
+                    mModelMover.rotateModel(SlimDX.Vector3.UnitZ, diff.X / 10.0f);
                     HadModelMovement = true;
                 }
             }

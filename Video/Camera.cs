@@ -67,7 +67,7 @@ namespace SharpWoW.Video
             }
 
             var state = Input.InputManager.Input.Mouse.State;
-            if (state.IsPressed((int)SlimDX.DirectInput.MouseObject.Button2))
+            if (state.IsPressed((int)SlimDX.DirectInput.MouseObject.Button2) && Game.GameManager.SelectionManager.IsModelMovement == false)
             {
                 if (state.X != 0 || state.Y != 0)
                 {

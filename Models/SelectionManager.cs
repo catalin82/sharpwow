@@ -41,6 +41,19 @@ namespace SharpWoW.Models
             }
         }
 
+        public bool IsModelMovement
+        {
+            get
+            {
+                bool isAlt = Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.Menu);
+                bool isMiddle = Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.MButton);
+                bool isLeft = Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.LButton);
+                bool isRight = Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.RButton);
+
+                return (isAlt && (isMiddle || isLeft || isRight));
+            }
+        }
+
         public void SelectMdxModel(MDX.MdxIntersectionResult result)
         {
             mMdxResult = result;

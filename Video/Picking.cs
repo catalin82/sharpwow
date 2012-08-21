@@ -88,7 +88,7 @@ namespace SharpWoW.Video
                             Game.GameManager.SelectionManager.SelectMdxModel(result);
                             return;
                         }
-                        Game.GameManager.GameWindow.WMOEditor.SetWMO(hit.Name);
+                        //Game.GameManager.GameWindow.WMOEditor.SetWMO(hit.Name);
                         Game.GameManager.SelectionManager.SelectWMOModel(hit);
                         return;
                     }

@@ -107,6 +107,14 @@ namespace SharpWoW.Models
 
             mModelMover = new WMO.WMOModelMover(wmoHit);
             mModelMover.ModelChanged += mSelectionBox.UpdateMatrix;
+            var modelOverlay = Game.GameManager.GraphicsThread.GetOverlay<UI.Overlays.ModelInfoOverlay>();
+            if (modelOverlay != null)
+                modelOverlay.UpdateModel(wmoHit);
+            else
+            {
+                modelOverlay = new UI.Overlays.ModelInfoOverlay(wmoHit);
+                Game.GameManager.GraphicsThread.PushOverlay(modelOverlay);
+            }
         }
 
         public void ClearSelection()

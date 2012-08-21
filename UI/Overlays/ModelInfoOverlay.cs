@@ -42,7 +42,7 @@ namespace SharpWoW.UI.Overlays
                     FontSize = 20,
                     Text = "Middle",
                     Position = new SlimDX.Vector2(90, 75),
-                    TextColor = System.Drawing.Color.Green
+                    TextColor = System.Drawing.Color.LightGreen
                 },
 
                 new TextElement()

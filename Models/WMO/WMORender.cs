@@ -29,7 +29,7 @@ namespace SharpWoW.Models.WMO
             }
         }
 
-        public bool IsInstanceHit(out float nearestHit, out uint nearestInstance, out uint refId, out Vector3 pos)
+        public bool IsInstanceHit(out float nearestHit, out uint nearestInstance, out uint refId, out Vector3 pos, out Matrix modelMatrix)
         {
             nearestHit = 0;
             nearestInstance = 0;
@@ -37,6 +37,7 @@ namespace SharpWoW.Models.WMO
             float curNear = 99999;
             bool hasHit = false;
             pos = Vector3.Zero;
+            modelMatrix = Matrix.Identity;
 
             lock (mInstLock)
             {
@@ -53,6 +54,7 @@ namespace SharpWoW.Models.WMO
                             nearestInstance = mUniqueId[mat.Key];
                             refId = mat.Key;
                             pos = Vector3.TransformCoordinate(ray.Position + curHit * ray.Direction, mat.Value);
+                            modelMatrix = mat.Value;
                         }
                     }
                 }
@@ -104,6 +106,8 @@ namespace SharpWoW.Models.WMO
                 return 0;
             }
         }
+
+        public WMOFile File { get { return mFile; } }
 
         private WMOFile mFile = null;
         private Dictionary<uint, Matrix> mInstances = new Dictionary<uint, Matrix>();

@@ -13,6 +13,12 @@ namespace SharpWoW.UI.Overlays
             initOverlay();
         }
 
+        public ModelInfoOverlay(Models.WMO.WMOHitInformation info)
+        {
+            mModelName = info.Model.FileName;
+            initOverlay();
+        }
+
         void initOverlay()
         {
             var font = FontManager.GetFont("Segoe UI");
@@ -78,6 +84,13 @@ namespace SharpWoW.UI.Overlays
         public void UpdateModel(Models.MDX.MdxIntersectionResult result)
         {
             mModelName = result.Model.ModelPath;
+            mTextElements[0].Text = "Selected model: " + mModelName;
+            mBorderElements[1].Size = new SlimDX.Vector2(mTextElements[0].DrawFont.MeasureString(new SlimDX.Vector2(45, 47), mTextElements[0].Text, mTextElements[0].FontSize).X + 10, 23);
+        }
+
+        public void UpdateModel(Models.WMO.WMOHitInformation hit)
+        {
+            mModelName = hit.Model.FileName;
             mTextElements[0].Text = "Selected model: " + mModelName;
             mBorderElements[1].Size = new SlimDX.Vector2(mTextElements[0].DrawFont.MeasureString(new SlimDX.Vector2(45, 47), mTextElements[0].Text, mTextElements[0].FontSize).X + 10, 23);
         }

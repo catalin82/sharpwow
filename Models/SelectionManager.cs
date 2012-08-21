@@ -11,6 +11,7 @@ namespace SharpWoW.Models
         {
             HadModelMovement = false;
             Video.Input.InputManager.Input.MouseMoved += MouseMove;
+            Video.Input.InputManager.Input.MouseDown += (x, y, button) => { HadModelMovement = IsModelMovement; };
         }
 
         void MouseMove(int x, int y, System.Windows.Forms.MouseButtons pressedButtons, SlimDX.Vector2 diff)
@@ -25,17 +26,17 @@ namespace SharpWoW.Models
             {
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Left) != 0)
                 {
-                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitX, mMdxResult.InstanceData.ModelMatrix), diff.X / 2.0f);
+                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitX, mMdxResult.InstanceData.ModelMatrix), diff.X / 6.0f);
                     HadModelMovement = true;
                 }
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Middle) != 0)
                 {
-                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitY, mMdxResult.InstanceData.ModelMatrix), diff.X / 2.0f);
+                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitY, mMdxResult.InstanceData.ModelMatrix), diff.X / 6.0f);
                     HadModelMovement = true;
                 }
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Right) != 0)
                 {
-                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitZ, mMdxResult.InstanceData.ModelMatrix), diff.X / 2.0f);
+                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitZ, mMdxResult.InstanceData.ModelMatrix), diff.Y / 6.0f);
                     HadModelMovement = true;
                 }
             }

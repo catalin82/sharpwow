@@ -52,6 +52,12 @@ namespace SharpWoW.Video
 
         static void _MouseClick(int x, int y, System.Windows.Forms.MouseButtons pressedButton)
         {
+            if (Game.GameManager.SelectionManager.HadModelMovement)
+            {
+                Game.GameManager.SelectionManager.HadModelMovement = false;
+                return;
+            }
+
             if (pressedButton == System.Windows.Forms.MouseButtons.Left)
             {
                 bool shift = Video.Input.InputManager.Input[System.Windows.Forms.Keys.ShiftKey];

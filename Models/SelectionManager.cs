@@ -42,7 +42,11 @@ namespace SharpWoW.Models
             }
             else if (Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.ControlKey))
             {
-                
+                if ((pressedButtons & System.Windows.Forms.MouseButtons.Left) != 0)
+                {
+                    mModelMover.rotateModel(/*SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitX, mMdxResult.InstanceData.ModelMatrix)*/SlimDX.Vector3.UnitX, diff.X / 10.0f);
+                    HadModelMovement = true;
+                }
             }
         }
 
@@ -54,8 +58,9 @@ namespace SharpWoW.Models
                 bool isMiddle = Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.MButton);
                 bool isLeft = Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.LButton);
                 bool isRight = Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.RButton);
+                bool isCtrl = Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.ControlKey);
 
-                return (isAlt && (isMiddle || isLeft || isRight));
+                return ((mMdxResult != null || mWmoResult != null) && (isAlt || isCtrl) && (isMiddle || isLeft || isRight));
             }
         }
 

@@ -101,6 +101,9 @@ namespace SharpWoW.Game.Logic
             bool ctrl = Video.Input.InputManager.Input[System.Windows.Forms.Keys.ControlKey];
             if ((shift || ctrl) && Video.Input.InputManager.Input.Mouse.State.IsPressed(0))
             {
+                if (Game.GameManager.SelectionManager.IsModelMovement)
+                    return;
+
                 var mpos = Game.GameManager.GraphicsThread.GraphicsManager.MousePosition;
                 if (mpos.X > 900000)
                     return;

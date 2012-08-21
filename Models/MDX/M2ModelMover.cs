@@ -14,6 +14,13 @@ namespace SharpWoW.Models.MDX
 
         public void rotateModel(SlimDX.Vector3 axis, float amount)
         {
+            var newData = mResult.InstanceData;
+            var invWorld = SlimDX.Matrix.RotationAxis(axis, (amount / 180.0f) * (float)Math.PI) * newData.ModelMatrix;
+            newData.ModelMatrix = invWorld;
+            mResult.InstanceData = newData;
+            mResult.Renderer.InstanceLoader.setInstance(mResult.InstanceID, mResult.InstanceData);
+            if (ModelChanged != null)
+                ModelChanged(mResult.InstanceData.ModelMatrix);
         }
 
         public void moveModel(SlimDX.Vector3 axis, float amount)

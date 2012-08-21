@@ -53,14 +53,14 @@ namespace SharpWoW.Video
             }
             if (inp[Keys.Q])
             {
-                var change = (float)diff.TotalSeconds * mUp * 50;
+                var change = (float)diff.TotalSeconds * Vector3.UnitZ * 50;
                 mPosition += change;
                 mTarget += change;
                 changed = true;
             }
             if (inp[Keys.E])
             {
-                var change = (float)diff.TotalSeconds * mUp * 50;
+                var change = (float)diff.TotalSeconds * Vector3.UnitZ * 50;
                 mPosition -= change;
                 mTarget -= change;
                 changed = true;

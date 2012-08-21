@@ -9,6 +9,7 @@ namespace SharpWoW.Models
     {
         void rotateModel(SlimDX.Vector3 axis, float amount);
         void moveModel(SlimDX.Vector3 axis, float amount);
+        void moveModel(SlimDX.Vector3 newPos);
 
         event Action<SlimDX.Matrix> ModelChanged;
     }

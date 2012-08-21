@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SlimDX;
 
 namespace SharpWoW.Models.MDX
 {
@@ -27,6 +28,19 @@ namespace SharpWoW.Models.MDX
         {
             var newData = mResult.InstanceData;
             var newMatrix = newData.ModelMatrix * SlimDX.Matrix.Translation(axis * amount);
+            newData.ModelMatrix = newMatrix;
+            mResult.InstanceData = newData;
+            mResult.Renderer.InstanceLoader.setInstance(mResult.InstanceID, mResult.InstanceData);
+            if (ModelChanged != null)
+                ModelChanged(mResult.InstanceData.ModelMatrix);
+        }
+
+        public void moveModel(SlimDX.Vector3 newPos)
+        {
+            var newData = mResult.InstanceData;
+            Vector3 oldPos = new Vector3(mResult.InstanceData.ModelMatrix.M41, mResult.InstanceData.ModelMatrix.M42, mResult.InstanceData.ModelMatrix.M43);
+            var diff = newPos - oldPos;
+            var newMatrix = Matrix.Translation(diff) * mResult.InstanceData.ModelMatrix;
             newData.ModelMatrix = newMatrix;
             mResult.InstanceData = newData;
             mResult.Renderer.InstanceLoader.setInstance(mResult.InstanceID, mResult.InstanceData);

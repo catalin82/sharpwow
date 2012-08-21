@@ -188,6 +188,7 @@
     <Compile Include="Models\MDX\M2ModelMover.cs" />
     <Compile Include="Models\MDX\M2Structs.cs" />
     <Compile Include="Models\MDX\ModelIntersector.cs" />
+    <Compile Include="Models\ModelSelectionInfo.cs" />
     <Compile Include="Models\SelectionBox.cs" />
     <Compile Include="Models\SelectionManager.cs" />
     <Compile Include="Models\WMO\WMOCache.cs" />

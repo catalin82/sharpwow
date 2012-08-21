@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SlimDX;
 
 namespace SharpWoW.Models.WMO
 {
@@ -24,6 +25,17 @@ namespace SharpWoW.Models.WMO
         public void moveModel(SlimDX.Vector3 axis, float amount)
         {
             var newMatrix = mResult.ModelMatrix * SlimDX.Matrix.Translation(axis * amount);
+            mResult.ModelMatrix = newMatrix;
+            mResult.Renderer.UpdateInstance(mResult.InstanceID, mResult.ModelMatrix);
+            if (ModelChanged != null)
+                ModelChanged(mResult.ModelMatrix);
+        }
+
+        public void moveModel(SlimDX.Vector3 newPos)
+        {
+            Vector3 oldPos = new Vector3(mResult.ModelMatrix.M41, mResult.ModelMatrix.M42, mResult.ModelMatrix.M43);
+            var diff = newPos - oldPos;
+            var newMatrix = Matrix.Translation(diff) * mResult.ModelMatrix;
             mResult.ModelMatrix = newMatrix;
             mResult.Renderer.UpdateInstance(mResult.InstanceID, mResult.ModelMatrix);
             if (ModelChanged != null)

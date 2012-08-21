@@ -48,6 +48,8 @@ namespace SharpWoW.Game
             M2ModelCache = new Models.MDX.M2InfoCache();
             M2ModelManager = new Models.MDX.M2Manager();
             SelectionManager = new Models.SelectionManager();
+            if (GlobalDataLoaded != null)
+                GlobalDataLoaded();
         }
 
         /// <summary>
@@ -169,6 +171,7 @@ namespace SharpWoW.Game
         public static event Action GameTerminated;
         public static event Action ActiveChangeModeChanged;
         public static event Action GraphicsThreadCreated;
+        public static event Action GlobalDataLoaded;
 
         private static string mGamePath = null;
         private static UI.Form1 mForm = null;

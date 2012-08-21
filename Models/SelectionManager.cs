@@ -24,19 +24,20 @@ namespace SharpWoW.Models
 
             if (Video.Input.InputManager.Input.IsAsyncKeyDown(System.Windows.Forms.Keys.Menu))
             {
+                var matrix = getMatrix();
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Left) != 0)
                 {
-                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitX, mMdxResult.InstanceData.ModelMatrix), diff.X / 6.0f);
+                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitX, matrix), diff.X / 6.0f);
                     HadModelMovement = true;
                 }
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Middle) != 0)
                 {
-                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitY, mMdxResult.InstanceData.ModelMatrix), diff.X / 6.0f);
+                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitY, matrix), diff.X / 6.0f);
                     HadModelMovement = true;
                 }
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Right) != 0)
                 {
-                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitZ, mMdxResult.InstanceData.ModelMatrix), -diff.Y / 6.0f);
+                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitZ, matrix), -diff.Y / 6.0f);
                     HadModelMovement = true;
                 }
             }
@@ -60,6 +61,16 @@ namespace SharpWoW.Models
                     HadModelMovement = true;
                 }
             }
+        }
+
+        private SlimDX.Matrix getMatrix()
+        {
+            if (mMdxResult != null)
+                return mMdxResult.InstanceData.ModelMatrix;
+            else if (mWmoResult != null)
+                return mWmoResult.ModelMatrix;
+
+            throw new Exception();
         }
 
         public bool IsModelMovement
@@ -95,6 +106,16 @@ namespace SharpWoW.Models
                 modelOverlay = new UI.Overlays.ModelInfoOverlay(result);
                 Game.GameManager.GraphicsThread.PushOverlay(modelOverlay);
             }
+
+            ModelSelectionInfo info = new ModelSelectionInfo()
+            {
+                ModelName = result.Model.ModelPath,
+                ModelMover = mModelMover,
+                ModelPosition = new SlimDX.Vector3(result.InstanceData.ModelMatrix.M41, result.InstanceData.ModelMatrix.M42, result.InstanceData.ModelMatrix.M43)
+            };
+
+            if (ModelSelected != null)
+                ModelSelected(info);
         }
 
         public void SelectWMOModel(WMO.WMOHitInformation wmoHit)
@@ -115,6 +136,16 @@ namespace SharpWoW.Models
                 modelOverlay = new UI.Overlays.ModelInfoOverlay(wmoHit);
                 Game.GameManager.GraphicsThread.PushOverlay(modelOverlay);
             }
+
+            ModelSelectionInfo info = new ModelSelectionInfo()
+            {
+                ModelName = wmoHit.Model.FileName,
+                ModelMover = mModelMover,
+                ModelPosition = new SlimDX.Vector3(wmoHit.ModelMatrix.M41, wmoHit.ModelMatrix.M42, wmoHit.ModelMatrix.M43)
+            };
+
+            if (ModelSelected != null)
+                ModelSelected(info);
         }
 
         public void ClearSelection()
@@ -124,6 +155,8 @@ namespace SharpWoW.Models
             mSelectionBox.ClearSelectionBox();
             mModelMover = null;
             Game.GameManager.GraphicsThread.RemoveOverlay<UI.Overlays.ModelInfoOverlay>();
+            if (ModelSelected != null)
+                ModelSelected(null);
         }
 
         public bool IsMdxInstanceSelected(MDX.M2Info info, uint id)
@@ -138,6 +171,8 @@ namespace SharpWoW.Models
         {
             mSelectionBox.RenderBox();
         }
+
+        public event Action<ModelSelectionInfo> ModelSelected;
 
         MDX.MdxIntersectionResult mMdxResult = null;
         WMO.WMOHitInformation mWmoResult = null;

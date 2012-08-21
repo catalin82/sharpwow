@@ -46,7 +46,6 @@
             this.radioButton10 = new System.Windows.Forms.RadioButton();
             this.radioButton9 = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.multiPointSplineControl1 = new SharpWoW.Controls.MultiPointSplineControl();
             this.radioButton8 = new System.Windows.Forms.RadioButton();
             this.radioButton7 = new System.Windows.Forms.RadioButton();
             this.radioButton6 = new System.Windows.Forms.RadioButton();
@@ -76,9 +75,7 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.propertyTab1 = new SharpWoW.Controls.PropertyTab();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.lightEditorTab1 = new SharpWoW.Controls.LightEditorTab();
             this.BottomToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.TopToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.RightToolStripPanel = new System.Windows.Forms.ToolStripPanel();
@@ -86,8 +83,11 @@
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.multiPointSplineControl1 = new SharpWoW.Controls.MultiPointSplineControl();
+            this.propertyTab1 = new SharpWoW.Controls.PropertyTab();
+            this.lightEditorTab1 = new SharpWoW.Controls.LightEditorTab();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -338,14 +338,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Spline Options";
             this.groupBox2.Visible = false;
-            // 
-            // multiPointSplineControl1
-            // 
-            this.multiPointSplineControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.multiPointSplineControl1.Location = new System.Drawing.Point(13, 21);
-            this.multiPointSplineControl1.Name = "multiPointSplineControl1";
-            this.multiPointSplineControl1.Size = new System.Drawing.Size(74, 75);
-            this.multiPointSplineControl1.TabIndex = 6;
             // 
             // radioButton8
             // 
@@ -680,14 +672,6 @@
             this.tabPage3.Text = "Properties";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // propertyTab1
-            // 
-            this.propertyTab1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyTab1.Location = new System.Drawing.Point(3, 3);
-            this.propertyTab1.Name = "propertyTab1";
-            this.propertyTab1.Size = new System.Drawing.Size(320, 672);
-            this.propertyTab1.TabIndex = 0;
-            // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.lightEditorTab1);
@@ -698,13 +682,6 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Lighting";
             this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // lightEditorTab1
-            // 
-            this.lightEditorTab1.Location = new System.Drawing.Point(0, 0);
-            this.lightEditorTab1.Name = "lightEditorTab1";
-            this.lightEditorTab1.Size = new System.Drawing.Size(326, 678);
-            this.lightEditorTab1.TabIndex = 0;
             // 
             // BottomToolStripPanel
             // 
@@ -745,8 +722,8 @@
             // 
             // groupBox8
             // 
+            this.groupBox8.Controls.Add(this.textBox3);
             this.groupBox8.Controls.Add(this.button1);
-            this.groupBox8.Controls.Add(this.label7);
             this.groupBox8.Controls.Add(this.label6);
             this.groupBox8.Location = new System.Drawing.Point(10, 425);
             this.groupBox8.Name = "groupBox8";
@@ -764,13 +741,6 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Name: ";
             // 
-            // label7
-            // 
-            this.label7.Location = new System.Drawing.Point(49, 20);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(253, 33);
-            this.label7.TabIndex = 1;
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(208, 187);
@@ -779,6 +749,38 @@
             this.button1.TabIndex = 2;
             this.button1.Text = "Align to ground";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(49, 18);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.ReadOnly = true;
+            this.textBox3.Size = new System.Drawing.Size(242, 20);
+            this.textBox3.TabIndex = 3;
+            // 
+            // multiPointSplineControl1
+            // 
+            this.multiPointSplineControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.multiPointSplineControl1.Location = new System.Drawing.Point(13, 21);
+            this.multiPointSplineControl1.Name = "multiPointSplineControl1";
+            this.multiPointSplineControl1.Size = new System.Drawing.Size(74, 75);
+            this.multiPointSplineControl1.TabIndex = 6;
+            // 
+            // propertyTab1
+            // 
+            this.propertyTab1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyTab1.Location = new System.Drawing.Point(3, 3);
+            this.propertyTab1.Name = "propertyTab1";
+            this.propertyTab1.Size = new System.Drawing.Size(320, 672);
+            this.propertyTab1.TabIndex = 0;
+            // 
+            // lightEditorTab1
+            // 
+            this.lightEditorTab1.Location = new System.Drawing.Point(0, 0);
+            this.lightEditorTab1.Name = "lightEditorTab1";
+            this.lightEditorTab1.Size = new System.Drawing.Size(326, 678);
+            this.lightEditorTab1.TabIndex = 0;
             // 
             // UIPanel
             // 
@@ -880,7 +882,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBox3;
     }
 }

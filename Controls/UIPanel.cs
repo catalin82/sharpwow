@@ -66,6 +66,8 @@ namespace SharpWoW.Controls
                     wmoNode = loadTreeViewItems(wmoModelList, "WMO");
                 };
 
+            Resize += UIPanel_Resize;
+
             HandleCreated += (sender, e) =>
                 {
                     listBox1.Items.AddRange(fileList.ToArray());
@@ -86,6 +88,28 @@ namespace SharpWoW.Controls
                             break;
                     }
                 };
+
+            Game.GameManager.GlobalDataLoaded += () => Game.GameManager.SelectionManager.ModelSelected += SelectionManager_ModelSelected;
+        }
+
+        void UIPanel_Resize(object sender, EventArgs e)
+        {
+            groupBox8.Location = new Point(groupBox8.Location.X, Height - 270);
+            treeView1.Height = Height - 350;
+        }
+
+        void SelectionManager_ModelSelected(Models.ModelSelectionInfo obj)
+        {
+            if(obj == null)
+            {
+                groupBox8.Visible = false;
+                groupBox8.Tag = null;
+                return;
+            }
+
+            groupBox8.Tag = obj;
+            groupBox8.Visible = true;
+            textBox3.Text = obj.ModelName;
         }
 
         private TreeNode loadTreeViewItems(List<string> items, string nodeRoot = "Models")
@@ -275,6 +299,14 @@ namespace SharpWoW.Controls
             treeView1.Nodes.Add(node);
             treeView1.Nodes.Add(node2);
             treeView1.ResumeLayout();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (groupBox8.Tag == null)
+                return;
+
+            ((Models.ModelSelectionInfo)groupBox8.Tag).AlignToGround();
         }
     }
 }

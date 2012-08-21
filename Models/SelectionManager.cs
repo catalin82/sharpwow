@@ -36,7 +36,7 @@ namespace SharpWoW.Models
                 }
                 if ((pressedButtons & System.Windows.Forms.MouseButtons.Right) != 0)
                 {
-                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitZ, mMdxResult.InstanceData.ModelMatrix), diff.Y / 6.0f);
+                    mModelMover.moveModel(SlimDX.Vector3.TransformNormal(SlimDX.Vector3.UnitZ, mMdxResult.InstanceData.ModelMatrix), -diff.Y / 6.0f);
                     HadModelMovement = true;
                 }
             }

@@ -44,7 +44,8 @@ namespace SharpWoW.UI
 
             sprite.Transform = oldTransform;
 
-            return new Vector2(rect.Width, rect.Height);
+            var vec = new Vector2(rect.Width, rect.Height);
+            return Vector2.TransformCoordinate(vec, matScale);
         }
     }
 }

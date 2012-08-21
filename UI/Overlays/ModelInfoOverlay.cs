@@ -59,22 +59,27 @@ namespace SharpWoW.UI.Overlays
 
             BorderElement colorBorder = new BorderElement()
             {
-                Position = new SlimDX.Vector2(45, 70),
-                Size = new SlimDX.Vector2(150, 30),
+                Position = new SlimDX.Vector2(45, 73),
+                Size = new SlimDX.Vector2(150, 24),
                 Opacity = 200
             };
 
             BorderElement nameBorder = new BorderElement()
             {
+                Position = new SlimDX.Vector2(45, 50),
+                Size = new SlimDX.Vector2(mTextElements[0].DrawFont.MeasureString(new SlimDX.Vector2(45, 47), mTextElements[0].Text, mTextElements[0].FontSize).X + 10, 23),
+                Opacity = 200
             };
 
             mBorderElements.Add(colorBorder);
+            mBorderElements.Add(nameBorder);
         }
 
         public void UpdateModel(Models.MDX.MdxIntersectionResult result)
         {
             mModelName = result.Model.ModelPath;
             mTextElements[0].Text = "Selected model: " + mModelName;
+            mBorderElements[1].Size = new SlimDX.Vector2(mTextElements[0].DrawFont.MeasureString(new SlimDX.Vector2(45, 47), mTextElements[0].Text, mTextElements[0].FontSize).X + 10, 23);
         }
 
         public override void update()

@@ -62,6 +62,7 @@ namespace SharpWoW.Models.WMO
                             refId = curRef;
                             hitPos = pos;
                             modelMatrix = tmpMatrix;
+                            hitFile = rndr.Value.File;
                         }
                     }
                 }

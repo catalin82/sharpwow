@@ -9,6 +9,7 @@ namespace SharpWoW.ADT
     public static class ADTManager
     {
         private static List<IADTFile> mActiveFiles = new List<IADTFile>();
+        private static Dictionary<int, List<uint>> mModelRefs = new Dictionary<int, List<uint>>();
 
         public static void Render()
         {
@@ -126,7 +127,37 @@ namespace SharpWoW.ADT
 
             return null;
         }
-           
+
+        public static bool AddUniqueMDXId(string fileName, uint id)
+        {
+            int hash = fileName.ToLower().GetHashCode();
+            lock (mModelRefs)
+            {
+                if (mModelRefs.ContainsKey(hash))
+                {
+                    if (mModelRefs[hash].Contains(id))
+                        return false;
+
+                    mModelRefs[hash].Add(id);
+                    return true;
+                }
+
+                mModelRefs.Add(hash, new List<uint>(new uint[] { id }));
+                return true;
+            }
+        }
+
+        public static void RemoveUniqueMdxId(string fileName, uint id)
+        {
+            int hash = fileName.ToLower().GetHashCode();
+            lock (mModelRefs)
+            {
+                if (mModelRefs.ContainsKey(hash))
+                {
+                    mModelRefs[hash].RemoveAll((curid) => curid == id);
+                }
+            }
+        }
 
         public static List<ADT.IADTChunk> VisibleChunks = new List<IADTChunk>();
     }

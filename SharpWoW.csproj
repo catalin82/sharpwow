@@ -172,6 +172,7 @@
     <Compile Include="Game\Bookmark.cs" />
     <Compile Include="Game\Logic\ActiveChangeType.cs" />
     <Compile Include="Game\Logic\TextureChangeParam.cs" />
+    <Compile Include="Models\IModelMover.cs" />
     <Compile Include="Models\MDX\M2Animator.cs" />
     <Compile Include="Models\MDX\M2BatchRenderer.cs" />
     <Compile Include="Models\MDX\M2BoneAnimator.cs" />
@@ -180,6 +181,7 @@
     <Compile Include="Models\MDX\M2InfoCache.cs" />
     <Compile Include="Models\MDX\M2Instance.cs" />
     <Compile Include="Models\MDX\M2Manager.cs" />
+    <Compile Include="Models\MDX\M2ModelMover.cs" />
     <Compile Include="Models\MDX\M2Structs.cs" />
     <Compile Include="Models\MDX\ModelIntersector.cs" />
     <Compile Include="Models\SelectionBox.cs" />

@@ -53,24 +53,28 @@ float4 PixelBlendShader(PixelInput input) : COLOR0
 {
 	float4 color = float4(0, 0, 0, 0);
 
-	if(	(input.TextureCoords.x < 0.01 && input.TextureCoords.y < 0.01)  ||
-		(input.TextureCoords.x > 0.99 && input.TextureCoords.y > 0.99)  ||
-		(input.TextureCoords.x < 0.01 && input.TextureCoords.y > 0.99)  ||
-		(input.TextureCoords.x > 0.99 && input.TextureCoords.y < 0.01)  ||
-		(input.TextureCoords.x < 0.01 && input.TextureCoords.y < 0.01)  ||
-		(input.TextureCoords.x > 0.99 && input.TextureCoords.y > 0.99)  ||
-		(input.TextureCoords.x < 0.01 && input.TextureCoords.y > 0.99)  ||
-		(input.TextureCoords.x > 0.99 && input.TextureCoords.y < 0.01)  ||
-		(input.TextureCoords.x < 0.01 && input.TextureCoords2.x < 0.01) ||
-		(input.TextureCoords.x > 0.99 && input.TextureCoords2.x < 0.01) ||
+	if( (input.TextureCoords.x > 0.99 && input.TextureCoords.y < 0.01) ||
+		(input.TextureCoords.x < 0.01 && input.TextureCoords.y > 0.99) ||
+		(input.TextureCoords.x > 0.99 && input.TextureCoords.y > 0.99) ||
+		(input.TextureCoords.x < 0.01 && input.TextureCoords.y < 0.01)   )
+	{
+		color.ar = 1;
+	}
+
+	if( (input.TextureCoords.x > 0.99 && input.TextureCoords2.x > 0.99) ||
 		(input.TextureCoords.x < 0.01 && input.TextureCoords2.x > 0.99) ||
-		(input.TextureCoords.x > 0.99 && input.TextureCoords2.x > 0.99) ||
-		(input.TextureCoords.y < 0.01 && input.TextureCoords2.x < 0.01) ||
+		(input.TextureCoords.x > 0.99 && input.TextureCoords2.x < 0.01) ||
+		(input.TextureCoords.x < 0.01 && input.TextureCoords2.x < 0.01)   )
+	{
+		color.ab = 1;
+	}
+
+	if(	(input.TextureCoords.y < 0.01 && input.TextureCoords2.x < 0.01) ||
 		(input.TextureCoords.y > 0.99 && input.TextureCoords2.x < 0.01) ||
 		(input.TextureCoords.y < 0.01 && input.TextureCoords2.x > 0.99) ||
 		(input.TextureCoords.y > 0.99 && input.TextureCoords2.x > 0.99)   )
 	{
-		color.argb = 1;
+		color.ag = 1;
 	}
 
 	return color;

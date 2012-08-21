@@ -86,6 +86,7 @@ namespace SharpWoW.Video.Input
 
         void _MouseClick(object sender, MouseEventArgs e)
         {
+            mMouseLastPos = new SlimDX.Vector2(e.X, e.Y);
             if (MousePress != null)
                 MousePress(e.X, e.Y, e.Button);
         }
@@ -98,8 +99,13 @@ namespace SharpWoW.Video.Input
 
         void _MouseMoved(object sender, MouseEventArgs e)
         {
+            if (mMouseLastPos.HasValue == false)
+                mMouseLastPos = new SlimDX.Vector2(e.X, e.Y);
+
             if (MouseMoved != null)
-                MouseMoved(e.X, e.Y, e.Button);
+                MouseMoved(e.X, e.Y, e.Button, (new SlimDX.Vector2(e.X, e.Y) - mMouseLastPos.Value));
+
+            mMouseLastPos = new SlimDX.Vector2(e.X, e.Y);
         }
 
         void _UpdateFocus(object sender, EventArgs e)
@@ -149,7 +155,7 @@ namespace SharpWoW.Video.Input
         }
 
         public delegate void MousePressDlg(int x, int y, MouseButtons pressedButton);
-        public delegate void MouseMoveDlg(int x, int y, MouseButtons pressedButtons);
+        public delegate void MouseMoveDlg(int x, int y, MouseButtons pressedButtons, SlimDX.Vector2 diff);
         public delegate void KeyPressDlg(char chr);
         public delegate void KeyDownDlg(Keys key);
         public delegate void KeyUpDlg(Keys key);
@@ -158,6 +164,8 @@ namespace SharpWoW.Video.Input
         public event KeyDownDlg KeyDown;
         public event KeyUpDlg KeyUp;
         public event MousePressDlg MousePress;
+
+        private SlimDX.Vector2? mMouseLastPos = null;
         
 
         public static InputManager Input { get; private set; }

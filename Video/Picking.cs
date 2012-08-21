@@ -18,8 +18,7 @@ namespace SharpWoW.Video
 
         public static Ray TransformRay(Ray ray, Matrix mat)
         {
-            ray.Position = Vector3.TransformCoordinate(ray.Direction, mat);
-            ray.Direction = Vector3.TransformNormal(ray.Position, mat);
+            ray.Position = Vector3.TransformCoordinate(ray.Position, mat);
             return ray;
         }
 
@@ -66,11 +65,11 @@ namespace SharpWoW.Video
                 var ray = CalcRayForTransform(Matrix.Identity);
                 Models.MDX.MdxIntersectionResult result;
                 Game.GameManager.M2ModelManager.HitModels(ray, out result);
-                float mdxDistance = result.Distance;
 
                 var terrainPos = Game.GameManager.GraphicsThread.GraphicsManager.MousePosition;
                 var camPos = Game.GameManager.GraphicsThread.GraphicsManager.Camera.Position;
                 var terrainDist = (terrainPos - camPos).Length();
+                var mdxDistance = (result.HitPoint - camPos).Length();
 
                 if (Models.WMO.WMOManager.IsWmoHit(out hit, out hitPos))
                 {

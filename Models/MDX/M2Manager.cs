@@ -82,7 +82,8 @@ namespace SharpWoW.Models.MDX
             {
                 float curDist = 0.0f;
                 uint instanceId;
-                if (couple.Value.Intersector.Intersect(camRay, out curDist, out instanceId))
+                SlimDX.Vector3 hitPoint;
+                if (couple.Value.Intersector.Intersect(camRay, out curDist, out instanceId, out hitPoint))
                 {
                     if (curDist < result.Distance || result.Distance < 0)
                     {
@@ -91,6 +92,7 @@ namespace SharpWoW.Models.MDX
                         result.Model = couple.Value.mModelInfo;
                         result.Renderer = couple.Value;
                         result.InstanceData = result.Renderer.InstanceLoader.GetInstanceById(instanceId);
+                        result.HitPoint = hitPoint;
                     }
                 }
             }

@@ -261,6 +261,12 @@ namespace SharpWoW.ADT.Wotlk
                     Game.GameManager.M2ModelManager.RemoveInstance(inst.Key, id);
             }
 
+            foreach (var id in mConfirmedUniqueID)
+            {
+                var name = mParent.DoodadNames[mParent.ModelIdentifiers[(int)mParent.ModelDefinitions[(int)id].idMMID]];
+                ADTManager.RemoveUniqueMdxId(name, id);
+            }
+
             mParent = null;
             mFile = null;
             mLayers.Clear();
@@ -294,6 +300,10 @@ namespace SharpWoW.ADT.Wotlk
                 try
                 {
                     var name = mParent.DoodadNames[mParent.ModelIdentifiers[(int)mParent.ModelDefinitions[(int)re].idMMID]];
+                    if (ADTManager.AddUniqueMDXId(name, re) == false)
+                        continue;
+
+                    mConfirmedUniqueID.Add(re);
                     var id = Game.GameManager.M2ModelManager.AddInstance(name, mParent.ModelDefinitions[(int)re]);
                     if (!mDoodadInstances.ContainsKey(name))
                         mDoodadInstances.Add(name, new List<uint>());
@@ -426,6 +436,7 @@ namespace SharpWoW.ADT.Wotlk
         private List<uint> mWmoRefs = new List<uint>();
         private Dictionary<string, List<uint>> mDoodadInstances = new Dictionary<string, List<uint>>();
         private bool mAlphaDirty = false;
+        private List<uint> mConfirmedUniqueID = new List<uint>();
 
         private string ReadSignature()
         {

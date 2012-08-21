@@ -112,6 +112,12 @@ namespace SharpWoW.Models
             dev.SetRenderState(RenderState.CullMode, oldCull);
         }
 
+        public void UpdateMatrix(Matrix newMatrix)
+        {
+            mTransform = newMatrix;
+            Video.ShaderCollection.BoxShader.SetValue("matrixWorld", mTransform);
+        }
+
         bool mDrawBox = false;
         Line mLine;
         Matrix mTransform;

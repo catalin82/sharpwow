@@ -38,17 +38,23 @@ namespace SharpWoW.Game
 
             GraphicsManager.CreateDevice(true, true);
             UI.FontManager.init();
-            CurrentOverlay = new UI.TerrainInfoOverlay();
+            PushOverlay(new UI.TerrainInfoOverlay());
             Game.GameManager.ActiveChangeModeChanged += () =>
                 {
                     switch (Game.GameManager.ActiveChangeType)
                     {
                         case Logic.ActiveChangeType.Height:
-                            CurrentOverlay = new UI.TerrainInfoOverlay();
+                            if (GetOverlay<UI.TerrainInfoOverlay>() == null)
+                                PushOverlay(new UI.TerrainInfoOverlay());
+                            if (GetOverlay<UI.TextureInfoOverlay>() != null)
+                                RemoveOverlay<UI.TextureInfoOverlay>();
                             break;
 
                         case Logic.ActiveChangeType.Texturing:
-                            CurrentOverlay = new UI.TextureInfoOverlay();
+                            if (GetOverlay<UI.TextureInfoOverlay>() == null)
+                                PushOverlay(new UI.TextureInfoOverlay());
+                            if (GetOverlay<UI.TerrainInfoOverlay>() != null)
+                                RemoveOverlay<UI.TerrainInfoOverlay>();
                             break;
                     }
                 };
@@ -101,8 +107,10 @@ namespace SharpWoW.Game
             GraphicsManager.UpdateMouseTerrainPos(0, 0);
 
             UI.FontManager.beginFrame();
-            if (CurrentOverlay != null)
-                CurrentOverlay.Draw();
+
+            foreach (var overlay in mOverlays)
+                overlay.Draw();
+
             UI.FontManager.endFrame();
 
             GraphicsManager.Device.EndScene();
@@ -125,6 +133,40 @@ namespace SharpWoW.Game
             }
         }
 
+        public T GetOverlay<T>() where T : UI.InterfaceOverlay
+        {
+            lock (mOverlays)
+            {
+                var qry = from overlay in mOverlays
+                          where overlay.GetType() == typeof(T)
+                          select overlay;
+
+                if (qry.Count() == 0)
+                    return null;
+
+                return (T)qry.First();
+            }
+        }
+
+        public void PushOverlay(UI.InterfaceOverlay overlay)
+        {
+            lock (mOverlays)
+            {
+                if (mOverlays.Contains(overlay) == true)
+                    return;
+
+                mOverlays.Add(overlay);
+            }
+        }
+
+        public void RemoveOverlay<T>() where T : UI.InterfaceOverlay
+        {
+            lock (mOverlays)
+            {
+                mOverlays.RemoveAll((overlay) => overlay.GetType() == typeof(T));
+            }
+        }
+
         public delegate void FrameRenderDelegate(Device device, TimeSpan deltaTime);
         public event FrameRenderDelegate OnFrame;
 
@@ -137,6 +179,6 @@ namespace SharpWoW.Game
         private DateTime mLastFPS;
         private System.Threading.Thread mMainThread;
         private uint mLastNumFrames = 0;
-        private UI.InterfaceOverlay CurrentOverlay = null;
+        private List<UI.InterfaceOverlay> mOverlays = new List<UI.InterfaceOverlay>();
     }
 }

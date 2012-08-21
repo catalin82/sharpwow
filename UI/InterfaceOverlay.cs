@@ -20,6 +20,7 @@ namespace SharpWoW.UI
 
         protected Device mDevice;
         protected List<TextElement> mElements = new List<TextElement>();
+        protected List<Overlays.BorderElement> mBorderElements = new List<Overlays.BorderElement>();
 
         public InterfaceOverlay()
         {
@@ -29,6 +30,9 @@ namespace SharpWoW.UI
         public void Draw()
         {
             update();
+
+            foreach (var border in mBorderElements)
+                border.Draw();
 
             foreach (var elem in mElements)
             {

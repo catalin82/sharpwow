@@ -248,6 +248,8 @@
     <Compile Include="UI\FontManager.cs" />
     <Compile Include="UI\GridComboBox.cs" />
     <Compile Include="UI\InterfaceOverlay.cs" />
+    <Compile Include="UI\Overlays\BorderElement.cs" />
+    <Compile Include="UI\Overlays\ModelInfoOverlay.cs" />
     <Compile Include="UI\TerrainInfoOverlay.cs" />
     <Compile Include="UI\TextureInfoOverlay.cs" />
     <Compile Include="Utils\Math.cs" />

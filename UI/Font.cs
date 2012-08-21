@@ -31,5 +31,20 @@ namespace SharpWoW.UI
 
             sprite.Transform = oldTransform;
         }
+
+        public Vector2 MeasureString(Vector2 position, string text, float emSize)
+        {
+            Matrix matScale = Matrix.Scaling(emSize / 30.0f, emSize / 30.0f, 1);
+            var sprite = FontManager.Sprite;
+
+            var oldTransform = sprite.Transform;
+            sprite.Transform = matScale * Matrix.Translation(position.X, position.Y, 0);
+
+            var rect = mBaseFont.MeasureString(sprite, text, DrawTextFormat.Center);
+
+            sprite.Transform = oldTransform;
+
+            return new Vector2(rect.Width, rect.Height);
+        }
     }
 }

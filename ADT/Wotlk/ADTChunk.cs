@@ -264,7 +264,7 @@ namespace SharpWoW.ADT.Wotlk
             foreach (var id in mConfirmedUniqueID)
             {
                 var name = mParent.DoodadNames[mParent.ModelIdentifiers[(int)mParent.ModelDefinitions[(int)id].idMMID]];
-                ADTManager.RemoveUniqueMdxId(name, id);
+                ADTManager.RemoveUniqueMdxId(name, mParent.ModelDefinitions[(int)id].uniqueId);
             }
 
             mParent = null;
@@ -300,7 +300,9 @@ namespace SharpWoW.ADT.Wotlk
                 try
                 {
                     var name = mParent.DoodadNames[mParent.ModelIdentifiers[(int)mParent.ModelDefinitions[(int)re].idMMID]];
-                    if (ADTManager.AddUniqueMDXId(name, re) == false)
+                    var uniqueID = mParent.ModelDefinitions[(int)re].uniqueId;
+
+                    if (ADTManager.AddUniqueMDXId(name, uniqueID) == false)
                         continue;
 
                     mConfirmedUniqueID.Add(re);

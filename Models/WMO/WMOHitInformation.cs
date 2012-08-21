@@ -12,5 +12,7 @@ namespace SharpWoW.Models.WMO
         public SlimDX.Vector3 HitPoint { get; set; }
         public SlimDX.Matrix ModelMatrix { get; set; }
         public WMOFile Model { get; set; }
+        public WMORender Renderer { get; set; }
+        public uint InstanceID { get; set; }
     }
 }

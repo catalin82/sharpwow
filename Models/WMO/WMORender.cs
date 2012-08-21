@@ -29,7 +29,7 @@ namespace SharpWoW.Models.WMO
             }
         }
 
-        public bool IsInstanceHit(out float nearestHit, out uint nearestInstance, out uint refId, out Vector3 pos, out Matrix modelMatrix)
+        public bool IsInstanceHit(out float nearestHit, out uint nearestInstance, out uint refId, out Vector3 pos, out Matrix modelMatrix, out uint id)
         {
             nearestHit = 0;
             nearestInstance = 0;
@@ -38,6 +38,7 @@ namespace SharpWoW.Models.WMO
             bool hasHit = false;
             pos = Vector3.Zero;
             modelMatrix = Matrix.Identity;
+            id = 0;
 
             lock (mInstLock)
             {
@@ -55,6 +56,7 @@ namespace SharpWoW.Models.WMO
                             refId = mat.Key;
                             pos = Vector3.TransformCoordinate(ray.Position + curHit * ray.Direction, mat.Value);
                             modelMatrix = mat.Value;
+                            id = mat.Key;
                         }
                     }
                 }
@@ -62,6 +64,15 @@ namespace SharpWoW.Models.WMO
 
             nearestHit = curNear;
             return hasHit;
+        }
+
+        public void UpdateInstance(uint id, Matrix mat)
+        {
+            lock (mInstLock)
+            {
+                if (mInstances.ContainsKey(id))
+                    mInstances[id] = mat;
+            }
         }
 
         public uint PushInstance(uint unique, Vector3 pos, Vector3 rotation)

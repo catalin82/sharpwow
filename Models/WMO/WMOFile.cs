@@ -26,8 +26,8 @@ namespace SharpWoW.Models.WMO
             mFile.Position += 4;
             mHeader = mFile.Read<MOHD>();
 
-            BoundingBox = new SlimDX.BoundingBox(new SlimDX.Vector3(mHeader.MinPosition.X, mHeader.MinPosition.Z, mHeader.MinPosition.Y),
-                new SlimDX.Vector3(mHeader.MaxPosition.X, mHeader.MaxPosition.Z, mHeader.MaxPosition.Y));
+            BoundingBox = new SlimDX.BoundingBox(new SlimDX.Vector3(mHeader.MinPosition.X, mHeader.MinPosition.Y, mHeader.MinPosition.Z),
+                new SlimDX.Vector3(mHeader.MaxPosition.X, mHeader.MaxPosition.Y, mHeader.MaxPosition.Z));
 
             SeekChunk("XTOM");
             uint numBytes = mFile.Read<uint>();

@@ -41,6 +41,8 @@ namespace SharpWoW.Models.WMO
             hitPos = SlimDX.Vector3.Zero;
             SlimDX.Matrix modelMatrix = SlimDX.Matrix.Identity;
             WMOFile hitFile = null;
+            WMORender renderer = null;
+            uint instanceID = 0;
             lock (lockobj)
             {
                 float curNear = 99999;
@@ -52,7 +54,8 @@ namespace SharpWoW.Models.WMO
                     uint curRef = 0;
                     SlimDX.Vector3 pos;
                     SlimDX.Matrix tmpMatrix;
-                    if (rndr.Value.IsInstanceHit(out curHit, out curInst, out curRef, out pos, out tmpMatrix))
+                    uint tmpId = 0;
+                    if (rndr.Value.IsInstanceHit(out curHit, out curInst, out curRef, out pos, out tmpMatrix, out tmpId))
                     {
                         hasHit = true;
                         if (curHit < curNear)
@@ -63,6 +66,8 @@ namespace SharpWoW.Models.WMO
                             hitPos = pos;
                             modelMatrix = tmpMatrix;
                             hitFile = rndr.Value.File;
+                            renderer = rndr.Value;
+                            instanceID = tmpId;
                         }
                     }
                 }
@@ -74,6 +79,8 @@ namespace SharpWoW.Models.WMO
                 info.HitPoint = hitPos;
                 info.ModelMatrix = modelMatrix;
                 info.Model = hitFile;
+                info.Renderer = renderer;
+                info.InstanceID = instanceID;
             }
 
             return hasHit;

@@ -33,9 +33,10 @@ namespace SharpWoW.Models.WMO
 
         public void moveModel(SlimDX.Vector3 newPos)
         {
-            Vector3 oldPos = new Vector3(mResult.ModelMatrix.M41, mResult.ModelMatrix.M42, mResult.ModelMatrix.M43);
-            var diff = newPos - oldPos;
-            var newMatrix = Matrix.Translation(diff) * mResult.ModelMatrix;
+            var newMatrix = mResult.ModelMatrix;
+            newMatrix.M41 = newPos.X;
+            newMatrix.M42 = newPos.Y;
+            newMatrix.M43 = newPos.Z;
             mResult.ModelMatrix = newMatrix;
             mResult.Renderer.UpdateInstance(mResult.InstanceID, mResult.ModelMatrix);
             if (ModelChanged != null)

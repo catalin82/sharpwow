@@ -97,7 +97,12 @@ namespace SharpWoW.Models
             if (mModelMover != null)
                 mModelMover.ModelChanged -= mSelectionBox.UpdateMatrix;
             mModelMover = new MDX.M2ModelMover(result);
-            mModelMover.ModelChanged += mSelectionBox.UpdateMatrix;
+            mModelMover.ModelChanged += (matrix) =>
+                {
+                    mSelectionBox.UpdateMatrix(matrix);
+                    if (mCurrentSelection != null)
+                        mCurrentSelection.ModelPosition = new SlimDX.Vector3(matrix.M41, matrix.M42, matrix.M43);
+                };
             var modelOverlay = Game.GameManager.GraphicsThread.GetOverlay<UI.Overlays.ModelInfoOverlay>();
             if (modelOverlay != null)
                 modelOverlay.UpdateModel(result);
@@ -114,6 +119,8 @@ namespace SharpWoW.Models
                 ModelPosition = new SlimDX.Vector3(result.InstanceData.ModelMatrix.M41, result.InstanceData.ModelMatrix.M42, result.InstanceData.ModelMatrix.M43)
             };
 
+            mCurrentSelection = info;
+
             if (ModelSelected != null)
                 ModelSelected(info);
         }
@@ -127,7 +134,13 @@ namespace SharpWoW.Models
                 mModelMover.ModelChanged -= mSelectionBox.UpdateMatrix;
 
             mModelMover = new WMO.WMOModelMover(wmoHit);
-            mModelMover.ModelChanged += mSelectionBox.UpdateMatrix;
+            mModelMover.ModelChanged += (matrix) =>
+            {
+                mSelectionBox.UpdateMatrix(matrix);
+                if (mCurrentSelection != null)
+                    mCurrentSelection.ModelPosition = new SlimDX.Vector3(matrix.M41, matrix.M42, matrix.M43);
+            };
+
             var modelOverlay = Game.GameManager.GraphicsThread.GetOverlay<UI.Overlays.ModelInfoOverlay>();
             if (modelOverlay != null)
                 modelOverlay.UpdateModel(wmoHit);
@@ -144,6 +157,8 @@ namespace SharpWoW.Models
                 ModelPosition = new SlimDX.Vector3(wmoHit.ModelMatrix.M41, wmoHit.ModelMatrix.M42, wmoHit.ModelMatrix.M43)
             };
 
+            mCurrentSelection = info;
+
             if (ModelSelected != null)
                 ModelSelected(info);
         }
@@ -155,6 +170,7 @@ namespace SharpWoW.Models
             mSelectionBox.ClearSelectionBox();
             mModelMover = null;
             Game.GameManager.GraphicsThread.RemoveOverlay<UI.Overlays.ModelInfoOverlay>();
+            mCurrentSelection = null;
             if (ModelSelected != null)
                 ModelSelected(null);
         }
@@ -178,5 +194,6 @@ namespace SharpWoW.Models
         WMO.WMOHitInformation mWmoResult = null;
         SelectionBox mSelectionBox = new SelectionBox();
         IModelMover mModelMover = null;
+        ModelSelectionInfo mCurrentSelection;
     }
 }

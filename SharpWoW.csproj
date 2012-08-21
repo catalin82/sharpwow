@@ -196,6 +196,7 @@
     <Compile Include="Models\WMO\WMOGroup.cs" />
     <Compile Include="Models\WMO\WMOHitInformation.cs" />
     <Compile Include="Models\WMO\WMOManager.cs" />
+    <Compile Include="Models\WMO\WMOModelMover.cs" />
     <Compile Include="Models\WMO\WMORender.cs" />
     <Compile Include="Models\WMO\WMOStructs.cs" />
     <Compile Include="Resources\Images.Designer.cs">

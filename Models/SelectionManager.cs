@@ -83,6 +83,8 @@ namespace SharpWoW.Models
             mMdxResult = result;
             mWmoResult = null;
             mSelectionBox.UpdateSelectionBox(result.Model.BoundingBox, result.InstanceData.ModelMatrix);
+            if (mModelMover != null)
+                mModelMover.ModelChanged -= mSelectionBox.UpdateMatrix;
             mModelMover = new MDX.M2ModelMover(result);
             mModelMover.ModelChanged += mSelectionBox.UpdateMatrix;
             var modelOverlay = Game.GameManager.GraphicsThread.GetOverlay<UI.Overlays.ModelInfoOverlay>();
@@ -100,6 +102,11 @@ namespace SharpWoW.Models
             mMdxResult = null;
             mWmoResult = wmoHit;
             mSelectionBox.UpdateSelectionBox(wmoHit.Model.BoundingBox, wmoHit.ModelMatrix);
+            if (mModelMover != null)
+                mModelMover.ModelChanged -= mSelectionBox.UpdateMatrix;
+
+            mModelMover = new WMO.WMOModelMover(wmoHit);
+            mModelMover.ModelChanged += mSelectionBox.UpdateMatrix;
         }
 
         public void ClearSelection()

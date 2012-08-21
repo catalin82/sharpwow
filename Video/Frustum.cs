@@ -61,8 +61,33 @@ namespace SharpWoW.Video
 
         public ContainmentType Contains(BoundingBox boundingBox, Matrix worldMatrix)
         {
-            boundingBox.Maximum = Vector3.TransformCoordinate(boundingBox.Maximum, worldMatrix);
-            boundingBox.Minimum = Vector3.TransformCoordinate(boundingBox.Minimum, worldMatrix);
+            var bboxcl = boundingBox.GetCorners().ToList();
+            for (int i = 0; i < bboxcl.Count; ++i)
+                bboxcl[i] = Vector3.TransformCoordinate(bboxcl[i], worldMatrix);
+
+            Vector3 newMin = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+            Vector3 newMax = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+
+            for (int i = 0; i < bboxcl.Count; ++i)
+            {
+                if (bboxcl[i].X < newMin.X)
+                    newMin.X = bboxcl[i].X;
+                if (bboxcl[i].X > newMax.X)
+                    newMax.X = bboxcl[i].X;
+
+                if (bboxcl[i].Y < newMin.Y)
+                    newMin.Y = bboxcl[i].Y;
+                if (bboxcl[i].Y > newMax.Y)
+                    newMax.Y = bboxcl[i].Y;
+
+                if (bboxcl[i].Z < newMin.Z)
+                    newMin.Z = bboxcl[i].Z;
+                if (bboxcl[i].Z > newMax.Z)
+                    newMax.Z = bboxcl[i].Z;
+            }
+
+            boundingBox = new BoundingBox(newMin, newMax);
+
             bool flag = false;
             foreach (Plane plane in planes)
             {

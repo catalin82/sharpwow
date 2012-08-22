@@ -207,6 +207,7 @@
     </Compile>
     <Compile Include="SimpleRender\ControlRender.cs" />
     <Compile Include="SimpleRender\ModelCamera.cs" />
+    <Compile Include="TexCoordSize.cs" />
     <Compile Include="UI\Dialogs\BookmarksDialog.cs">
       <SubType>Form</SubType>
     </Compile>

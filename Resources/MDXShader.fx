@@ -58,7 +58,7 @@ float CalcDepth(float3 vertexPos)
 	return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-float4 ApplySunLight(float4 base, float3 normal)
+float4 ApplySunLight(float4 base, float3 normal, float3 viewDirection)
 {
 	float light = dot(normal, -normalize(SunDirection));
 	if(light < 0)
@@ -66,9 +66,18 @@ float4 ApplySunLight(float4 base, float3 normal)
 	if(light > 0.5f)
 		light = 0.5f + (light - 0.5f) * 0.65f;
 
-	light = saturate(light + 0.5f);
+	float3 Normal = normalize(normal);
+	float3 LightDir = normalize(-SunDirection);
+	float3 ViewDir = normalize(viewDirection);
+	float4 diff = saturate(dot(Normal, LightDir));
+
+	float3 reflect = normalize(2 * diff * Normal - LightDir);
+	float4 specular = pow(saturate(dot(reflect, ViewDir)), 8);
+
+	//light = saturate(light + 0.5f);
 	float3 diffuse = diffuseLight * light;
 	diffuse += ambientLight;
+	diffuse += specular * 0.3f * diffuseLight;
 	base.rgb *= diffuse;
 	return base;
 }
@@ -87,6 +96,7 @@ struct PixelInput
 	float Angle : TEXCOORD2;
 	float3 Normal : TEXCOORD3;
 	float4 VariableInput : COLOR1;
+	float3 ViewDirection : TEXCOORD4;
 };
 
 struct VertexInput
@@ -152,6 +162,7 @@ PixelInput MeshShader(VertexInput input)
 	retVal.Depth = CalcDepth(instancePos.xyz);
 	retVal.Normal = normalize(instanceNorm);
 	retVal.VariableInput = input.VariableInput;
+	retVal.ViewDirection = CameraPosition - input.Position.xyz;
 
 	return retVal;
 }
@@ -165,7 +176,7 @@ PixelInput MeshShader(VertexInput input)
 float4 PixelBlendShader(PixelInput input) : COLOR0
 {
 	float4 BaseColor = tex2D(MeshSampler, input.TextureCoords);
-	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
 
 	BaseColor = ApplyFog(BaseColor, input.Depth, input.Angle);
 	

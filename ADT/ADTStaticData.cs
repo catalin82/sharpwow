@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SlimDX.Direct3D9;
+using SlimDX;
 
 namespace SharpWoW.ADT
 {
@@ -11,6 +13,17 @@ namespace SharpWoW.ADT
         internal static short[] Indices = new short[768];
         internal static float[,] TexCoords = new float[145, 2];
         internal static float[,] AlphaCoords = new float[145, 2];
+        internal static VertexDeclaration VertexDeclaration;
+        internal static VertexElement[] VertexElements = new VertexElement[]
+        {
+            new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Position, 0),
+            new VertexElement(0, 12, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Normal, 0),
+            new VertexElement(0, 24, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 0),
+            new VertexElement(0, 32, DeclarationType.Float2, DeclarationMethod.Default, DeclarationUsage.TextureCoordinate, 1),
+            new VertexElement(0, 40, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Tangent, 0),
+            new VertexElement(0, 52, DeclarationType.Float3, DeclarationMethod.Default, DeclarationUsage.Binormal, 0),
+            VertexElement.VertexDeclarationEnd
+        };
 
         public const float HoleSize = Utils.Metrics.Chunksize / 64.0f;
         public const float HoleLen = Utils.Metrics.Chunksize / 4.0f;
@@ -56,6 +69,8 @@ namespace SharpWoW.ADT
 
             LoadTexCoords();
             LoadAlphaCoords();
+
+            VertexDeclaration = new VertexDeclaration(Game.GameManager.GraphicsThread.GraphicsManager.Device, VertexElements);
         }
 
         private static void LoadTexCoords()

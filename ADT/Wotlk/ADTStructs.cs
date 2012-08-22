@@ -52,8 +52,10 @@ namespace SharpWoW.ADT.Wotlk
         public float NX, NY, NZ;
         public float U, V;
         public float S, T;
+        public Vector3 Tangent;
+        public Vector3 Binormal;
 
-        public const SlimDX.Direct3D9.VertexFormat FVF = SlimDX.Direct3D9.VertexFormat.Position | SlimDX.Direct3D9.VertexFormat.Texture2 | SlimDX.Direct3D9.VertexFormat.Normal;
+        public static SlimDX.Direct3D9.VertexFormat FVF = SlimDX.Direct3D9.VertexFormat.Position | SlimDX.Direct3D9.VertexFormat.Texture4 | SlimDX.Direct3D9.VertexFormat.Normal | new TexCoordSize3(2) | new TexCoordSize3(3);
         public const int Size = 20;
     }
 

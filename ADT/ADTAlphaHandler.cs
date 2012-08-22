@@ -40,7 +40,7 @@ namespace SharpWoW.ADT
                 if (mFreeShadowTextures.Count == 0)
                     return null;
 
-                var ret = mFreeTextures[0];
+                var ret = mFreeShadowTextures[0];
                 mFreeShadowTextures.RemoveAt(0);
                 return ret;
             }

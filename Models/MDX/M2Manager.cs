@@ -93,6 +93,7 @@ namespace SharpWoW.Models.MDX
                         result.Renderer = couple.Value;
                         result.InstanceData = result.Renderer.InstanceLoader.GetInstanceById(instanceId);
                         result.HitPoint = hitPoint;
+                        result.HasHit = true;
                     }
                 }
             }

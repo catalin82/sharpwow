@@ -92,13 +92,13 @@ namespace SharpWoW.Video
                         Game.GameManager.SelectionManager.SelectWMOModel(hit);
                         return;
                     }
-                    else if (mdxDistance >= 0 && mdxDistance < terrainDist)
+                    else if (result.HasHit && mdxDistance >= 0 && mdxDistance < terrainDist)
                     {
                         Game.GameManager.SelectionManager.SelectMdxModel(result);
                         return;
                     }
                 }
-                else if (mdxDistance >= 0 && mdxDistance < terrainDist)
+                else if (result.HasHit && mdxDistance >= 0 && mdxDistance < terrainDist)
                 {
                     Game.GameManager.SelectionManager.SelectMdxModel(result);
                     return;

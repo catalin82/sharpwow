@@ -106,7 +106,7 @@ float4 ApplyShadows(float4 base, float2 coords)
 	return base;
 }
 
-float4 ApplySunLight(float4 base, float3 normal)
+float4 ApplySunLight(float4 base, float3 normal, float3 viewDirection)
 {
 	float light = dot(normal, -normalize(SunDirection));
 	if(light < 0)
@@ -114,9 +114,18 @@ float4 ApplySunLight(float4 base, float3 normal)
 	if(light > 0.5f)
 		light = 0.5f + (light - 0.5f) * 0.65f;
 
-	light = saturate(light + 0.5f);
+	float3 Normal = normalize(normal);
+	float3 LightDir = normalize(-SunDirection);
+	float3 ViewDir = normalize(viewDirection);
+	float4 diff = saturate(dot(Normal, LightDir));
+
+	float3 reflect = normalize(2 * diff * Normal - LightDir);
+	float4 specular = pow(saturate(dot(reflect, ViewDir)), 8);
+
+	//light = saturate(light + 0.5f);
 	float3 diffuse = diffuseLight * light;
 	diffuse += ambientLight;
+	diffuse += specular * 0.3f * diffuseLight;
 	base.rgb *= diffuse;
 	return base;
 }
@@ -204,7 +213,7 @@ struct PixelInput
 	float2 AlphaCoords : TEXCOORD1;
 	float3 PositionSpace : TEXCOORD2;
 	float Depth : TEXCOORD3;
-	//float Angle : TEXCOORD4;
+	float3 ViewDirection : TEXCOORD4;
 	float3 Normal : TEXCOORD5;
 	//float4 VertexColor : TEXCOORD6;
 };
@@ -234,6 +243,7 @@ PixelInput TerrainBlendShader(VertexInput input)
 	retVal.PositionSpace = input.Position.xyz;
 	retVal.Depth = CalcDepth(input.Position.xyz);
 	retVal.Normal = normalize(input.Normal);
+	retVal.ViewDirection = CameraPosition - input.Position.xyz;
 	/*retVal.VertexColor = input.VertexColor;
 
 	float3 diff = input.Position - CameraPosition;
@@ -289,7 +299,7 @@ float4 PixelBlendShader1Layer(PixelInput input) : COLOR0
 	BaseColor *= AlphaValue.a;
 
 	//BaseColor = ApplyDiffuse(BaseColor);
-	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
 	BaseColor = ApplyShadows(BaseColor, input.AlphaCoords);
 	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
@@ -345,7 +355,7 @@ float4 PixelBlendShader2Layer(PixelInput input) : COLOR0
 	BaseColor *= AlphaValues.a;
 
 	//BaseColor = ApplyDiffuse(BaseColor);
-	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
 	BaseColor = ApplyShadows(BaseColor, input.AlphaCoords);
 	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
@@ -408,7 +418,7 @@ float4 PixelBlendShader3Layer(PixelInput input) : COLOR0
 	BaseColor *= AlphaValues.a;
 
 	//BaseColor = ApplyDiffuse(BaseColor);
-	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
 	BaseColor = ApplyShadows(BaseColor, input.AlphaCoords);
 	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
@@ -475,7 +485,7 @@ float4 PixelBlendShader4Layer(PixelInput input) : COLOR0
 	BaseColor *= AlphaValues.a;
 
 	//BaseColor = ApplyDiffuse(BaseColor);
-	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
 	BaseColor = ApplyShadows(BaseColor, input.AlphaCoords);
 	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
 	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);

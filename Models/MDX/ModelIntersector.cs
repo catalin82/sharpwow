@@ -8,6 +8,7 @@ namespace SharpWoW.Models.MDX
 {
     public class MdxIntersectionResult
     {
+        public bool HasHit { get; set; }
         public M2BatchRender Renderer { get; set; }
         public M2Info Model { get; set; }
         public float Distance { get; set; }

@@ -455,7 +455,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\wobd_earth.ico" />
-    <None Include="Resources\wobd_earth.png" />
     <Resource Include="Resources\394580430943859083405.png" />
     <None Include="Resources\21.png" />
     <None Include="Resources\BoxShader.fx" />

@@ -153,10 +153,6 @@ PixelInput MeshShader(VertexInput input)
 	retVal.Normal = normalize(instanceNorm);
 	retVal.VariableInput = input.VariableInput;
 
-	//float3 diff = input.Position - CameraPosition;
-	//float diff2D = sqrt(diff.x * diff.x + diff.z * diff.z);
-	//retVal.Angle = atan(diff.y / diff2D);
-
 	return retVal;
 }
 

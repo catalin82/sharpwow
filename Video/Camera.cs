@@ -9,11 +9,30 @@ using System.Windows.Forms;
 
 namespace SharpWoW.Video
 {
-    public class Camera
+    public class PerspectiveCamera : ICamera
     {
-        public Camera()
+        public PerspectiveCamera()
         {
             ViewFrustum = new Frustum();
+            mMatProjection =
+                Matrix.PerspectiveFovLH(
+                45.0f * ((float)Math.PI / 180.0f),
+                (float)Game.GameManager.GraphicsThread.GraphicsManager.RenderWindow.ClientSize.Width /
+                Game.GameManager.GraphicsThread.GraphicsManager.RenderWindow.ClientSize.Height,
+                0.1f, 1000.0f
+           );
+
+            Game.GameManager.GraphicsThread.GraphicsManager.Device.SetTransform(TransformState.Projection, mMatProjection);
+        }
+
+        public void DeviceAttached(Device dev)
+        {
+            Game.GameManager.GraphicsThread.GraphicsManager.Device.SetTransform(TransformState.Projection, mMatProjection);
+            mDevice.SetTransform(TransformState.View, Matrix.LookAtLH(mPosition, mTarget, mUp));
+            ShaderCollection.CameraChanged(this);
+            Game.GameManager.WorldManager.Update(this);
+            ViewFrustum.BuildViewFrustum(mDevice.GetTransform(TransformState.View), mDevice.GetTransform(TransformState.Projection));
+            Game.GameManager.InformPropertyChanged(Game.GameProperties.CameraPosition);
         }
 
         public void UpdateCamera(Device dev, TimeSpan diff)
@@ -109,17 +128,21 @@ namespace SharpWoW.Video
             }
         }
 
-        public void SetPosition(Vector3 position)
+        public void SetPosition(Vector3 position, bool nonUpdate = false)
         {
             mPosition = position;
             mTarget = mPosition + mFront;
             mDevice.SetTransform(TransformState.View, Matrix.LookAtLH(mPosition, mTarget, mUp));
             ShaderCollection.CameraChanged(this);
-            Game.GameManager.WorldManager.Update(this);
-            ViewFrustum.BuildViewFrustum(mDevice.GetTransform(TransformState.View), mDevice.GetTransform(TransformState.Projection));
-            Game.GameManager.InformPropertyChanged(Game.GameProperties.CameraPosition);
+            if (nonUpdate == false)
+            {
+                Game.GameManager.WorldManager.Update(this);
+                ViewFrustum.BuildViewFrustum(mDevice.GetTransform(TransformState.View), mDevice.GetTransform(TransformState.Projection));
+                Game.GameManager.InformPropertyChanged(Game.GameProperties.CameraPosition);
+            }
         }
 
+        private Matrix mMatProjection;
         private Vector3 mPosition = Vector3.UnitX;
         private Vector3 mTarget = Vector3.Zero;
         private Vector3 mUp = Vector3.UnitZ;

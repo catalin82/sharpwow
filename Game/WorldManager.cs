@@ -33,6 +33,8 @@ namespace SharpWoW.Game
                     ADT.IADTFile file = ADT.ADTManager.CreateADT(@"World\Maps\" + continent + @"\" + continent + "_" + valX + "_" + valY + ".adt",
                         (uint)valX, (uint)valY, (i == 0 && j == 0));
 
+                    file.Continent = continent;
+
                     if (file != null)
                         mFiles.Add(file);
                 }
@@ -71,6 +73,8 @@ namespace SharpWoW.Game
                     ADT.IADTFile file = ADT.ADTManager.CreateADT(@"World\Maps\" + continent + @"\" + continent + "_" + valX + "_" + valY + ".adt",
                         (uint)valX, (uint)valY);
 
+                    file.Continent = continent;
+
                     if (file != null)
                         mFiles.Add(file);
                 }
@@ -89,7 +93,7 @@ namespace SharpWoW.Game
             mContinent = continent;
         }
 
-        public void Update(Video.Camera cam)
+        public void Update(Video.ICamera cam)
         {
             if (isInWorld == false)
                 return;
@@ -145,6 +149,7 @@ namespace SharpWoW.Game
                 uint iy = index % 1000;
                 var str = @"World\Maps\" + mContinent + "\\" + mContinent + "_" + ix + "_" + iy + ".adt";
                 ADT.IADTFile file = ADT.ADTManager.CreateADT(str, ix, iy);
+                file.Continent = mContinent;
                 if (file != null)
                     mFiles.Add(file);                    
             }
@@ -256,11 +261,14 @@ namespace SharpWoW.Game
         public ADT.IADTChunk HoveredChunk { get { return mHoveredChunk; } }
         public uint MapID { get; private set; }
         public bool IsInWorld { get { return mFiles.Count != 0; } }
+        public float FogStart { get { return mFogStart; } set { mFogStart = value; Game.GameManager.InformPropertyChanged(GameProperties.FogStart); } }
+        public float FogDistance { get { return mFogDistance; } set { mFogDistance = value; Game.GameManager.InformPropertyChanged(GameProperties.FogDistance); } }
 
         private List<ADT.IADTFile> mFiles = new List<ADT.IADTFile>();
         string mContinent;
         bool isInWorld = false;
         private ADT.IADTFile mHoveredTile = null;
         private ADT.IADTChunk mHoveredChunk = null;
+        private float mFogStart, mFogDistance;
     }
 }

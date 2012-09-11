@@ -47,7 +47,6 @@ namespace SharpWoW.Models.WMO
         public MOMT Material { get { return mMaterial; } }
 
         private MOMT mMaterial;
-        private WMOFile mFile;
     }
 
     public class WMOEditDescriptor

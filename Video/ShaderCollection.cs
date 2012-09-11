@@ -26,9 +26,32 @@ namespace SharpWoW.Video
             WMOShader.SetTechnique(0);
             BoxShader = ShaderManager.Shaders.GetShader("BoxShader");
             BoxShader.SetTechnique(0);
+
+            Game.GameManager.PropertyChanged += (property) =>
+            {
+                switch (property)
+                {
+                    case Game.GameProperties.FogStart:
+                        {
+                            TerrainShader.SetValue("fogStart", Game.GameManager.WorldManager.FogStart);
+                            MDXShader.SetValue("fogStart", Game.GameManager.WorldManager.FogStart);
+                            WMOShader.SetValue("fogStart", Game.GameManager.WorldManager.FogStart);
+                        }
+                        break;
+
+                    case Game.GameProperties.FogDistance:
+                        {
+                            float fogEnd = Game.GameManager.WorldManager.FogStart + Game.GameManager.WorldManager.FogDistance;
+                            TerrainShader.SetValue("fogEnd", fogEnd);
+                            MDXShader.SetValue("fogEnd", fogEnd);
+                            WMOShader.SetValue("fogEnd", fogEnd);
+                        }
+                        break;
+                }
+            };
         }
 
-        public static void CameraChanged(Video.Camera cam)
+        public static void CameraChanged(Video.ICamera cam)
         {
             TerrainShader.SetValue("matrixViewProj", cam.ViewProj);
             TerrainShader.SetValue("CameraPosition", cam.Position);

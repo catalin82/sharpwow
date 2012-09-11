@@ -10,8 +10,18 @@ using System.Runtime.InteropServices;
 
 namespace SharpWoW.ADT.Cataclysm
 {
+    /// <summary>
+    /// Represents a subchunk of a large terrain file. Implements IADTChunk for general access and rendering.
+    /// </summary>
     public class ADTChunk : IADTChunk
     {
+        /// <summary>
+        /// Initializes all parameters of the chunk without performing any load operation.
+        /// </summary>
+        /// <param name="parent">The parent large terrain file of this chunk</param>
+        /// <param name="baseFile">The MPQ-file which contains the general information about placement and doodads</param>
+        /// <param name="texFile">The MPQ-stream which contains all the texture related information (MCLY, MCAL, ...)</param>
+        /// <param name="offset">The offset inside baseFile and texFile where this chunks MCNK is located</param>
         public ADTChunk(ADTFile parent, Stormlib.MPQFile baseFile, Utils.StreamedMpq texFile, ChunkOffset offset)
         {
             mFile = baseFile;
@@ -20,6 +30,9 @@ namespace SharpWoW.ADT.Cataclysm
             mParent = parent;
         }
 
+        /// <summary>
+        /// Performs a synchronous load of the chunk including vertices, texture layers and normals.
+        /// </summary>
         public void DoLoad()
         {
             mFile.Position = mOffset.Offset + 8;
@@ -34,6 +47,10 @@ namespace SharpWoW.ADT.Cataclysm
             LoadNormals();
         }
 
+        /// <summary>
+        /// Renders the chunk to the screen using the TerrainShader. Checks visibility of the bounding box against the current active
+        /// camera.
+        /// </summary>
         public void Render()
         {
             if (Game.GameManager.GraphicsThread.GraphicsManager.Camera.ViewFrustum.Contains(mBox, Matrix.Identity) == ContainmentType.Disjoint)

@@ -22,15 +22,20 @@ namespace SharpWoW.ADT.Wotlk
             ADTManager.AddADT(this);
         }
 
-        public override void RenderADT()
+        public override void RenderADT(SlimDX.Matrix preTransform)
         { 
             lock (mChunks)
             {
                 foreach (var chunk in mChunks)
                 {
-                    chunk.Render();
+                    chunk.Render(preTransform);
                 }
             }
+        }
+
+        public bool IsLoaded()
+        {
+            return mChunks.Count == 256;
         }
 
         public override void Unload()

@@ -37,9 +37,10 @@ namespace SharpWoW.Game
         /// Called by the main windows when its initialization is done. After here all the additional stuff is loaded
         /// which may use graphical interaction with the user. 
         /// </summary>
-        public static void OnFormLoaded()
+        public static async void OnFormLoaded()
         {
-            Stormlib.MPQArchiveLoader.Instance.Init();
+            IsGlobalDataLoaded = false;
+            await Stormlib.MPQArchiveLoader.Instance.Init();
             DBC.DBCStores.LoadFiles();
             SkyManager = new World.SkyManager();
             mForm.OnGameInitialized(); 
@@ -50,6 +51,7 @@ namespace SharpWoW.Game
             SelectionManager = new Models.SelectionManager();
             if (GlobalDataLoaded != null)
                 GlobalDataLoaded();
+            IsGlobalDataLoaded = true;
         }
 
         /// <summary>
@@ -166,6 +168,7 @@ namespace SharpWoW.Game
                     ActiveChangeModeChanged();
             }
         }
+        public static bool IsGlobalDataLoaded { get; private set; }
 
         public static event Action<GameProperties> PropertyChanged;
         public static event Action GameTerminated;
@@ -216,6 +219,8 @@ namespace SharpWoW.Game
         HoveredADT,
         HoveredChunk,
         Map,
-        CameraPosition
+        CameraPosition,
+        FogStart,
+        FogDistance
     }
 }

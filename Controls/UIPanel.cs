@@ -16,12 +16,17 @@ namespace SharpWoW.Controls
         public UIPanel()
         {
             InitializeComponent();
+            Initialize();
+        }
+
+        private async Task modelAwaiter()
+        {
             List<string> fileList = new List<string>();
             List<string> mdxFileList = new List<string>();
             List<string> wmoModelList = new List<string>();
-            TreeNode mdxNode = null, wmoNode = null;
-            Stormlib.MPQArchiveLoader.Instance.Initialized += () =>
-                {
+
+            Action a = new Action(() =>
+            {
                     foreach (var archive in Stormlib.MPQArchiveLoader.Instance.ArchiveList)
                     {
                         var files = archive.Value.GetFiles();
@@ -37,11 +42,12 @@ namespace SharpWoW.Controls
 
                         mdxFileList.AddRange(mdxModels);
 
-                        Func<string, bool> groupLambda = (file) => {
-                            if(file.Length <= 4)
+                        Func<string, bool> groupLambda = (file) =>
+                        {
+                            if (file.Length <= 4)
                                 return false;
 
-                            if(file[file.Length - 4] != '_')
+                            if (file[file.Length - 4] != '_')
                                 return false;
 
                             var last = new string(file.Skip(file.Length - 3).ToArray());
@@ -61,19 +67,45 @@ namespace SharpWoW.Controls
 
                     mTextureFileList.AddRange(fileList);
                     mMdxModelList.AddRange(mdxFileList);
-                    mdxNode = loadTreeViewItems(mdxFileList);
-                    mWmoModelList.AddRange(wmoModelList);
-                    wmoNode = loadTreeViewItems(wmoModelList, "WMO");
-                };
+                        mMdxTreeNode = loadTreeViewItems(mdxFileList);
+                        mWmoModelList.AddRange(wmoModelList);
+                        mWmoTreeNode = loadTreeViewItems(wmoModelList, "WMO");
+                        if (mIsTreeHandleReady)
+                        {
+                            listBox1.Invoke(new Action(() => listBox1.Items.AddRange(fileList.ToArray())));
+                            treeView1.Invoke(new Action(() => treeView1.Nodes.Add(mMdxTreeNode)));
+                            treeView1.Invoke(new Action(() => treeView1.Nodes.Add(mWmoTreeNode)));
+                        }
+                }
+            );
+
+            TaskFactory fac = new TaskFactory();
+            await fac.StartNew(a);
+        }
+
+        private async void MPQLoadedCallback()
+        {
+            await modelAwaiter();
+        }
+
+        private void Initialize()
+        {
+            HandleCreated += (sender, e) =>
+            {
+                if (mMdxTreeNode == null)
+                {
+                    mIsTreeHandleReady = true;
+                    return;
+                }
+                listBox1.Items.AddRange(mTextureFileList.ToArray());
+                treeView1.Nodes.Add(mMdxTreeNode);
+                treeView1.Nodes.Add(mWmoTreeNode);
+
+            };
+
+            Stormlib.MPQArchiveLoader.Instance.Initialized += MPQLoadedCallback;
 
             Resize += UIPanel_Resize;
-
-            HandleCreated += (sender, e) =>
-                {
-                    listBox1.Items.AddRange(fileList.ToArray());
-                    treeView1.Nodes.Add(mdxNode);
-                    treeView1.Nodes.Add(wmoNode);
-                };
 
             Game.GameManager.ActiveChangeModeChanged += () =>
                 {
@@ -215,6 +247,8 @@ namespace SharpWoW.Controls
         private List<string> mTextureFileList = new List<string>();
         private List<string> mMdxModelList = new List<string>();
         private List<string> mWmoModelList = new List<string>();
+        private TreeNode mWmoTreeNode, mMdxTreeNode;
+        private bool mIsTreeHandleReady = false;
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {

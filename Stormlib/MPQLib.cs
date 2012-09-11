@@ -50,36 +50,43 @@ namespace SharpWoW.Stormlib
 
         public event Action Initialized;
 
-        public bool Init()
+        public async Task<bool> Init()
         {
             ArchiveList = new Dictionary<string, MPQArchive>();
 
-            string basePath = Game.GameManager.GamePath;
-            basePath += "\\data";
-            LoadArchivesFromDir(basePath);
-
-            Locale = Locales.Unknown;
-
-            var locs = Enum.GetNames(typeof(Locales));
-            foreach (var loc in locs)
-            {
-                if (System.IO.Directory.Exists(basePath + "\\" + loc))
+            Func<bool> a = new Func<bool>(() =>
                 {
-                    Locale = (Locales)Enum.Parse(typeof(Locales), loc);
-                    break;
+                    string basePath = Game.GameManager.GamePath;
+                    basePath += "\\data";
+                    LoadArchivesFromDir(basePath);
+
+                    Locale = Locales.Unknown;
+
+                    var locs = Enum.GetNames(typeof(Locales));
+                    foreach (var loc in locs)
+                    {
+                        if (System.IO.Directory.Exists(basePath + "\\" + loc))
+                        {
+                            Locale = (Locales)Enum.Parse(typeof(Locales), loc);
+                            break;
+                        }
+                    }
+
+                    if (Locale == Locales.Unknown)
+                        throw new Exception("Unable to determine locale!");
+
+                    basePath += "\\" + Locale.ToString();
+                    LoadArchivesFromDir(basePath);
+
+                    if (Initialized != null)
+                        Initialized();
+
+                    return true;
                 }
-            }
+            );
 
-            if (Locale == Locales.Unknown)
-                throw new Exception("Unable to determine locale!");
-
-            basePath += "\\" + Locale.ToString();
-            LoadArchivesFromDir(basePath);
-
-            if (Initialized != null)
-                Initialized();
-
-            return true;
+            TaskFactory<bool> factory = new TaskFactory<bool>();
+            return await factory.StartNew(a);
         }
 
         private void LoadArchive(List<string> listFiles)

@@ -86,6 +86,19 @@ namespace SharpWoW.Game.Logic
                             Game.GameManager.ActiveChangeType = ActiveChangeType.Height;
                     }
                     break;
+
+                case 'h':
+                    Game.GameManager.GraphicsThread.GraphicsManager.Enter2DMode();
+                    break;
+
+                case 'g':
+                    {
+                        var file = Game.GameManager.WorldManager.HoveredTile;
+                        ADT.MinimapRender rndr = new ADT.MinimapRender();
+                        rndr.CreateMinimap(file);
+                        rndr.Unload();
+                    }
+                    break;
             }
 
             if (Intensity < 0)

@@ -19,6 +19,9 @@ namespace SharpWoW.World
 
         public void DrawSky()
         {
+            if (Game.GameManager.GraphicsThread.GraphicsManager.IsIn2D)
+                return;
+
             var dev = Game.GameManager.GraphicsThread.GraphicsManager.Device;
             var matrix = Matrix.Translation(Game.GameManager.GraphicsThread.GraphicsManager.Camera.Position);
             Video.ShaderCollection.SkyShader.SetValue("matWorld", matrix);

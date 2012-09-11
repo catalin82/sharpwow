@@ -11,8 +11,11 @@ namespace SharpWoW.Video
     {
         private Plane[] planes;
 
+        public bool PassAllTests { get; set; }
+
         public Frustum()
         {
+            PassAllTests = false;
             planes = new Plane[6];
         }
 
@@ -61,6 +64,9 @@ namespace SharpWoW.Video
 
         public ContainmentType Contains(BoundingBox boundingBox, Matrix worldMatrix)
         {
+            if (PassAllTests)
+                return ContainmentType.Contains;
+
             var bboxcl = boundingBox.GetCorners().ToList();
             for (int i = 0; i < bboxcl.Count; ++i)
                 bboxcl[i] = Vector3.TransformCoordinate(bboxcl[i], worldMatrix);

@@ -51,13 +51,8 @@ namespace SharpWoW.Video
 
             VideoResourceMgr = new VideoResourceManager();
 
-            Camera = new Camera();
-            Device.SetTransform(TransformState.Projection, SlimDX.Matrix.PerspectiveFovLH(
-                45.0f * ((float)Math.PI / 180.0f), 
-                (float)mRenderWindow.ClientSize.Width / (float)mRenderWindow.ClientSize.Height,
-                0.1f,
-                1000.0f
-            ));
+            mActiveCamera = new PerspectiveCamera();
+
             Device.SetTransform(TransformState.World, Matrix.Identity);
             Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
             Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
@@ -65,6 +60,26 @@ namespace SharpWoW.Video
 
             if (DeviceLoaded != null)
                 DeviceLoaded();
+        }
+
+        public void Enter2DMode(bool updateWorld = true)
+        {
+            if (Camera is OrthogonalCamera)
+                return;
+
+            var oldCamera = Camera;
+            var newCamera = new OrthogonalCamera();
+            newCamera.PreventWorldUpdate = !updateWorld;
+            Camera = newCamera;
+            float height = 0;
+            var position = oldCamera.Position;
+
+            if (Game.GameManager.WorldManager.GetLandHeightFast(position.X, position.Y, ref height))
+                position.Z = height;
+
+            Camera.SetPosition(oldCamera.Position);
+            Game.GameManager.WorldManager.FogStart = 1000.0f;
+            newCamera.PreventWorldUpdate = false;
         }
 
         public void UpdateMouseTerrainPos(int x, int y)
@@ -117,13 +132,15 @@ namespace SharpWoW.Video
 
         Control mRenderWindow;
         PresentParameters mPresentParams;
+        ICamera mActiveCamera;
 
         public Control RenderWindow { get { return mRenderWindow; } }
         public Device Device { get; private set; }
         public Direct3D Direct3D { get; private set; }
-        public Camera Camera { get; private set; }
+        public ICamera Camera { get { return mActiveCamera; } set { mActiveCamera = value; mActiveCamera.DeviceAttached(Device); } }
         public VideoConfig CurrentConfig { get; set; }
         public event Action DeviceLoaded;
         public VideoResourceManager VideoResourceMgr { get; private set; }
+        public bool IsIn2D { get { return Camera is OrthogonalCamera; } }
     }
 }

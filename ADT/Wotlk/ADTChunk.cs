@@ -57,9 +57,9 @@ namespace SharpWoW.ADT.Wotlk
                 for (int j = 0; j < (((i % 2) != 0) ? 8 : 9); ++j)
                 {
                     float x, y, z;
-                    z = mFile.Read<float>() + mHeader.position.Z;
-                    y = i * Utils.Metrics.Unitsize * 0.5f + mHeader.position.Y;
-                    x = j * Utils.Metrics.Unitsize + mHeader.position.X;
+                    z = mFile.Read<float>() + mHeader.position.Z; 
+                    y = i * Utils.Metrics.Unitsize * 0.5f/* + mHeader.position.Y*/;
+                    x = j * Utils.Metrics.Unitsize/* + mHeader.position.X*/;
 
                     if ((i % 2) != 0)
                         x += 0.5f * Utils.Metrics.Unitsize;
@@ -336,7 +336,7 @@ namespace SharpWoW.ADT.Wotlk
             AlphaFloats = null;
         }
 
-        public void Render()
+        public void Render(SlimDX.Matrix preTransform)
         {
             if (Game.GameManager.GraphicsThread.GraphicsManager.Camera.ViewFrustum.Contains(mBox, Matrix.Identity) == ContainmentType.Disjoint)
                 return;
@@ -401,6 +401,10 @@ namespace SharpWoW.ADT.Wotlk
             shdr.SetTechnique(mHeader.nLayers - 1);
             shdr.SetTexture("alphaTexture", mAlphaTexture);
             shdr.SetTexture("shadowTexture", mShadowTexture);
+            Matrix matChunk = preTransform * Matrix.Translation(mHeader.position.X, mHeader.position.Y, 0);
+
+            shdr.SetValue("matrixViewProj", (matChunk * Game.GameManager.GraphicsThread.GraphicsManager.Camera.ViewProj));
+            shdr.SetValue("matrixWorld", matChunk);
             for(int i = 0; i < 4; ++i)
                 shdr.SetValue("TextureFlags" + i, mTextureFlags[i]);
             for (int i = 0; i < mLayers.Count; ++i)

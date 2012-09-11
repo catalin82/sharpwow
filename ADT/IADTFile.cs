@@ -9,7 +9,7 @@ namespace SharpWoW.ADT
 {
     public abstract class IADTFile
     {
-        public abstract void RenderADT();
+        public abstract void RenderADT(Matrix pretransform);
         public abstract bool Intersect(Ray ray, ref float height);
         public abstract void ChangeTerrain(Vector3 pos, bool lower);
         public abstract void FlattenTerrain(Vector3 pos, bool lower);
@@ -30,6 +30,7 @@ namespace SharpWoW.ADT
         public Dictionary<uint, string> WMONames = new Dictionary<uint, string>();
         public List<uint> WMOIdentifiers = new List<uint>();
         public List<Wotlk.MODF> WMODefinitions = new List<Wotlk.MODF>();
+        public string Continent { get; set; }
        
     }
 }

@@ -84,6 +84,13 @@ namespace SharpWoW.Video.Input
             ctrl.MouseClick += new MouseEventHandler(_MouseClick);
             ctrl.MouseDown += _MouseDown;
             ctrl.MouseUp += _MouseUp;
+            ctrl.MouseWheel += _MouseWheel;
+        }
+
+        void _MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (MouseWheel != null)
+                MouseWheel(e.Delta);
         }
 
         void _MouseUp(object sender, MouseEventArgs e)
@@ -175,12 +182,14 @@ namespace SharpWoW.Video.Input
         public delegate void KeyPressDlg(char chr);
         public delegate void KeyDownDlg(Keys key);
         public delegate void KeyUpDlg(Keys key);
+        public delegate void MouseWheelDlg(int delta);
         public event MouseMoveDlg MouseMoved;
         public event KeyPressDlg KeyPressed;
         public event KeyDownDlg KeyDown;
         public event KeyUpDlg KeyUp;
         public event MousePressDlg MousePress;
         public event MousePressDlg MouseUp, MouseDown;
+        public event MouseWheelDlg MouseWheel;
 
         private SlimDX.Vector2? mMouseLastPos = null;
         

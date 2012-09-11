@@ -16,7 +16,7 @@ namespace SharpWoW.ADT
             VisibleChunks.Clear();
             foreach (var file in mActiveFiles)
             {
-                file.RenderADT();
+                file.RenderADT(SlimDX.Matrix.Identity);
             }
         }
 

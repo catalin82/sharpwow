@@ -92,7 +92,7 @@ namespace SharpWoW.ADT.Cataclysm
             return hasHit;
         }
 
-        public override void RenderADT()
+        public override void RenderADT(SlimDX.Matrix preTransform)
         {
             if (loadFinished == false)
                 return;

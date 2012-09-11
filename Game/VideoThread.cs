@@ -84,6 +84,16 @@ namespace SharpWoW.Game
                 mLastNumFrames = 0;
             }
 
+            if (Game.GameManager.IsGlobalDataLoaded == false)
+            {
+                GraphicsManager.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
+                GraphicsManager.Device.BeginScene();
+
+                GraphicsManager.Device.EndScene();
+                GraphicsManager.Device.Present();
+                return;
+            }
+
             Video.Input.InputManager.Input.Update();
             Video.ShaderCollection.UpdateTime(Game.GameManager.GameTime);
 
@@ -139,7 +149,7 @@ namespace SharpWoW.Game
                 if (async == false)
                     mWindow.Invoke(action);
                 else
-                    mWindow.BeginInvoke(new Action(action));
+                    mWindow.BeginInvoke(action);
             }
         }
 

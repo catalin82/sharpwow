@@ -156,8 +156,15 @@ namespace SharpWoW.Models.MDX
                 dev.Indices = Indices[counter];
 
                 shdr.SetTexture("MeshTexture", Textures[counter]);
-                shdr.SetValue<Matrix>("BoneMatrices", mModelInfo.Passes[counter].BoneMatrices);
-                shdr.SetValue("useAnimation", false);//mModelInfo.Passes[counter].BoneMatrices.Length > 0);
+                if (mModelInfo.Passes[counter].BoneMatrices.Length == 0 || mModelInfo.Passes[counter].BoneMatrices.Length > 50)
+                {
+                    shdr.SetValue("useAnimation", false);
+                }
+                else
+                {
+                    shdr.SetValue<Matrix>("BoneMatrices", mModelInfo.Passes[counter].BoneMatrices);
+                    shdr.SetValue("useAnimation", false);//mModelInfo.Passes[counter].BoneMatrices.Length > 0);
+                }
 
                 shdr.DoRender((device) =>
                     {

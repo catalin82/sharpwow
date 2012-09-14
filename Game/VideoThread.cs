@@ -187,7 +187,7 @@ namespace SharpWoW.Game
             }
         }
 
-        public delegate void FrameRenderDelegate(Device device, TimeSpan deltaTime);
+        public delegate void FrameRenderDelegate(Device sender, TimeSpan deltaTime);
         public event FrameRenderDelegate OnFrame;
 
         public Video.GraphicsManager GraphicsManager { get; private set; }

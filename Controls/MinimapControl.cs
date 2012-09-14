@@ -16,12 +16,16 @@ namespace SharpWoW.Controls
         public MinimapControl()
         {
             InitializeComponent();
+            mInfoQuery = ADT.IBasicInfoQuery.Create();
+
             Paint += new PaintEventHandler(paintMap);
             MouseDown += new MouseEventHandler(_MouseDown);
             MouseUp += new MouseEventHandler(_MouseUp);
             MouseMove += new MouseEventHandler(_MouseMove);
             MouseWheel += new MouseEventHandler(_MouseWheel);
             MouseClick += new MouseEventHandler(_MouseClick);
+            label2.Location = new Point(0, 20);
+            label2.Visible = false;
         }
 
         void _MouseClick(object sender, MouseEventArgs e)
@@ -116,12 +120,15 @@ namespace SharpWoW.Controls
         }
 
         public Bitmap Minimap { get { return mMinimap; } set { mMinimap = value; ImageChanged(); } }
+        public DBC.MapEntry MapEntry { get; set; }
+
         private Bitmap mMinimap = null;
         private PointF mTranslation = new PointF(0, 0);
         private bool mRightDown = false;
         private Point mLastPoint = Point.Empty;
         private float mZoomFactor = 1.0f;
         private RectangleF mSrcRectangle;
+        private ADT.IBasicInfoQuery mInfoQuery;
 
         public delegate void PointSelectedDlg(float x, float y);
         public event PointSelectedDlg PointSelected;

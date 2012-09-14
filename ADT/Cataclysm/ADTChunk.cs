@@ -165,6 +165,14 @@ namespace SharpWoW.ADT.Cataclysm
                         minPos.Z = z;
                     if (z > maxPos.Z)
                         maxPos.Z = z;
+                    if (x < minPos.X)
+                        minPos.X = x;
+                    if (x > maxPos.X)
+                        maxPos.X = x;
+                    if (y < minPos.Y)
+                        minPos.Y = y;
+                    if (y > maxPos.Y)
+                        maxPos.Y = y;
 
                     vertices[counter] = new Wotlk.ADTVertex()
                     {
@@ -299,7 +307,7 @@ namespace SharpWoW.ADT.Cataclysm
                 mAlphaTexture = new SlimDX.Direct3D9.Texture(Game.GameManager.GraphicsThread.GraphicsManager.Device, 64, 64, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
             Surface baseSurf = mAlphaTexture.GetSurfaceLevel(0);
             System.Drawing.Rectangle rec = System.Drawing.Rectangle.FromLTRB(0, 0, 64, 64);
-            Surface.FromMemory(baseSurf, AlphaData, Filter.None, 0, Format.A8R8G8B8, 4 * 64, rec);
+            Surface.FromMemory(baseSurf, AlphaData, Filter.Box, 0, Format.A8R8G8B8, 4 * 64, rec);
             baseSurf.Dispose();
         }
 

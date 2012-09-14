@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace SharpWoW.Controls
 {
@@ -20,6 +21,10 @@ namespace SharpWoW.Controls
 
             if (Game.GameManager.SavePath != null)
                 textBox1.Text = System.IO.Path.GetFullPath(Game.GameManager.SavePath);
+
+            if (Game.GameManager.GamePath != null)
+                textBox2.Text = Game.GameManager.GamePath;
+
             Game.GameManager.GraphicsThreadCreated += () =>
                 {
                     Game.GameManager.GraphicsThread.GraphicsManager.DeviceLoaded += () => propertyGrid2.SelectedObject = Game.GameManager.GraphicsThread.GraphicsManager.CurrentConfig;
@@ -111,6 +116,24 @@ namespace SharpWoW.Controls
                 return;
 
             textBox1.Text = folderBrowserDialog1.SelectedPath;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var res = folderBrowserDialog2.ShowDialog();
+            if (res != DialogResult.OK)
+                return;
+
+            textBox2.Text = folderBrowserDialog2.SelectedPath;
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            var key = Registry.CurrentUser.OpenSubKey("Software\\Yias\\SharpWoW", true);
+            if (key == null)
+                key = Registry.CurrentUser.CreateSubKey("Software\\Yias\\SharpWoW");
+
+            key.SetValue("StoredWoWPath", textBox2.Text);
         }
     }
 }

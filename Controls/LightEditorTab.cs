@@ -84,6 +84,8 @@ namespace SharpWoW.Controls
 
         void insertLights(Graphics g)
         {
+            return;
+
             uint mapSize = 64 * 17;
             float realSize = 64 * Utils.Metrics.Tilesize;
             float step = realSize / mapSize;

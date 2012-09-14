@@ -27,7 +27,7 @@ float fogStart = 500.0f;
 float fogEnd = 530.0f;
 float3 diffuseLight = float3(1, 1, 1);
 float3 ambientLight = float3(0, 0, 0);
-float3 SunDirection = float3(-1, -1, -1);
+float3 SunDirection = float3(1, 1, -1);
 
 
 ///////////////////////////////////////////////////
@@ -56,7 +56,7 @@ float CalcDepth(float3 vertexPos)
 	return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-float4 ApplySunLight(float4 base, float3 normal)
+float4 ApplySunLight(float4 base, float3 normal, float3 viewDirection)
 {
 	float light = dot(normal, -normalize(SunDirection));
 	if(light < 0)
@@ -64,9 +64,18 @@ float4 ApplySunLight(float4 base, float3 normal)
 	if(light > 0.5f)
 		light = 0.5f + (light - 0.5f) * 0.65f;
 
-	light = saturate(light + 0.5f);
+	float3 Normal = normalize(normal);
+	float3 LightDir = normalize(-SunDirection);
+	float3 ViewDir = normalize(viewDirection);
+	float4 diff = saturate(dot(Normal, LightDir));
+
+	float3 reflect = normalize(2 * diff * Normal - LightDir);
+	float4 specular = pow(saturate(dot(reflect, ViewDir)), 8);
+
+	//light = saturate(light + 0.5f);
 	float3 diffuse = diffuseLight * light;
 	diffuse += ambientLight;
+	diffuse += specular * 0.3f * diffuseLight;
 	base.rgb *= diffuse;
 	return base;
 }
@@ -84,6 +93,7 @@ struct PixelInput
 	float Depth : TEXCOORD1;
 	float Angle : TEXCOORD2;
 	float3 Normal : TEXCOORD3;
+	float3 ViewDirection : TEXCOORD4;
 };
 
 struct VertexInput
@@ -111,6 +121,7 @@ PixelInput MeshShader(VertexInput input)
 	retVal.TextureCoords = input.TextureCoords;
 	retVal.Depth = CalcDepth(instancePos.xyz);
 	retVal.Normal = normalize(instanceNorm);
+	retVal.ViewDirection = CameraPosition - input.Position.xyz;
 
 	//float3 diff = input.Position - CameraPosition;
 	//float diff2D = sqrt(diff.x * diff.x + diff.z * diff.z);
@@ -128,7 +139,7 @@ PixelInput MeshShader(VertexInput input)
 float4 PixelBlendShader(PixelInput input) : COLOR0
 {
 	float4 BaseColor = tex2D(MeshSampler, input.TextureCoords);
-	BaseColor = ApplySunLight(BaseColor, input.Normal);
+	BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
 
 	return ApplyFog(BaseColor, input.Depth, input.Angle);
 }

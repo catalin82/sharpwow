@@ -91,8 +91,10 @@
     <Compile Include="ADT\Cataclysm\ADTChunk.cs" />
     <Compile Include="ADT\Cataclysm\ADTFile.cs" />
     <Compile Include="ADT\Cataclysm\ADTStructs.cs" />
+    <Compile Include="ADT\Cataclysm\BasicInfoProvider.cs" />
     <Compile Include="ADT\IADTChunk.cs" />
     <Compile Include="ADT\IADTFile.cs" />
+    <Compile Include="ADT\IBasicInfoQuery.cs" />
     <Compile Include="ADT\MinimapDirectory.cs" />
     <Compile Include="ADT\MinimapRender.cs" />
     <Compile Include="ADT\Wotlk\ADTChunk.cs" />
@@ -102,6 +104,7 @@
     <Compile Include="ADT\ADTStaticData.cs" />
     <Compile Include="ADT\Wotlk\ADTStructs.cs" />
     <Compile Include="ADT\Minimap.cs" />
+    <Compile Include="ADT\Wotlk\BasicInfoProvider.cs" />
     <Compile Include="Brushes\IBrush.cs" />
     <Compile Include="Brushes\SprayBrush.cs" />
     <Compile Include="Brushes\TerrainBrush.cs" />

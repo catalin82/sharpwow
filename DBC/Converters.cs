@@ -10,17 +10,38 @@ namespace SharpWoW.DBC
     {
         public MapEntry Convert(object value)
         {
-            MapEntry_4 me = value as MapEntry_4;
-            MapEntry ret = new MapEntry()
+            if (value is MapEntry_4)
             {
-                ID = me.ID,
-                AreaTable = me.AreaTable,
-                InternalName = me.InternalName,
-                Name = me.MapName
-            };
+                MapEntry_4 me = value as MapEntry_4;
+                MapEntry ret = new MapEntry()
+                {
+                    ID = me.ID,
+                    AreaTable = me.AreaTable,
+                    InternalName = me.InternalName,
+                    Name = me.Name
+                };
 
-            return ret;
+                return ret;
+            }
+            else if (value is MapEntry_5)
+            {
+                MapEntry_5 me = value as MapEntry_5;
+                MapEntry ret = new MapEntry();
+                foreach (var field in ret.GetType().GetFields())
+                {
+                    var field5 = me.GetType().GetField(field.Name);
+                    if (field5 == null)
+                        continue;
+
+                    field.SetValue(ret, me.GetType().GetField(field.Name).GetValue(me));
+                }
+                return ret;
+            }
+
+            throw new InvalidOperationException();
         }
+
+        public static Type GetRawType() { return Game.GameManager.IsPandaria ? typeof(MapEntry_5) : typeof(MapEntry_4); }
     }
 
     internal class AreaTableConverter : DBC.IDBCRowConverter<AreaTableEntry>

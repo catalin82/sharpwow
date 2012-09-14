@@ -52,6 +52,11 @@ namespace SharpWoW.Video
 
         static void _MouseClick(int x, int y, System.Windows.Forms.MouseButtons pressedButton)
         {
+            // at startup when we are awaiting the loading the selection manager is not yet created
+            // so if the user clicks the window SelectionManager is still null
+            if (Game.GameManager.SelectionManager == null)
+                return;
+
             if (Game.GameManager.SelectionManager.HadModelMovement)
             {
                 Game.GameManager.SelectionManager.HadModelMovement = false;

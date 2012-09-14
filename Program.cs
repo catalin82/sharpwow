@@ -19,12 +19,13 @@ namespace SharpWoW
             {
                 Game.GameManager.RunGame();
             }
-            catch (ApplicationException)
+            catch (ApplicationException ae)
             {
+                MessageBox.Show("An exeption occured during execution of the program: \n" + ae);
                 Application.Exit();
                 Application.DoEvents();
             }
-            catch (System.Threading.ThreadAbortException)
+            catch (System.Threading.ThreadAbortException te)
             {
                 Application.Exit();
                 Application.DoEvents();

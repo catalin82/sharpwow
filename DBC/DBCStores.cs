@@ -32,7 +32,7 @@ namespace SharpWoW.DBC
             LightSkyBox = new DBCFile<DBC.LightSkyBox>("DBFilesClient\\LightSkybox.dbc");
 
             if (Game.GameManager.BuildNumber > 12340)
-                Map.SetLoadType(typeof(MapEntry_4), new MapConverter());
+                Map.SetLoadType(MapConverter.GetRawType(), new MapConverter());
 
             Map.LoadData();
             LoadingScreen.LoadData();

@@ -49,6 +49,9 @@ namespace SharpWoW.Video
                         break;
                 }
             };
+
+            //if (Game.GameManager.IsPandaria)
+                TerrainShader.SetValue("minimapMode", true);
         }
 
         public static void CameraChanged(Video.ICamera cam)

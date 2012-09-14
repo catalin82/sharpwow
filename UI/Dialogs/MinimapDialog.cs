@@ -24,6 +24,7 @@ namespace SharpWoW.UI.Dialogs
             {
                 ADT.Minimap minimap = new ADT.Minimap(map.InternalName, map.ID);
                 minimapControl1.Minimap = minimap.CreateImage();
+                minimapControl1.MapEntry = mEntry;
                 ContinentName = map.InternalName;
                 minimapControl1.PointSelected += new SharpWoW.Controls.MinimapControl.PointSelectedDlg(_PointSelected);
                 Text = "Select your entry point on " + map.Name;

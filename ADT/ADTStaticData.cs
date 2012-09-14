@@ -77,8 +77,10 @@ namespace SharpWoW.ADT
         {
             uint counter = 0;
             float tx, ty;
+            // 17 rows of vertices
             for (int j = 0; j < 17; ++j)
             {
+                // All even rows have 9 vertices, the odd ones only 8 and are shifted half the unitsize into the middle
                 for (int i = 0; i < (((j % 2) != 0) ? 8 : 9); ++i)
                 {
                     tx = (float)i;

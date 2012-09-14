@@ -58,8 +58,8 @@ namespace SharpWoW.ADT.Wotlk
                 {
                     float x, y, z;
                     z = mFile.Read<float>() + mHeader.position.Z; 
-                    y = i * Utils.Metrics.Unitsize * 0.5f/* + mHeader.position.Y*/;
-                    x = j * Utils.Metrics.Unitsize/* + mHeader.position.X*/;
+                    y = i * Utils.Metrics.Unitsize * 0.5f;
+                    x = j * Utils.Metrics.Unitsize;
 
                     if ((i % 2) != 0)
                         x += 0.5f * Utils.Metrics.Unitsize;
@@ -157,7 +157,7 @@ namespace SharpWoW.ADT.Wotlk
                 {
                     byte mask = mFile.Read<byte>();
                     for (int k = 0; k < 8; ++k)
-                        ShadowData[curPtr++] = ((mask & (1 << k)) == 0) ? (byte)0xFF : (byte)0x7B;
+                        ShadowData[curPtr++] = ((mask & (1 << k)) == 0) ? (byte)0xFF : (byte)0xCC;
                 }
             }
 
@@ -181,9 +181,10 @@ namespace SharpWoW.ADT.Wotlk
                 }
             }
 
+            mFile.Position = mInfo.ofsMcnk + mHeader.ofsAlpha + 8;
             for (int i = 1; i < mHeader.nLayers; ++i)
             {
-                mFile.Position = mInfo.ofsMcnk + mHeader.ofsAlpha + 0x08 + mLayers[i].offsetMCAL;
+                //mFile.Position = mInfo.ofsMcnk + mHeader.ofsAlpha + 8 + mLayers[i].offsetMCAL;
 
                 if ((mLayers[i].flags & 0x200) != 0)
                 {
@@ -195,7 +196,7 @@ namespace SharpWoW.ADT.Wotlk
 
                 uint bufferPtr = 0;
                 uint mapPtr = 0;
-                for (int j = 0; j < 64; j++)
+                for (int j = 0; j < 63; j++)
                 {
                     for (int k = 0; k < 32; k++)
                     {
@@ -213,11 +214,16 @@ namespace SharpWoW.ADT.Wotlk
                         AlphaData[mapPtr * 4 + i - 1] = (byte)((((255 * ((int)(fileData[bufferPtr] & 0x0F))) / (float)0x0F)) * factor);
                         AlphaFloats[mapPtr, i - 1] = (ushort)((AlphaData[mapPtr * 4 + i - 1] / 255.0f) * 65535.0f);
                         ++mapPtr;
-                        AlphaData[mapPtr * 4 + i - 1] = (byte)((((255 * ((int)(fileData[bufferPtr] & 0xF0))) / 0xF0)) * factor2);
+                        AlphaData[mapPtr * 4 + i - 1] = (byte)((((255 * ((int)(fileData[bufferPtr] & (k != 31 ? 0xF0 : 0x0F)))) / (k != 31 ? 0xF0 : 0x0F))) * factor2);
                         AlphaFloats[mapPtr, i - 1] = (ushort)((AlphaData[mapPtr * 4 + i - 1] / 255.0f) * 65535.0f);
                         ++mapPtr;
                         ++bufferPtr;
                     }
+                }
+
+                for (uint j = 0; j < 256; ++j)
+                {
+                    AlphaData[(63 * 256) + j] = AlphaData[(62 * 256) + j];
                 }
             }
 
@@ -441,7 +447,7 @@ namespace SharpWoW.ADT.Wotlk
                 mAlphaTexture = new SlimDX.Direct3D9.Texture(Game.GameManager.GraphicsThread.GraphicsManager.Device, 64, 64, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
             Surface baseSurf = mAlphaTexture.GetSurfaceLevel(0);
             System.Drawing.Rectangle rec = System.Drawing.Rectangle.FromLTRB(0, 0, 64, 64);
-            Surface.FromMemory(baseSurf, AlphaData, Filter.None, 0, Format.A8R8G8B8, 4 * 64, rec);
+            Surface.FromMemory(baseSurf, AlphaData, Filter.Default, 0, Format.A8R8G8B8, 4 * 64, rec);
             baseSurf.Dispose();
         }
 

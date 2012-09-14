@@ -26,7 +26,7 @@ float fogStart = 500.0f;
 float fogEnd = 530.0f;
 float3 diffuseLight = float3(1, 1, 1);
 float3 ambientLight = float3(0, 0, 0);
-float3 SunDirection = float3(-1, -1, -1);
+float3 SunDirection = float3(1, 1, -1);
 float4x4 BoneMatrices[61];
 bool useAnimation = false;
 bool isSelected = false;
@@ -66,18 +66,9 @@ float4 ApplySunLight(float4 base, float3 normal, float3 viewDirection)
 	if(light > 0.5f)
 		light = 0.5f + (light - 0.5f) * 0.65f;
 
-	float3 Normal = normalize(normal);
-	float3 LightDir = normalize(-SunDirection);
-	float3 ViewDir = normalize(viewDirection);
-	float4 diff = saturate(dot(Normal, LightDir));
-
-	float3 reflect = normalize(2 * diff * Normal - LightDir);
-	float4 specular = pow(saturate(dot(reflect, ViewDir)), 8);
-
 	//light = saturate(light + 0.5f);
 	float3 diffuse = diffuseLight * light;
 	diffuse += ambientLight;
-	diffuse += specular * 0.3f * diffuseLight;
 	base.rgb *= diffuse;
 	return base;
 }
@@ -179,8 +170,6 @@ float4 PixelBlendShader(PixelInput input) : COLOR0
 	BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
 
 	BaseColor = ApplyFog(BaseColor, input.Depth, input.Angle);
-	
-	BaseColor.rgb *= input.VariableInput.rgb;
 
 	return BaseColor;
 }

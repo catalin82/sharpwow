@@ -21,13 +21,13 @@ namespace SharpWoW.DBC
         public string DescHorde;
         public uint TimeOfDay;
         public uint LoadScreen;
-        public float BattleFieldScale;
+        public float minimapScale;
         public float EntranceX;
         public float EntranceY;       
         public uint Expansion;
         public uint ParentArea;
         public uint Unk;
-        public uint NumPlayers;
+        public uint NumberOfPlayers;
         public uint Unk2;
     }
 
@@ -35,15 +35,38 @@ namespace SharpWoW.DBC
     {
         public uint ID;
         public string InternalName;
-        public uint InstanceType;
+        public uint MapType;
         public uint AreaTable;
         public uint Flags;
         public uint PvP;
-        public string MapName;
+        public string Name;
         public uint Unk2;
         public string DescAlliance;
         public string DescHorde;
-        public uint LoadingScreen;
+        public uint LoadScreen;
+        public float minimapScale;
+        public uint corpseID;
+        public float corpseX;
+        public float corpseY;
+        public uint TimeOfDay;
+        public uint Expansion;
+        public uint NumberOfPlayers;
+        public uint ParentMap;
+        public uint Unk1;
+    }
+
+    public class MapEntry_5
+    {
+        public uint ID;
+        public string InternalName;
+        public uint MapType;
+        public uint AreaTable;
+        public uint Flags;
+        public string Name;
+        public uint Unk2;
+        public string DescAlliance;
+        public string DescHorde;
+        public uint LoadScreen;
         public float minimapScale;
         public uint corpseID;
         public float corpseX;
@@ -121,6 +144,7 @@ namespace SharpWoW.DBC
         public uint refZoneIntro;
         public int area_level;
         public int unkMOP;
+        public int unk7;
         public string AreaName;
         public uint refFactionGroup;
         public uint liquidType1, liquidType2, liquidType3, liquidType4;

@@ -13,7 +13,7 @@ namespace SharpWoW.ADT
         public MinimapRender()
         {
             mRenderTarget = new Texture(Game.GameManager.GraphicsThread.GraphicsManager.Device,
-                256, 256, 1, Usage.RenderTarget | Usage.AutoGenerateMipMap, Format.X8R8G8B8, Pool.Default);
+                2048, 2048, 1, Usage.RenderTarget, Format.X8R8G8B8, Pool.Default);
 
             mRenderSurface = mRenderTarget.GetSurfaceLevel(0);
         }
@@ -38,7 +38,7 @@ namespace SharpWoW.ADT
             var oldCamera = Game.GameManager.GraphicsThread.GraphicsManager.Camera;
             var oldTarget = Game.GameManager.GraphicsThread.GraphicsManager.Device.GetRenderTarget(0);
             Game.GameManager.GraphicsThread.GraphicsManager.Device.SetRenderTarget(0, mRenderSurface);
-            Game.GameManager.GraphicsThread.GraphicsManager.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Red, 1, 0);
+            Game.GameManager.GraphicsThread.GraphicsManager.Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.CornflowerBlue, 1, 0);
 
             var newCamera = new Video.OrthogonalCamera(1, 1, false);
             newCamera.ViewFrustum.PassAllTests = true;
@@ -52,7 +52,13 @@ namespace SharpWoW.ADT
             Game.GameManager.WorldManager.FogStart = 530.0f;
             Game.GameManager.GraphicsThread.GraphicsManager.Camera = oldCamera;
 
-            Video.TextureConverter.SaveTextureAsBlp(Video.TextureConverter.BlpCompression.Dxt3, mRenderTarget, fileName);
+            Texture saveTexture = new Texture(mRenderSurface.Device, 256, 256, 1, Usage.None, Format.X8R8G8B8, Pool.Managed);
+            Surface surf = saveTexture.GetSurfaceLevel(0);
+            Surface.FromSurface(surf, mRenderSurface, Filter.Box, 0);
+            surf.Dispose();
+
+            Video.TextureConverter.SaveTextureAsBlp(Video.TextureConverter.BlpCompression.Dxt3, saveTexture, fileName);
+            saveTexture.Dispose();
             Video.ShaderCollection.TerrainShader.SetValue("minimapMode", false);
         }
 

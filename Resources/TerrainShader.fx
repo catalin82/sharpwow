@@ -10,21 +10,21 @@ texture alphaTexture;
 sampler BaseSampler = sampler_state
 {
 	texture = <blendTexture0>; 
-	magfilter = ANISOTROPIC;
-	minfilter = ANISOTROPIC;
-	mipfilter = ANISOTROPIC;
-	AddressU = wrap;
-	AddressV = wrap;
+	magfilter = LINEAR;
+	minfilter = LINEAR;
+	mipfilter = LINEAR;
+	AddressU = clamp;
+	AddressV = clamp;
 };
 
 sampler BlendSampler1 = sampler_state
 {
 	texture = <blendTexture1>; 
-	magfilter = ANISOTROPIC;
-	minfilter = ANISOTROPIC;
-	mipfilter = ANISOTROPIC;
-	AddressU = wrap;
-	AddressV = wrap;
+	magfilter = LINEAR;
+	minfilter = LINEAR;
+	mipfilter = LINEAR;
+	AddressU = CLAMP;
+	AddressV = CLAMP;
 };
 
 sampler ShadowSampler = sampler_state
@@ -40,31 +40,31 @@ sampler ShadowSampler = sampler_state
 sampler BlendSampler2 = sampler_state
 {
 	texture = <blendTexture2>; 
-	magfilter = ANISOTROPIC;
-	minfilter = ANISOTROPIC;
-	mipfilter = ANISOTROPIC;
-	AddressU = wrap;
-	AddressV = wrap;
+	magfilter = LINEAR;
+	minfilter = LINEAR;
+	mipfilter = LINEAR;
+	AddressU = CLAMP;
+	AddressV = CLAMP;
 };
 
 sampler BlendSampler3 = sampler_state
 {
 	texture = <blendTexture3>; 
-	magfilter = ANISOTROPIC;
-	minfilter = ANISOTROPIC;
-	mipfilter = ANISOTROPIC;
-	AddressU = wrap;
-	AddressV = wrap;
+	magfilter = LINEAR;
+	minfilter = LINEAR;
+	mipfilter = LINEAR;
+	AddressU = CLAMP;
+	AddressV = CLAMP;
 };
 
 sampler AlphaSampler = sampler_state
 {
 	texture = <alphaTexture>; 
-	magfilter = ANISOTROPIC;
-	minfilter = ANISOTROPIC;
-	mipfilter = ANISOTROPIC;
-	AddressU = wrap;
-	AddressV = wrap;
+	magfilter = LINEAR;
+	minfilter = LINEAR;
+	mipfilter = LINEAR;
+	AddressU = clamp;
+	AddressV = clamp;
 };
 
 float4x4 matrixViewProj;
@@ -240,7 +240,7 @@ PixelInput TerrainBlendShader(VertexInput input)
 	PixelInput retVal = (PixelInput)0;
 
 	retVal.Position = mul(float4(input.Position.xyz, 1.0f), matrixViewProj);
-	retVal.TextureCoords = input.TextureCoords;
+	retVal.TextureCoords = (input.TextureCoords);
 	retVal.AlphaCoords = input.AlphaCoords;
 	retVal.PositionSpace = mul(float4(input.Position.xyz, 1.0f), matrixWorld).xyz;
 	retVal.Depth = CalcDepth(retVal.PositionSpace);
@@ -263,11 +263,11 @@ PixelInput TerrainBlendShader(VertexInput input)
 
 float4 PixelBlendShader1Layer(PixelInput input) : COLOR0
 {
-	float2 coord1 = input.TextureCoords;
+	float2 coord1 = frac(input.TextureCoords);
 	if(TextureFlags0 == 1)
 		coord1 += gameTime * float2(0.2, 0.2);
 	float4 BaseColor = tex2D(BaseSampler, coord1);
-	float4 AlphaValue = tex2D(AlphaSampler, input.AlphaCoords);
+	float4 AlphaValue = tex2D(AlphaSampler, frac(input.AlphaCoords));
 	BaseColor *= AlphaValue.a;
 	//BaseColor *= 2 * input.VertexColor;
 	
@@ -300,7 +300,6 @@ float4 PixelBlendShader1Layer(PixelInput input) : COLOR0
 
 	BaseColor *= AlphaValue.a;
 
-	//BaseColor = ApplyDiffuse(BaseColor);
 	if(minimapMode == false)
 	{
 		BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
@@ -316,8 +315,8 @@ float4 PixelBlendShader1Layer(PixelInput input) : COLOR0
 
 float4 PixelBlendShader2Layer(PixelInput input) : COLOR0
 {
-	float2 coord1 = input.TextureCoords;
-	float2 coord2 = input.TextureCoords;
+	float2 coord1 = frac(input.TextureCoords);
+	float2 coord2 = frac(input.TextureCoords);
 	if(TextureFlags0 == 1)
 		coord1 += gameTime * float2(0.2, 0.2);
 	if(TextureFlags1 == 2)
@@ -325,7 +324,7 @@ float4 PixelBlendShader2Layer(PixelInput input) : COLOR0
 
 	float4 BaseColor = tex2D(BaseSampler, coord1);
 	float4 BlendColor = tex2D(BlendSampler1, coord2);
-	float4 AlphaValues = tex2D(AlphaSampler, input.AlphaCoords);
+	float4 AlphaValues = tex2D(AlphaSampler, frac(input.AlphaCoords));
 	BaseColor *= AlphaValues.a;
 	BaseColor = (BlendColor * AlphaValues.b) + (1 - AlphaValues.b) * BaseColor;
 	//BaseColor *= 2 * input.VertexColor;
@@ -359,7 +358,6 @@ float4 PixelBlendShader2Layer(PixelInput input) : COLOR0
 
 	BaseColor *= AlphaValues.a;
 
-	//BaseColor = ApplyDiffuse(BaseColor);
 	if(minimapMode == false)
 	{
 		BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
@@ -375,9 +373,9 @@ float4 PixelBlendShader2Layer(PixelInput input) : COLOR0
 
 float4 PixelBlendShader3Layer(PixelInput input) : COLOR0
 {
-	float2 coord1 = input.TextureCoords;
-	float2 coord2 = input.TextureCoords;
-	float2 coord3 = input.TextureCoords;
+	float2 coord1 = frac(input.TextureCoords);
+	float2 coord2 = frac(input.TextureCoords);
+	float2 coord3 = frac(input.TextureCoords);
 	if(TextureFlags0 == 1)
 		coord1 += gameTime * float2(0.2, 0.2);
 	if(TextureFlags1 == 1)
@@ -389,7 +387,7 @@ float4 PixelBlendShader3Layer(PixelInput input) : COLOR0
 	float4 BlendColor1 = tex2D(BlendSampler1, coord2);
 	float4 BlendColor2 = tex2D(BlendSampler2, coord3);
 
-	float4 AlphaValues = tex2D(AlphaSampler, input.AlphaCoords);
+	float4 AlphaValues = tex2D(AlphaSampler, frac(input.AlphaCoords));
 	BaseColor *= AlphaValues.a;
 
 	float4 blend1 = (AlphaValues.b * BlendColor1) + ((1 - AlphaValues.b) * BaseColor);
@@ -425,7 +423,6 @@ float4 PixelBlendShader3Layer(PixelInput input) : COLOR0
 
 	BaseColor *= AlphaValues.a;
 
-	//BaseColor = ApplyDiffuse(BaseColor);
 	if(minimapMode == false)
 	{
 		BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
@@ -441,10 +438,10 @@ float4 PixelBlendShader3Layer(PixelInput input) : COLOR0
 
 float4 PixelBlendShader4Layer(PixelInput input) : COLOR0
 {
-	float2 coord1 = input.TextureCoords;
-	float2 coord2 = input.TextureCoords;
-	float2 coord3 = input.TextureCoords;
-	float2 coord4 = input.TextureCoords;
+	float2 coord1 = frac(input.TextureCoords);
+	float2 coord2 = frac(input.TextureCoords);
+	float2 coord3 = frac(input.TextureCoords);
+	float2 coord4 = frac(input.TextureCoords);
 	if(TextureFlags0 == 1)
 		coord1 += gameTime * float2(0.2, 0.2);
 	if(TextureFlags1 == 1)
@@ -459,7 +456,8 @@ float4 PixelBlendShader4Layer(PixelInput input) : COLOR0
 	float4 BlendColor2 = tex2D(BlendSampler2, coord3);
 	float4 BlendColor3 = tex2D(BlendSampler3, coord4);
 
-	float4 AlphaValues = tex2D(AlphaSampler, input.AlphaCoords);
+	float4 AlphaValues = tex2D(AlphaSampler, frac(input.AlphaCoords));
+
 	BaseColor *= AlphaValues.a;
 	float4 blend1 = (AlphaValues.b * BlendColor1) + ((1 - AlphaValues.b) * BaseColor);
 	float4 blend2 = (BlendColor2 * AlphaValues.g) + ((1 - AlphaValues.g) * blend1);
@@ -495,7 +493,6 @@ float4 PixelBlendShader4Layer(PixelInput input) : COLOR0
 
 	BaseColor *= AlphaValues.a;
 
-	//BaseColor = ApplyDiffuse(BaseColor);
 	if(minimapMode == false)
 	{
 		BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);

@@ -36,6 +36,11 @@ namespace SharpWoW.Utils
             srcHandle.Free();
         }
 
+        public static void CopyMemory(IntPtr src, IntPtr dst, int numBytes)
+        {
+            MoveMemory(dst, src, numBytes);
+        }
+
         [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
         static extern void MoveMemory(IntPtr dest, IntPtr src, int size);
     }

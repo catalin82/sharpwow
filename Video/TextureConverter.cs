@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SlimDX.Direct3D9;
 using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace SharpWoW.Video
 {
@@ -32,6 +33,30 @@ namespace SharpWoW.Video
             Dxt1,
             Dxt3,
             Dxt5
+        }
+
+        public static void SaveTextureToImage(Texture texture, Bitmap bmp)
+        {
+            if (bmp.PixelFormat != System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                throw new InvalidOperationException();
+
+            var desc0 = texture.GetLevelDescription(0);
+            Texture tmpTexture = null;
+
+            Surface dataSurface;
+            tmpTexture = new Texture(texture.Device, bmp.Width, bmp.Height, 1, Usage.None, Format.A8R8G8B8, Pool.Managed);
+            dataSurface = tmpTexture.GetSurfaceLevel(0);
+            using (Surface srcSurf = texture.GetSurfaceLevel(0))
+                Surface.FromSurface(dataSurface, srcSurf, Filter.Box, 0);
+
+            var rect = dataSurface.LockRectangle(LockFlags.None);
+            var bmpInfo = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Utils.Memory.CopyMemory(rect.Data.DataPointer, bmpInfo.Scan0, 4 * bmp.Width * bmp.Height);
+            bmp.UnlockBits(bmpInfo);
+            dataSurface.UnlockRectangle();
+
+            dataSurface.Dispose();
+            tmpTexture.Dispose();
         }
 
         public static void SaveTextureAsBlp(BlpCompression compression, Texture texture, string fileName)

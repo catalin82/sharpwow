@@ -124,4 +124,7 @@
     <value>Select the format you like to use for the depth and stencil buffer. The parameters are the following:
 D stands for depth and S stands for stencil, X means unused. Ideal is D24S8 which means 24 bits for depth and 8 bits for stencil. You can select the highest possible value, the lockable attribute is optional and you can ignore it.</value>
   </data>
+  <data name="WorldMapMinimapWarning" xml:space="preserve">
+    <value>!!! WARNING: ADT are not correctly loaded in this mode !!!</value>
+  </data>
 </root>

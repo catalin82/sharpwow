@@ -118,12 +118,47 @@ namespace SharpWoW.Models.MDX
         public ushort BoneBaseIndex = 0;
         public SlimDX.Matrix[] BoneMatrices;
         public M2Info ParentModel;
+        public List<byte> BoneIndices = new List<byte>();
 
         public void UpdatePass()
         {
-            for (ushort i = 0; i < BoneMatrices.Length; ++i)
+            if(BoneIndices.Count > 50)
+                return;
+
+            int i = 0;
+            for (; i < BoneIndices.Count; ++i)
             {
-                BoneMatrices[i] = ParentModel.BoneAnimator.GetBone((short)(ParentModel.BoneLookupTable[i + BoneBaseIndex])).Matrix;
+                var bone = ParentModel.BoneAnimator.GetBone(BoneIndices[i]);
+                if (bone == null)
+                {
+                    BoneMatrices[i] = SlimDX.Matrix.Identity;
+                    continue;
+                }
+
+                BoneMatrices[i] = bone.Matrix;
+            }
+        }
+
+        public void SetVertexIndices()
+        {
+            foreach (var v in Vertices)
+            {
+                if (!BoneIndices.Contains(v.bi1))
+                    BoneIndices.Add(v.bi1);
+                if (!BoneIndices.Contains(v.bi2))
+                    BoneIndices.Add(v.bi2);
+                if (!BoneIndices.Contains(v.bi3))
+                    BoneIndices.Add(v.bi3);
+                if (!BoneIndices.Contains(v.bi4))
+                    BoneIndices.Add(v.bi4);
+            }
+
+            for (int i = 0; i < Vertices.Length; ++i)
+            {
+                Vertices[i].bi1 = (byte)BoneIndices.IndexOf(Vertices[i].bi1);
+                Vertices[i].bi2 = (byte)BoneIndices.IndexOf(Vertices[i].bi2);
+                Vertices[i].bi3 = (byte)BoneIndices.IndexOf(Vertices[i].bi3);
+                Vertices[i].bi4 = (byte)BoneIndices.IndexOf(Vertices[i].bi4);
             }
         }
     }

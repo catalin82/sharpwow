@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 namespace SharpWoW.Controls
 {
@@ -16,6 +17,8 @@ namespace SharpWoW.Controls
         public MinimapControl()
         {
             InitializeComponent();
+            checkBox1.Tag = 0;
+            checkBox1.MouseHover += checkBox1_MouseHover;
             mInfoQuery = ADT.IBasicInfoQuery.Create();
 
             Paint += new PaintEventHandler(paintMap);
@@ -26,6 +29,38 @@ namespace SharpWoW.Controls
             MouseClick += new MouseEventHandler(_MouseClick);
             label2.Location = new Point(0, 20);
             label2.Visible = false;
+            Load += MinimapControl_HandleCreated;
+        }
+
+        void checkBox1_MouseHover(object sender, EventArgs e)
+        {
+            int oldVal = (int)checkBox1.Tag;
+            ++oldVal;
+            oldVal %= 4;
+            checkBox1.Tag = oldVal;
+            switch (oldVal)
+            {
+                case 0:
+                    checkBox1.Location = new Point(0, 0);
+                    break;
+
+                case 1:
+                    checkBox1.Location = new Point(Parent.ClientSize.Width - checkBox1.Width, 0);
+                    break;
+
+                case 2:
+                    checkBox1.Location = new Point(Parent.ClientSize.Width - checkBox1.Width, Parent.ClientSize.Height - checkBox1.Height);
+                    break;
+                    
+                case 3:
+                    checkBox1.Location = new Point(0, Parent.ClientSize.Height - checkBox1.Height);
+                    break;
+            }
+        }
+
+        void MinimapControl_HandleCreated(object sender, EventArgs e)
+        {
+            mOrigSize = Parent.Size;
         }
 
         void _MouseClick(object sender, MouseEventArgs e)
@@ -101,8 +136,18 @@ namespace SharpWoW.Controls
         {
             var g = e.Graphics;
             g.Clear(Color.Black);
-            if (mMinimap != null)
-                g.DrawImage(mMinimap, new RectangleF(0, 0, Width, Height), mSrcRectangle, GraphicsUnit.Pixel);
+            if (DrawOverlay == false)
+            {
+                if (mMinimap != null)
+                    g.DrawImage(mMinimap, new RectangleF(0, 0, Width, Height), mSrcRectangle, GraphicsUnit.Pixel);
+            }
+            else
+            {
+                if (mStaticOverlay != null)
+                    g.DrawImage(mStaticOverlay, new RectangleF(0, 0, Width, Height), mSrcRectangle, GraphicsUnit.Pixel);
+
+                g.DrawString(Resources.Strings.WorldMapMinimapWarning, mWarnFont, mBrush, new PointF(0, 30));
+            }
         }
 
         private void ImageChanged()
@@ -112,23 +157,55 @@ namespace SharpWoW.Controls
 
         private void updateRectangle()
         {
-            if (mMinimap == null)
+            if ((DrawOverlay == false && mMinimap == null) || (DrawOverlay && mStaticOverlay == null))
                 return;
 
-            mSrcRectangle = new RectangleF(mTranslation.X + ((1 - mZoomFactor) * mMinimap.Width) / 2.0f, mTranslation.Y + ((1 - mZoomFactor) * mMinimap.Height) / 2.0f, mMinimap.Width * mZoomFactor, mMinimap.Height * mZoomFactor);
+            int width = (DrawOverlay ? StaticOverlay.Width : mMinimap.Width);
+            int height = (DrawOverlay ? StaticOverlay.Height : mMinimap.Height);
+
+            mSrcRectangle = new RectangleF(mTranslation.X + ((1 - mZoomFactor) * width) / 2.0f, mTranslation.Y + ((1 - mZoomFactor) * height) / 2.0f, width * mZoomFactor, height * mZoomFactor);
             Invalidate();
         }
 
+        public Bitmap StaticOverlay { get { return mStaticOverlay; } set { mStaticOverlay = value; ImageChanged(); } }
         public Bitmap Minimap { get { return mMinimap; } set { mMinimap = value; ImageChanged(); } }
         public DBC.MapEntry MapEntry { get; set; }
+        public bool DrawOverlay
+        {
+            get
+            {
+                return mDrawOverlay;
+            }
 
+            set
+            {
+                mDrawOverlay = value;
+                if (value)
+                {
+                    float aspect = 1002.0f / 667.0f;
+                    Parent.Width = (int)(mOrigSize.Height * aspect);
+                }
+                else
+                {
+                    Parent.Width = mOrigSize.Width;
+                }
+
+                updateRectangle();
+            }
+        }
+
+        private bool mDrawOverlay = false;
         private Bitmap mMinimap = null;
+        private Bitmap mStaticOverlay = null;
         private PointF mTranslation = new PointF(0, 0);
         private bool mRightDown = false;
         private Point mLastPoint = Point.Empty;
         private float mZoomFactor = 1.0f;
         private RectangleF mSrcRectangle;
         private ADT.IBasicInfoQuery mInfoQuery;
+        private Size mOrigSize;
+        private Font mWarnFont = new Font(new FontFamily("Lucida Sans Unicode"), 14.0f, FontStyle.Bold);
+        private SolidBrush mBrush = new SolidBrush(Color.Red);
 
         public delegate void PointSelectedDlg(float x, float y);
         public event PointSelectedDlg PointSelected;
@@ -139,6 +216,11 @@ namespace SharpWoW.Controls
                 label1.Dock = DockStyle.Right;
             else
                 label1.Dock = DockStyle.Left;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            DrawOverlay = checkBox1.Checked;
         }
     }
 }

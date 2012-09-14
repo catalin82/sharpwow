@@ -118,6 +118,10 @@ namespace SharpWoW.Models.MDX
             mFile.Position = Header.ofsBoneLookupTables;
             mFile.Read(BoneLookupTable);
 
+            GlobalSequences = new uint[Header.nGlobalSequences];
+            mFile.Position = Header.ofsGlobalSequences;
+            mFile.Read(GlobalSequences);
+
             for (int i = 0; i < mView.nTexUnits; ++i)
             {
                 M2RenderPass pass = new M2RenderPass();
@@ -144,6 +148,7 @@ namespace SharpWoW.Models.MDX
                     pass.Vertices[k].bi4 = (byte)(Vertices[i].bi4);
                 }
 
+                pass.SetVertexIndices();
                 Passes.Add(pass);
             }
 
@@ -160,7 +165,7 @@ namespace SharpWoW.Models.MDX
         public List<MdxVertex> Vertices = new List<MdxVertex>();
         public List<M2RenderPass> Passes = new List<M2RenderPass>();
         public SlimDX.BoundingBox BoundingBox { get; private set; }
-        public uint[] GlobalSequences { get { return null; } }
+        public uint[] GlobalSequences { get; private set; }
         public M2BoneAnimator BoneAnimator { get; private set; }
         public ushort[] BoneLookupTable { get; private set; }
     }

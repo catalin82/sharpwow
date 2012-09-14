@@ -163,7 +163,7 @@ namespace SharpWoW.Models.MDX
                 else
                 {
                     shdr.SetValue<Matrix>("BoneMatrices", mModelInfo.Passes[counter].BoneMatrices);
-                    shdr.SetValue("useAnimation", false);//mModelInfo.Passes[counter].BoneMatrices.Length > 0);
+                    shdr.SetValue("useAnimation", mModelInfo.Passes[counter].BoneMatrices.Length > 0);
                 }
 
                 shdr.DoRender((device) =>
@@ -188,7 +188,7 @@ namespace SharpWoW.Models.MDX
             if (pass >= mModelInfo.Passes.Count)
                 throw new Exception("pass >= mModelInfo.Passes.Count");
 
-            //mModelInfo.Passes[pass].UpdatePass();
+            mModelInfo.Passes[pass].UpdatePass();
 
             Device dev = Game.GameManager.GraphicsThread.GraphicsManager.Device;
 

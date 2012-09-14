@@ -124,4 +124,7 @@
     <value>Auswahl des Tiefenformats. Die Parameter sind folgendermassen aufgebaut:
 D steht für die Tiefe, S steht für den Stencilbuffer und X bezeichnet nicht genutzte Bits. Eine ideale Verteilung auf die zwei Buffer wäre D24S8 was 24 Bits an die Tiefe und 8 Bits an den Stencilbuffer gibt. Werte die 'Lockable' haben können ignoriert werden, das Lockableattribut ist unwichtig für diese Applikation.</value>
   </data>
+  <data name="WorldMapMinimapWarning" xml:space="preserve">
+    <value>!!! ACHTUNG: Das Laden der ADT von der Worldmap funktioniert nicht korret !!!</value>
+  </data>
 </root>

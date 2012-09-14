@@ -10,9 +10,22 @@ namespace SharpWoW.Models.MDX
     {
         public M2BoneAnimator(Stormlib.MPQFile file, M2Info parent)
         {
+            string AnimPath = parent.FileDirectory + parent.ModelName;
+
             M2Animation[] anims = new M2Animation[parent.Header.nAnimations];
             file.Position = parent.Header.ofsAnimations;
             file.Read(anims);
+
+            Stormlib.MPQFile[] AnimFiles = new Stormlib.MPQFile[parent.Header.nAnimations];
+            for (int i = 0; i < parent.Header.nAnimations; ++i)
+            {
+                string full = AnimPath + anims[i].AnimationID.ToString("D4") + "-" + anims[i].SubAnimationID.ToString("D2") + ".anim";
+                if (Stormlib.MPQFile.Exists(full))
+                {
+                    Console.WriteLine(full);
+                    AnimFiles[i] = new Stormlib.MPQFile(full);
+                }
+            }
 
             Animations.AddRange(anims);
 
@@ -23,7 +36,7 @@ namespace SharpWoW.Models.MDX
 
             foreach (var bone in bones)
             {
-                M2AnimationBone ab = new M2AnimationBone(bone, this, file, parent.GlobalSequences);
+                M2AnimationBone ab = new M2AnimationBone(bone, this, file, parent.GlobalSequences, AnimFiles);
                 Bones.Add(ab);
                 ab.BoneIndex = Bones.Count - 1;
             }
@@ -59,22 +72,22 @@ namespace SharpWoW.Models.MDX
     {
         public int BoneIndex = 0;
 
-        public M2AnimationBone(M2Bone bone, M2BoneAnimator Anim, Stormlib.MPQFile f, uint[] gs)
+        public M2AnimationBone(M2Bone bone, M2BoneAnimator Anim, Stormlib.MPQFile f, uint[] gs, Stormlib.MPQFile[] Anims)
         {
             Animator = Anim;
             fileInfo = bone;
-            var ap = new M2Animator<Vector3, Vector3>(fileInfo.Translation, f, gs);
+            var ap = new M2Animator<Vector3, Vector3>(fileInfo.Translation, f, gs, Anims);
             ap.Load();
             ap.SelectedAnim = 0;
             AnimPos = new PositionAnimator(ap);
             AnimPos.MaxTime = TimeSpan.FromMilliseconds(Anim.Animations[0].Length);
-            ap = new M2Animator<Vector3, Vector3>(fileInfo.Scaling, f, gs);
+            ap = new M2Animator<Vector3, Vector3>(fileInfo.Scaling, f, gs, Anims);
             ap.Load();
             ap.SelectedAnim = 0;
             AnimScale = new PositionAnimator(ap);
             AnimScale.Default = new Vector3(1, 1, 1);
             AnimScale.MaxTime = TimeSpan.FromMilliseconds(Anim.Animations[0].Length);
-            var ar = new M2Animator<Quaternion16, Quaternion>(fileInfo.Rotation, f, gs);
+            var ar = new M2Animator<Quaternion16, Quaternion>(fileInfo.Rotation, f, gs, Anims);
             ar.Load();
             ar.SelectedAnim = 0;
             AnimRot = new RotationAnimator(ar);

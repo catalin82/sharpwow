@@ -58,8 +58,8 @@ namespace SharpWoW.ADT.Wotlk
                 {
                     float x, y, z;
                     z = mFile.Read<float>() + mHeader.position.Z; 
-                    y = i * Utils.Metrics.Unitsize * 0.5f;
-                    x = j * Utils.Metrics.Unitsize;
+                    y = i * Utils.Metrics.Unitsize * 0.5f + mHeader.position.Y;
+                    x = j * Utils.Metrics.Unitsize + mHeader.position.X;
 
                     if ((i % 2) != 0)
                         x += 0.5f * Utils.Metrics.Unitsize;
@@ -407,7 +407,7 @@ namespace SharpWoW.ADT.Wotlk
             shdr.SetTechnique(mHeader.nLayers - 1);
             shdr.SetTexture("alphaTexture", mAlphaTexture);
             shdr.SetTexture("shadowTexture", mShadowTexture);
-            Matrix matChunk = preTransform * Matrix.Translation(mHeader.position.X, mHeader.position.Y, 0);
+            Matrix matChunk = preTransform * Matrix.Identity;
 
             shdr.SetValue("matrixViewProj", (matChunk * Game.GameManager.GraphicsThread.GraphicsManager.Camera.ViewProj));
             shdr.SetValue("matrixWorld", matChunk);

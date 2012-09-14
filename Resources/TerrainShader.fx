@@ -242,7 +242,7 @@ PixelInput TerrainBlendShader(VertexInput input)
 	retVal.Position = mul(float4(input.Position.xyz, 1.0f), matrixViewProj);
 	retVal.TextureCoords = (input.TextureCoords);
 	retVal.AlphaCoords = input.AlphaCoords;
-	retVal.PositionSpace = mul(float4(input.Position.xyz, 1.0f), matrixWorld).xyz;
+	retVal.PositionSpace = input.Position.xyz;
 	retVal.Depth = CalcDepth(retVal.PositionSpace);
 	retVal.Normal = normalize(input.Normal);
 	retVal.ViewDirection = CameraPosition - retVal.PositionSpace;

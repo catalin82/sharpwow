@@ -131,18 +131,22 @@ PixelInput MeshShader(VertexInput input)
 		float fBlendW[4] = (float[4])input.Weights;
 		int iIndices[4] = (int[4])input.Indices;
 		float4 posOrig = posTmp;
-		float4 posTrans = posTmp;
+		float4 posTrans = 0.0f;
 
-		for(int i = 0; i < 4; ++i)
+		float lastW = 0.0f;
+
+		for(int i = 0; i < 3; ++i)
 		{
 			fW = fBlendW[i];
 			if(fW == 0.0f)
 				continue;
 
+			lastW += fW;
 			posTrans.xyz += mul(posOrig, BoneMatrices[iIndices[i]]) * fW;
 		}
 
-		posTmp.xyz = posTrans.xyz - posTmp.xyz;
+		posTrans.xyz += mul(posOrig, BoneMatrices[iIndices[3]]) * (1.0f - lastW);
+		posTmp.xyz = posTrans.xyz;
 	}
 
 	float4 instancePos = mul(posTmp, modelMatrix);

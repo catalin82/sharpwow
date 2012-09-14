@@ -78,5 +78,14 @@ namespace SharpWoW.Resources {
                 return ResourceManager.GetString("StencilExplanation", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to !!! WARNING: ADT are not correctly loaded in this mode !!!.
+        /// </summary>
+        internal static string WorldMapMinimapWarning {
+            get {
+                return ResourceManager.GetString("WorldMapMinimapWarning", resourceCulture);
+            }
+        }
     }
 }

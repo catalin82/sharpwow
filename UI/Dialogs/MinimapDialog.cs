@@ -63,7 +63,6 @@ namespace SharpWoW.UI.Dialogs
             }
 
             g.Flush();
-            bmp.Save(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\WM.png", System.Drawing.Imaging.ImageFormat.Png);
             return bmp;
         }
 

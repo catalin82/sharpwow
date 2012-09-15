@@ -117,14 +117,65 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddLight" xml:space="preserve">
+    <value>Add Light</value>
+  </data>
+  <data name="Border" xml:space="preserve">
+    <value>Border</value>
+  </data>
+  <data name="Brush" xml:space="preserve">
+    <value>Brush</value>
+  </data>
+  <data name="BrushRadius" xml:space="preserve">
+    <value>Brush radius:</value>
+  </data>
+  <data name="CameraSensitivity" xml:space="preserve">
+    <value>Camera sensitivity:</value>
+  </data>
+  <data name="Circle" xml:space="preserve">
+    <value>Circle</value>
+  </data>
+  <data name="ExploreFlag" xml:space="preserve">
+    <value>Explore flag (hex):</value>
+  </data>
+  <data name="Graphics" xml:space="preserve">
+    <value>Graphics</value>
+  </data>
   <data name="Help" xml:space="preserve">
     <value>Help</value>
+  </data>
+  <data name="LoadCurrent" xml:space="preserve">
+    <value>Load current</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ParentID" xml:space="preserve">
+    <value>Parent ID:</value>
+  </data>
+  <data name="SaveDBC" xml:space="preserve">
+    <value>Save DBC</value>
+  </data>
+  <data name="SaveEntry" xml:space="preserve">
+    <value>Save Entry</value>
+  </data>
+  <data name="SavePath" xml:space="preserve">
+    <value>Save folder:</value>
+  </data>
+  <data name="Special" xml:space="preserve">
+    <value>Special</value>
   </data>
   <data name="StencilExplanation" xml:space="preserve">
     <value>Select the format you like to use for the depth and stencil buffer. The parameters are the following:
 D stands for depth and S stands for stencil, X means unused. Ideal is D24S8 which means 24 bits for depth and 8 bits for stencil. You can select the highest possible value, the lockable attribute is optional and you can ignore it.</value>
   </data>
+  <data name="Worldmap" xml:space="preserve">
+    <value>Worldmap</value>
+  </data>
   <data name="WorldMapMinimapWarning" xml:space="preserve">
     <value>!!! WARNING: ADT are not correctly loaded in this mode !!!</value>
+  </data>
+  <data name="WoWFolder" xml:space="preserve">
+    <value>WoW folder (effects on next start):</value>
   </data>
 </root>

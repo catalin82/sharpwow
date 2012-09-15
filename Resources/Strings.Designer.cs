@@ -61,11 +61,146 @@ namespace SharpWoW.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Light.
+        /// </summary>
+        internal static string AddLight {
+            get {
+                return ResourceManager.GetString("AddLight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Border.
+        /// </summary>
+        internal static string Border {
+            get {
+                return ResourceManager.GetString("Border", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brush.
+        /// </summary>
+        internal static string Brush {
+            get {
+                return ResourceManager.GetString("Brush", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brush radius:.
+        /// </summary>
+        internal static string BrushRadius {
+            get {
+                return ResourceManager.GetString("BrushRadius", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Camera sensitivity:.
+        /// </summary>
+        internal static string CameraSensitivity {
+            get {
+                return ResourceManager.GetString("CameraSensitivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Circle.
+        /// </summary>
+        internal static string Circle {
+            get {
+                return ResourceManager.GetString("Circle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Explore flag (hex):.
+        /// </summary>
+        internal static string ExploreFlag {
+            get {
+                return ResourceManager.GetString("ExploreFlag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graphics.
+        /// </summary>
+        internal static string Graphics {
+            get {
+                return ResourceManager.GetString("Graphics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Help.
         /// </summary>
         internal static string Help {
             get {
                 return ResourceManager.GetString("Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load current.
+        /// </summary>
+        internal static string LoadCurrent {
+            get {
+                return ResourceManager.GetString("LoadCurrent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string None {
+            get {
+                return ResourceManager.GetString("None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent ID:.
+        /// </summary>
+        internal static string ParentID {
+            get {
+                return ResourceManager.GetString("ParentID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save DBC.
+        /// </summary>
+        internal static string SaveDBC {
+            get {
+                return ResourceManager.GetString("SaveDBC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Entry.
+        /// </summary>
+        internal static string SaveEntry {
+            get {
+                return ResourceManager.GetString("SaveEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save folder:.
+        /// </summary>
+        internal static string SavePath {
+            get {
+                return ResourceManager.GetString("SavePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Special.
+        /// </summary>
+        internal static string Special {
+            get {
+                return ResourceManager.GetString("Special", resourceCulture);
             }
         }
         
@@ -80,11 +215,29 @@ namespace SharpWoW.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Worldmap.
+        /// </summary>
+        internal static string Worldmap {
+            get {
+                return ResourceManager.GetString("Worldmap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to !!! WARNING: ADT are not correctly loaded in this mode !!!.
         /// </summary>
         internal static string WorldMapMinimapWarning {
             get {
                 return ResourceManager.GetString("WorldMapMinimapWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WoW folder (effects on next start):.
+        /// </summary>
+        internal static string WoWFolder {
+            get {
+                return ResourceManager.GetString("WoWFolder", resourceCulture);
             }
         }
     }

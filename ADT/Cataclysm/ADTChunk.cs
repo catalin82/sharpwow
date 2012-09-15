@@ -80,6 +80,10 @@ namespace SharpWoW.ADT.Cataclysm
             );
         }
 
+        /// <summary>
+        /// Creates the D3D-mesh from the loaded vertices and the ADTStaticData.Indices. Writes the indicies and vertices
+        /// to the buffers of the mesh.
+        /// </summary>
         private void LoadMesh()
         {
             mMesh = new Mesh(Game.GameManager.GraphicsThread.GraphicsManager.Device,
@@ -94,6 +98,9 @@ namespace SharpWoW.ADT.Cataclysm
             mMesh.UnlockIndexBuffer();
         }
 
+        /// <summary>
+        /// Loads the normals from the file and stores them in the vertices array, overwriting vertices[i].NX/NY/NZ.
+        /// </summary>
         private void LoadNormals()
         {
             mFile.Position = mOffset.Offset + mHeader.ofsNormal;
@@ -116,11 +123,18 @@ namespace SharpWoW.ADT.Cataclysm
             }
         }
 
+        /// <summary>
+        /// Performs the asynchrnous unloading tasks that do not need to run in the main graphics thread.
+        /// Basically unloads all I/O related work previously loaded.
+        /// </summary>
         public void AsyncUnload()
         {
             vertices = null;
         }
 
+        /// <summary>
+        /// Performs all the unload of synchronous data from the graphics thread. Unloads the mesh, frees the alpha texture.
+        /// </summary>
         public void Unload()
         {
             if (mMesh != null)
@@ -135,6 +149,10 @@ namespace SharpWoW.ADT.Cataclysm
             mAlphaTexture = null;
         }
 
+        /// <summary>
+        /// Populates the vertices array with the height data from the file and the X/Y offsets from the header Also loads the BoundingBox and
+        /// sets the texture coordinates for each vertex.
+        /// </summary>
         private void LoadVertices()
         {
             mFile.Position = mOffset.Offset + mHeader.ofsHeight;
@@ -194,6 +212,9 @@ namespace SharpWoW.ADT.Cataclysm
             MaxPosition = maxPos;
         }
 
+        /// <summary>
+        /// Loads the texture layer information (MCLY) from the file and for each layer the corresponding AlphaData.
+        /// </summary>
         private void LoadLayers()
         {
             mTexFile.Position = mOffset.OffsetTexStream + 4;
@@ -228,6 +249,9 @@ namespace SharpWoW.ADT.Cataclysm
 
         }
 
+        /// <summary>
+        /// Loads the alphadata for each layer according to the flags. It also loads the hole bitmap and the shadows.
+        /// </summary>
         private void LoadAlpha()
         {
             for (int i = 0; i < 64; ++i)
@@ -275,6 +299,13 @@ namespace SharpWoW.ADT.Cataclysm
             }
         }
 
+        /// <summary>
+        /// Decompresses a chunk of alpha data from a given starting position.
+        /// </summary>
+        /// <param name="numBytes">The number of bytes that should be as output</param>
+        /// <param name="startPos">The index in AlphChunk where to start</param>
+        /// <param name="AlphaChunk">The chunk with data.</param>
+        /// <returns></returns>
         private byte[] DecompressAlphaData(uint numBytes, ref uint startPos, byte[] AlphaChunk)
         {
             uint counterOut = 0;
@@ -300,6 +331,9 @@ namespace SharpWoW.ADT.Cataclysm
             return ret;
         }
 
+        /// <summary>
+        /// Acquires a new or used alpha texture from the ADTAlphaHandler and then loads the surface with AlphaData
+        /// </summary>
         private void LoadAlphaTexture()
         {
             mAlphaTexture = ADTAlphaHandler.FreeTexture();
@@ -311,6 +345,12 @@ namespace SharpWoW.ADT.Cataclysm
             baseSurf.Dispose();
         }
 
+        /// <summary>
+        /// Searches a chunk in the file by its 4 byte signature
+        /// </summary>
+        /// <param name="strm">The stream to search in</param>
+        /// <param name="id">The 4 byte ID that identifies the chunk</param>
+        /// <exception cref="System.IndexOutOfRangeException">If the signature wasnt found</exception>
         private void SeekChunk(Stream strm, string id)
         {
             strm.Position = 0;
@@ -324,6 +364,12 @@ namespace SharpWoW.ADT.Cataclysm
             strm.Position -= 4;
         }
 
+        /// <summary>
+        /// Gets a 4 byte chunk signature from the current position of a stream
+        /// </summary>
+        /// <param name="strm">The stream to read from</param>
+        /// <returns>String with the 4 byte chunk signature</returns>
+        /// <exception cref="System.IndexOutOfRangeException">If the stream has not enough space to read a signature from</exception>
         private string GetChunkSignature(Stream strm)
         {
             var bytes = new byte[4];
@@ -344,9 +390,20 @@ namespace SharpWoW.ADT.Cataclysm
         private Texture mAlphaTexture = null;
         private ADTFile mParent;
 
+        /// <summary>
+        /// Gets the minimum position on all 3 axis of this chunk.
+        /// </summary>
         public Vector3 MinPosition { get; private set; }
+        /// <summary>
+        /// Gets the maximum position on all 3 axis of this chunk.
+        /// </summary>
         public Vector3 MaxPosition { get; private set; }
 
+        /// <summary>
+        /// Blurs the terrain on a given position with all the properties from Game.GameManager.TerrainLogic (Radius, Intensity, ...)
+        /// </summary>
+        /// <param name="pos">The origin of the blur</param>
+        /// <param name="lower">Unused</param>
         public override void BlurTerrain(Vector3 pos, bool lower)
         {
             float radius = Game.GameManager.TerrainLogic.Radius;

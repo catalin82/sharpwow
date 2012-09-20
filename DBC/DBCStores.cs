@@ -16,9 +16,29 @@ namespace SharpWoW.DBC
         public static DBCFile<LightFloatBand> LightFloatBand { get; private set; }
         public static DBCFile<LightParams> LightParams { get; private set; }
         public static DBCFile<LightSkyBox> LightSkyBox { get; private set; }
+        public static DBCFile<SkillLineAbility> SkillLineAbility { get; private set; }
+        public static DBCFile<SpellEntry> Spell { get; private set; }
 
         public static void LoadFiles()
         {
+            Spell = new DBCFile<SpellEntry>("DBFilesClient\\Spell.dbc");
+            Spell.LoadData();
+            SkillLineAbility = new DBCFile<DBC.SkillLineAbility>(@"DBFilesClient\SkillLineAbility.dbc");
+            SkillLineAbility.LoadData();
+            string str = "Non 0 entries:\n";
+            var qry = from dbc in SkillLineAbility.Records
+                      where
+                          dbc.chrRaces != 0
+                      select
+                      dbc.ID;
+
+            foreach (var entry in qry)
+            {
+                if (Spell.ContainsKey(entry))
+                    str += Spell[entry].Name + ", ";
+            }
+
+            System.Windows.Forms.MessageBox.Show(str);
             Map = new DBCFile<MapEntry>("DBFilesClient\\Map.dbc");
             LoadingScreen = new DBCFile<LoadingScreenEntry>("DBFilesClient\\LoadingScreens.dbc");
             AreaTable = new DBCFile<AreaTableEntry>("DBFilesClient\\AreaTable.dbc");

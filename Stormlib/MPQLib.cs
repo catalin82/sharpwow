@@ -35,10 +35,10 @@ namespace SharpWoW.Stormlib
 
         public enum Locales
         {
+            enGB,
             deDE,
             frFR,
             enUS,
-            enGB,
             esES,
             esMX,
             ruRU,

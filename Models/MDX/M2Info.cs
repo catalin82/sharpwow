@@ -132,6 +132,7 @@ namespace SharpWoW.Models.MDX
                 pass.BoneMatrices = new SlimDX.Matrix[mesh.nBones];
                 pass.BoneBaseIndex = mesh.startBone;
                 pass.ParentModel = this;
+                pass.Index = TexUnits[i].TexUnitNumber;
 
                 for (uint q = 0; q < mesh.nBones; ++q)
                 {
@@ -151,6 +152,28 @@ namespace SharpWoW.Models.MDX
                 pass.SetVertexIndices();
                 Passes.Add(pass);
             }
+
+            Passes.Sort((g1, g2) =>
+            {
+                if (g1.BlendMode.blend == 2 && g2.BlendMode.blend != 2)
+                    return 1;
+                if (g2.BlendMode.blend == 2 && g1.BlendMode.blend != 2)
+                    return -1;
+
+                if (g1.BlendMode.blend < g2.BlendMode.blend)
+                    return -1;
+                if (g2.BlendMode.blend < g1.BlendMode.blend)
+                    return 1;
+
+                if (g1.Index == g2.Index)
+                    return 0;
+                if (g1.Index < g2.Index)
+                    return -1;
+                if (g1.Index > g2.Index)
+                    return 1;
+                return 0;
+            }
+            );
 
             BoneAnimator = mba;
         }

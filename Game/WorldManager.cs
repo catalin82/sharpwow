@@ -8,6 +8,11 @@ namespace SharpWoW.Game
 {
     public class WorldManager
     {
+        public WorldManager()
+        {
+            MouseHoverChunk = null;
+        }
+
         public void EnterWorld(uint mapid, string continent, float x, float y)
         {
             MapID = mapid;
@@ -30,7 +35,7 @@ namespace SharpWoW.Game
                     if (valX < 0 || valY < 0)
                         continue;
 
-                    ADT.IADTFile file = ADT.ADTManager.CreateADT(@"World\Maps\" + continent + @"\" + continent + "_" + valX + "_" + valY + ".adt",
+                    ADT.IADTFile file = ADT.ADTManager.CreateADT(mWdtManager.getWDT(continent), @"World\Maps\" + continent + @"\" + continent + "_" + valX + "_" + valY + ".adt",
                         (uint)valX, (uint)valY, (i == 0 && j == 0));
 
                     file.Continent = continent;
@@ -70,7 +75,7 @@ namespace SharpWoW.Game
                     if (valX < 0 || valY < 0)
                         continue;
 
-                    ADT.IADTFile file = ADT.ADTManager.CreateADT(@"World\Maps\" + continent + @"\" + continent + "_" + valX + "_" + valY + ".adt",
+                    ADT.IADTFile file = ADT.ADTManager.CreateADT(mWdtManager.getWDT(continent), @"World\Maps\" + continent + @"\" + continent + "_" + valX + "_" + valY + ".adt",
                         (uint)valX, (uint)valY);
 
                     file.Continent = continent;
@@ -148,7 +153,7 @@ namespace SharpWoW.Game
                 uint ix = index / 1000;
                 uint iy = index % 1000;
                 var str = @"World\Maps\" + mContinent + "\\" + mContinent + "_" + ix + "_" + iy + ".adt";
-                ADT.IADTFile file = ADT.ADTManager.CreateADT(str, ix, iy);
+                ADT.IADTFile file = ADT.ADTManager.CreateADT(mWdtManager.getWDT(mContinent), str, ix, iy);
                 file.Continent = mContinent;
                 if (file != null)
                     mFiles.Add(file);                    
@@ -259,6 +264,8 @@ namespace SharpWoW.Game
 
         public ADT.IADTFile HoveredTile { get { return mHoveredTile; } }
         public ADT.IADTChunk HoveredChunk { get { return mHoveredChunk; } }
+        public ADT.IADTChunk MouseHoverChunk { get; set; }
+
         public uint MapID { get; private set; }
         public bool IsInWorld { get { return mFiles.Count != 0; } }
         public float FogStart { get { return mFogStart; } set { mFogStart = value; Game.GameManager.InformPropertyChanged(GameProperties.FogStart); } }
@@ -270,5 +277,6 @@ namespace SharpWoW.Game
         private ADT.IADTFile mHoveredTile = null;
         private ADT.IADTChunk mHoveredChunk = null;
         private float mFogStart, mFogDistance;
+        private ADT.WDTManager mWdtManager = new ADT.WDTManager();
     }
 }

@@ -25,14 +25,16 @@ namespace SharpWoW.ADT.Wotlk
             return true;
         }
 
-        public override bool Intersect(SlimDX.Ray ray, ref float dist)
+        public override bool Intersect(SlimDX.Ray ray, ref float dist, out IADTChunk hitChunk)
         {
+            hitChunk = null;
             if (mMesh == null)
                 return false;
 
             float nDist = 0.0f;
             if (mMesh.Intersects(ray, out nDist))
             {
+                hitChunk = this;
                 dist = nDist;
                 return true;
             }

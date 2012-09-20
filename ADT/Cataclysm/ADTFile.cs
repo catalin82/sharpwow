@@ -8,8 +8,12 @@ namespace SharpWoW.ADT.Cataclysm
 {
     public partial class ADTFile : IADTFile
     {
-        public ADTFile(string fileName, uint indexX, uint indexY, bool initial = false)
+        public ADTFile(WDTFile wdt, string fileName, uint indexX, uint indexY, bool initial = false)
         {
+            bool unkFlag = (wdt.Flags & 0x84) != 0;
+            if (unkFlag)
+                throw new Exception();
+
             IndexX = indexX;
             IndexY = indexY;
             FileName = fileName;
@@ -75,10 +79,11 @@ namespace SharpWoW.ADT.Cataclysm
 
             bool hasHit = false;
             float nearHit = 99999999;
+            IADTChunk hitChunk;
             foreach (var chunk in mChunks)
             {
                 float curHit = 0;
-                if (chunk.Intersect(ray, ref curHit))
+                if (chunk.Intersect(ray, ref curHit, out hitChunk))
                 {
                     hasHit = true;
                     if (curHit < nearHit)

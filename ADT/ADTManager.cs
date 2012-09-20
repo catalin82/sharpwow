@@ -20,8 +20,9 @@ namespace SharpWoW.ADT
             }
         }
 
-        public static bool Intersect(SlimDX.Ray ray, ref float dist)
+        public static bool Intersect(SlimDX.Ray ray, ref float dist, out IADTChunk hitChunk)
         {
+            hitChunk = null;
             if (VisibleChunks.Count == 0)
                 return false;
 
@@ -30,8 +31,10 @@ namespace SharpWoW.ADT
             foreach (var file in VisibleChunks)
             {
                 float curHit = 0;
-                if (file.Intersect(ray, ref curHit))
+                IADTChunk tmpHit;
+                if (file.Intersect(ray, ref curHit, out tmpHit))
                 {
+                    hitChunk = tmpHit;
                     hasHit = true;
                     if (curHit < nearHit)
                         nearHit = curHit;
@@ -108,12 +111,12 @@ namespace SharpWoW.ADT
             mActiveFiles.Remove(file);
         }
 
-        public static IADTFile CreateADT(string fileName, uint indexX, uint indexY, bool initial = false)
+        public static IADTFile CreateADT(WDTFile wdt, string fileName, uint indexX, uint indexY, bool initial = false)
         {
             if (Game.GameManager.BuildNumber <= 12340)
                 return new Wotlk.ADTFile(fileName, indexX, indexY, initial);
 
-            return new Cataclysm.ADTFile(fileName, indexX, indexY, initial);
+            return new Cataclysm.ADTFile(wdt, fileName, indexX, indexY, initial);
         }
 
         public static Models.WMO.WMOHitInformation GetWmoInformation(uint uniqueId, uint refId)

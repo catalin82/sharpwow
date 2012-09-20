@@ -298,13 +298,15 @@ float4 PixelBlendShader1Layer(PixelInput input) : COLOR0
 		}
 	}
 
-	BaseColor *= AlphaValue.a;
+	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
+	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
+	BaseColor = ApplyTileLines(BaseColor, input.PositionSpace);
 
 	if(minimapMode == false)
 	{
 		BaseColor = ApplySunLight(BaseColor, input.Normal, input.ViewDirection);
 		BaseColor = ApplyShadows(BaseColor, input.AlphaCoords);
-		BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
+		
 		BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
 		BaseColor = ApplyTileLines(BaseColor, input.PositionSpace);
 		BaseColor = ApplyFog(BaseColor, input.Depth, 0);
@@ -356,7 +358,9 @@ float4 PixelBlendShader2Layer(PixelInput input) : COLOR0
 		}
 	}
 
-	BaseColor *= AlphaValues.a;
+	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
+	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
+	BaseColor = ApplyTileLines(BaseColor, input.PositionSpace);
 
 	if(minimapMode == false)
 	{
@@ -421,7 +425,9 @@ float4 PixelBlendShader3Layer(PixelInput input) : COLOR0
 		}
 	}
 
-	BaseColor *= AlphaValues.a;
+	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
+	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
+	BaseColor = ApplyTileLines(BaseColor, input.PositionSpace);
 
 	if(minimapMode == false)
 	{
@@ -491,7 +497,9 @@ float4 PixelBlendShader4Layer(PixelInput input) : COLOR0
 		}
 	}
 
-	BaseColor *= AlphaValues.a;
+	BaseColor = ApplyHeightLines(BaseColor, input.PositionSpace);
+	BaseColor = ApplyChunkLines(BaseColor, input.PositionSpace);
+	BaseColor = ApplyTileLines(BaseColor, input.PositionSpace);
 
 	if(minimapMode == false)
 	{

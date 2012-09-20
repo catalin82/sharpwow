@@ -197,23 +197,24 @@ namespace SharpWoW.Models.MDX
             {
                 case 0:
                     {
-                        dev.SetRenderState(RenderState.AlphaBlendEnable, false);
-                        dev.SetRenderState(RenderState.AlphaTestEnable, false);
+                        dev.SetRenderState(RenderState.AlphaTestEnable, true);
+                        dev.SetRenderState(RenderState.AlphaBlendEnable, true);
+                        dev.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
+                        dev.SetRenderState(RenderState.AlphaRef, 0.01f);
                         break;
                     }
                 case 1:
                     {
-                        dev.SetRenderState(RenderState.AlphaBlendEnable, true);
                         dev.SetRenderState(RenderState.AlphaTestEnable, true);
-                        dev.SetRenderState(RenderState.AlphaFunc, Compare.Greater);
-                        dev.SetRenderState(RenderState.AlphaRef, 1.0f / 255.0f);
+                        dev.SetRenderState(RenderState.AlphaBlendEnable, true);                        
                         break;
                     }
                 case 2:
                     {
                         dev.SetRenderState(RenderState.AlphaTestEnable, true);
-                        dev.SetRenderState(RenderState.DestinationBlend, Blend.One);
-                        dev.SetRenderState(RenderState.SourceBlend, Blend.One);
+                        dev.SetRenderState(RenderState.AlphaBlendEnable, true);
+                        dev.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+                        dev.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
                         break;
                     }
                 case 3:
@@ -230,6 +231,23 @@ namespace SharpWoW.Models.MDX
                         dev.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
                         break;
                     }
+
+                case 6:
+                case 5:
+                    {
+                        dev.SetRenderState(RenderState.AlphaBlendEnable, true);
+                        dev.SetRenderState(RenderState.SourceBlend, Blend.DestinationColor);
+                        dev.SetRenderState(RenderState.DestinationBlend, Blend.SourceColor);
+                    }
+                    break;
+
+                default:
+                    {
+                        dev.SetRenderState(RenderState.AlphaBlendEnable, true);
+                        dev.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                        dev.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+                    }
+                    break;
             }
         }
 

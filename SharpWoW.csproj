@@ -95,8 +95,10 @@
     <Compile Include="ADT\IADTChunk.cs" />
     <Compile Include="ADT\IADTFile.cs" />
     <Compile Include="ADT\IBasicInfoQuery.cs" />
+    <Compile Include="ADT\WDTFile.cs" />
     <Compile Include="ADT\MinimapDirectory.cs" />
     <Compile Include="ADT\MinimapRender.cs" />
+    <Compile Include="ADT\WDTManager.cs" />
     <Compile Include="ADT\Wotlk\ADTChunk.cs" />
     <Compile Include="ADT\Wotlk\ADTChunkInteraction.cs" />
     <Compile Include="ADT\Wotlk\ADTFile.cs" />
@@ -267,6 +269,7 @@
     <Compile Include="UI\GridComboBox.cs" />
     <Compile Include="UI\InterfaceOverlay.cs" />
     <Compile Include="UI\Overlays\BorderElement.cs" />
+    <Compile Include="UI\Overlays\ChunkInfoOverlay.cs" />
     <Compile Include="UI\Overlays\ModelInfoOverlay.cs" />
     <Compile Include="UI\TerrainInfoOverlay.cs" />
     <Compile Include="UI\TextureInfoOverlay.cs" />

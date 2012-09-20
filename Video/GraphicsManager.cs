@@ -102,15 +102,20 @@ namespace SharpWoW.Video
 
             Ray ray = new Ray(nearPos, Vector3.Normalize((farPos - nearPos)));
             float distance = 0;
-            bool hit = ADT.ADTManager.Intersect(ray, ref distance);
+            ADT.IADTChunk hitChunk = null;
+            bool hit = ADT.ADTManager.Intersect(ray, ref distance, out hitChunk);
             ShaderCollection.TerrainShader.SetValue("DrawMouse", hit);
             if (hit)
             {
                 ShaderCollection.TerrainShader.SetValue("MousePosition", ray.Position + distance * ray.Direction);
                 MousePosition = ray.Position + distance * ray.Direction;
+                Game.GameManager.WorldManager.MouseHoverChunk = hitChunk;
             }
             else
+            {
+                Game.GameManager.WorldManager.MouseHoverChunk = null;
                 MousePosition = new Vector3(999999, 999999, 999999);
+            }
         }
 
         public Vector3 MousePosition

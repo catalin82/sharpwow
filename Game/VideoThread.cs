@@ -39,6 +39,7 @@ namespace SharpWoW.Game
             GraphicsManager.CreateDevice(true, true);
             UI.FontManager.init();
             PushOverlay(new UI.TerrainInfoOverlay());
+            PushOverlay(new UI.Overlays.ChunkInfoOverlay());
             Game.GameManager.ActiveChangeModeChanged += () =>
                 {
                     switch (Game.GameManager.ActiveChangeType)

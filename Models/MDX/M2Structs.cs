@@ -114,6 +114,7 @@ namespace SharpWoW.Models.MDX
         public string Texture;
 
         public M2RenderFlags BlendMode;
+        public uint Index { get; set; }
 
         public ushort BoneBaseIndex = 0;
         public SlimDX.Matrix[] BoneMatrices;
@@ -143,14 +144,26 @@ namespace SharpWoW.Models.MDX
         {
             foreach (var v in Vertices)
             {
-                if (!BoneIndices.Contains(v.bi1))
-                    BoneIndices.Add(v.bi1);
-                if (!BoneIndices.Contains(v.bi2))
-                    BoneIndices.Add(v.bi2);
-                if (!BoneIndices.Contains(v.bi3))
-                    BoneIndices.Add(v.bi3);
-                if (!BoneIndices.Contains(v.bi4))
-                    BoneIndices.Add(v.bi4);
+                if (v.bi1 != 0)
+                {
+                    if (!BoneIndices.Contains(v.bi1))
+                        BoneIndices.Add(v.bi1);
+                }
+                if (v.bi2 != 0)
+                {
+                    if (!BoneIndices.Contains(v.bi2))
+                        BoneIndices.Add(v.bi2);
+                }
+                if (v.bi3 != 0)
+                {
+                    if (!BoneIndices.Contains(v.bi3))
+                        BoneIndices.Add(v.bi3);
+                }
+                if (v.bi4 != 0)
+                {
+                    if (!BoneIndices.Contains(v.bi4))
+                        BoneIndices.Add(v.bi4);
+                }
             }
 
             for (int i = 0; i < Vertices.Length; ++i)

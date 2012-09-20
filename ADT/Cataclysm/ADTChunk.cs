@@ -44,6 +44,7 @@ namespace SharpWoW.ADT.Cataclysm
 
             LoadVertices();
             LoadLayers();
+            LoadShadowData();
             LoadNormals();
         }
 
@@ -65,9 +66,13 @@ namespace SharpWoW.ADT.Cataclysm
             if (mAlphaTexture == null)
                 LoadAlphaTexture();
 
+            if (mShadowTexture == null)
+                LoadShadowTexture();
+
             var shdr = Video.ShaderCollection.TerrainShader;
             shdr.SetTechnique(mHeader.nLayers - 1);
             shdr.SetTexture("alphaTexture", mAlphaTexture);
+            shdr.SetTexture("shadowTexture", mShadowTexture);
             for (int i = 0; i < 4; ++i)
                 shdr.SetValue("TextureFlags" + i, 0);
             for (int i = 0; i < mLayers.Count; ++i)
@@ -78,6 +83,8 @@ namespace SharpWoW.ADT.Cataclysm
                 mMesh.DrawSubset(0);
             }
             );
+
+            ADTManager.VisibleChunks.Add(this);
         }
 
         /// <summary>
@@ -237,7 +244,9 @@ namespace SharpWoW.ADT.Cataclysm
                 try
                 {
                     SeekChunk(memStrm, "LACM");
-                    mTexFile.Position = mOffset.OffsetTexStream + 8 + memStrm.Position + 4;
+                    BinaryReader readr = new BinaryReader(memStrm);
+                    size = readr.ReadUInt32();
+                    mTexFile.Position = mOffset.OffsetTexStream + 8 + memStrm.Position;
                 }
                 catch (Exception)
                 {
@@ -254,20 +263,9 @@ namespace SharpWoW.ADT.Cataclysm
         /// </summary>
         private void LoadAlpha()
         {
-            for (int i = 0; i < 64; ++i)
-            {
-                for (int j = 0; j < 64; ++j)
-                {
-                    float x = i * ADTStaticData.HoleSize;
-                    float y = j * ADTStaticData.HoleSize;
-                    uint stepx = (uint)Math.Floor(x / ADTStaticData.HoleLen);
-                    uint stepy = (uint)Math.Floor(y / ADTStaticData.HoleLen);
+            bool loadFixed = (mHeader.flags & 0x8000) != 0;
 
-                    byte factor = (byte)((mHeader.holes & (ADTStaticData.HoleBitmap[stepx, stepy])) != 0 ? 0 : 1);
-                    AlphaData[(i * 64 + j) * 4 + 3] = (byte)(0xFF * factor);
-                }
-            }
-
+            
             if (Header.nLayers > 1)
             {
                 uint alphaSize = mTexFile.Read<uint>();
@@ -279,7 +277,7 @@ namespace SharpWoW.ADT.Cataclysm
                     if ((mLayers[j].flags & 0x200) != 0)
                     {
                         MCLY ly = mLayers[j];
-                        byte[] alpha = DecompressAlphaData(4096, ref ly.ofsMCAL, alphaChunk);
+                        byte[] alpha = decompressAlpha2(4096, ref ly.ofsMCAL, alphaChunk);
                         for (int k = 0; k < 4096; ++k)
                             AlphaData[k * 4 + j - 1] = alpha[k];
                     }
@@ -297,6 +295,56 @@ namespace SharpWoW.ADT.Cataclysm
                     }
                 }
             }
+
+            for (int i = 0; i < 64; ++i)
+            {
+                for (int j = 0; j < 64; ++j)
+                {
+                    float x = i * ADTStaticData.HoleSize;
+                    float y = j * ADTStaticData.HoleSize;
+                    uint stepx = (uint)Math.Floor(x / ADTStaticData.HoleLen);
+                    uint stepy = (uint)Math.Floor(y / ADTStaticData.HoleLen);
+
+                    byte factor = (byte)((mHeader.holes & (ADTStaticData.HoleBitmap[stepx, stepy])) != 0 ? 0 : 1);
+                    int baseIndex = (i * 64 + j) * 4;
+                    byte remain = (byte)(255 - AlphaData[baseIndex] - AlphaData[baseIndex + 1] - AlphaData[baseIndex + 2]);
+                    AlphaData[(i * 64 + j) * 4 + 3] = (byte)(remain * factor);
+                }
+            }
+        }
+
+        private byte[] decompressAlpha2(uint numBytes, ref uint startPos, byte[] AlphaChunk)
+        {
+            uint counterOut = 0;
+            byte[] ret = new byte[numBytes];
+            uint v44 = startPos;
+
+            while (counterOut < numBytes)
+            {
+                byte v46 = AlphaChunk[v44];
+                uint v47 = v44 + 1;
+                if ((v46 & 0x80) == 0x80)
+                {
+                    byte v55 = AlphaChunk[v47];
+                    v47 = v44 + 2;
+                    byte v54 = (byte)(v46 & 0x7F);
+                    for (byte i = 0; i < v54; ++i)
+                        ret[counterOut++] = v55;
+                }
+                else
+                {
+                    for (byte i = 0; i < v46; ++i)
+                    {
+                        ++v47;
+                        ret[counterOut++] = AlphaChunk[v44 + 1];
+                        ++v44;
+                    }
+                }
+
+                v44 = v47;
+            }
+
+            return ret;
         }
 
         /// <summary>
@@ -364,6 +412,43 @@ namespace SharpWoW.ADT.Cataclysm
             strm.Position -= 4;
         }
 
+        private void LoadShadowData()
+        {
+            if (mHeader.ofsShadow == 0 || mHeader.sizeShadow <= 8)
+                return;
+
+            mTexFile.Position = mOffset.OffsetTexStream + 4;
+            byte[] chunkData = new byte[mTexFile.Read<uint>()];
+            mTexFile.Read(chunkData, 0, chunkData.Length);
+            MemoryStream memStrm = new MemoryStream(chunkData);
+            SeekChunk(memStrm, "HSCM");
+            memStrm.Position += 8;
+
+            uint curPtr = 0;
+            for (int i = 0; i < 64; ++i)
+            {
+                for (int j = 0; j < 8; ++j)
+                {
+                    byte mask = mFile.Read<byte>();
+                    for (int k = 0; k < 8; ++k)
+                        ShadowData[curPtr++] = ((mask & (1 << k)) == 0) ? (byte)0xFF : (byte)0xCC;
+                }
+            }
+        }
+
+        private void LoadShadowTexture()
+        {
+            if (mShadowTexture == null)
+                mShadowTexture = ADTAlphaHandler.FreeShadowTexture();
+            if (mShadowTexture == null)
+                mShadowTexture = new Texture(Game.GameManager.GraphicsThread.GraphicsManager.Device, 64, 64, 1, Usage.None, Format.A8, Pool.Managed);
+
+            Surface baseSurf = mShadowTexture.GetSurfaceLevel(0);
+            System.Drawing.Rectangle rec = System.Drawing.Rectangle.FromLTRB(0, 0, 64, 64);
+            Surface.FromMemory(baseSurf, ShadowData, Filter.None, 0, Format.A8, 64, rec);
+            baseSurf.Dispose();
+        }
+
         /// <summary>
         /// Gets a 4 byte chunk signature from the current position of a stream
         /// </summary>
@@ -378,6 +463,11 @@ namespace SharpWoW.ADT.Cataclysm
             return ret;
         }
 
+        public override string getLayerTexture(Wotlk.MCLY ly)
+        {
+            return mParent.GetTexture((int)ly.textureId).Name;
+        }
+
         private Stormlib.MPQFile mFile;
         private Utils.StreamedMpq mTexFile;
         private ChunkOffset mOffset;
@@ -389,6 +479,8 @@ namespace SharpWoW.ADT.Cataclysm
         private short[,] AlphaFloats = new short[4096, 3];
         private Texture mAlphaTexture = null;
         private ADTFile mParent;
+        private byte[] ShadowData = new byte[4096];
+        private Texture mShadowTexture;
 
         /// <summary>
         /// Gets the minimum position on all 3 axis of this chunk.
@@ -398,6 +490,18 @@ namespace SharpWoW.ADT.Cataclysm
         /// Gets the maximum position on all 3 axis of this chunk.
         /// </summary>
         public Vector3 MaxPosition { get; private set; }
+
+        public override Wotlk.MCLY getLayer(int index)
+        {
+            var tmp = mLayers[index];
+            return new Wotlk.MCLY()
+            {
+                offsetMCAL = tmp.ofsMCAL,
+                effectId = tmp.effectId,
+                flags = tmp.flags,
+                textureId = tmp.textureId,
+            };
+        }
 
         /// <summary>
         /// Blurs the terrain on a given position with all the properties from Game.GameManager.TerrainLogic (Radius, Intensity, ...)
@@ -643,14 +747,16 @@ namespace SharpWoW.ADT.Cataclysm
             return true;
         }
 
-        public override bool Intersect(Ray ray, ref float dist)
+        public override bool Intersect(Ray ray, ref float dist, out IADTChunk hitChunk)
         {
+            hitChunk = null;
             if (mMesh == null)
                 return false;
 
             float nDist = 0.0f;
             if (mMesh.Intersects(ray, out nDist))
             {
+                hitChunk = this;
                 dist = nDist;
                 return true;
             }

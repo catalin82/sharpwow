@@ -342,6 +342,11 @@ namespace SharpWoW.ADT.Wotlk
             AlphaFloats = null;
         }
 
+        public override string getLayerTexture(MCLY ly)
+        {
+            return mParent.getTextureName((int)ly.textureId);
+        }
+
         public void Render(SlimDX.Matrix preTransform)
         {
             if (Game.GameManager.GraphicsThread.GraphicsManager.Camera.ViewFrustum.Contains(mBox, Matrix.Identity) == ContainmentType.Disjoint)
@@ -506,6 +511,11 @@ namespace SharpWoW.ADT.Wotlk
                 vertices[i].NY = Norm.Y;
                 vertices[i].NZ = Norm.Z;
             }
+        }
+
+        public override MCLY getLayer(int index)
+        {
+            return mLayers[index];
         }
 
         public Vector3 MinPosition { get; private set; }

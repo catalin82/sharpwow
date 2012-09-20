@@ -89,10 +89,11 @@ namespace SharpWoW.ADT.Wotlk
         {
             bool hasHit = false;
             float nearHit = 99999999;
+            IADTChunk hitChunk;
             foreach (var chunk in mChunks)
             {
                 float curHit = 0;
-                if (chunk.Intersect(ray, ref curHit))
+                if (chunk.Intersect(ray, ref curHit, out hitChunk))
                 {
                     hasHit = true;
                     if (curHit < nearHit)

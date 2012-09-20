@@ -6,6 +6,34 @@ using System.Threading.Tasks;
 
 namespace SharpWoW.DBC
 {
+    public class SkillLineAbility
+    {
+        public uint ID;
+        public uint refSkillLine;
+        public uint refSpellDBC;
+        public uint chrRaces;
+        public uint chrClasses;
+        public uint chrRacesEx;
+        public uint chrClassesEx;
+        public uint reqSkill;
+        public uint refSpellParent;
+        public uint aquireMethod;
+        public uint skillGreyLevel;
+        public uint skillGreenLevel;
+        public uint chrPoints1, chrPoints2;
+    }
+
+    public class SpellEntry
+    {
+        public uint ID;
+        [Array(135)]
+        public uint[] unused;
+        [Localized]
+        public string Name;
+        [Array(81)]
+        public uint[] unused2;
+    }
+
     public class MapEntry
     {
         public uint ID;
